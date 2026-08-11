@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import io.github.supermonster003.autojs6.plugin.yolo.ncnn.provider.NativeYoloRuntime
+import io.github.supermonster003.autojs6.plugin.yolo.ncnn.provider.YoloDecoderRegistry
 import org.autojs.plugin.common.api.PluginCapabilityKeys
 import org.autojs.plugin.common.api.PluginInfo
 import org.autojs.plugin.yolo.api.YoloBackend
@@ -25,7 +26,7 @@ internal object YoloPlugin {
     const val VARIANT = "ncnn"
     const val PROVIDER_ID = "autojs6-yolo-ncnn"
     const val REQUIRED_HOST_VERSION = 5_274L
-    const val DECODER_ID = "ultralytics-detect"
+    const val DECODER_ID = YoloDecoderRegistry.ULTRALYTICS_DETECT
 
     val supportedAbis = listOf("arm64-v8a")
 
@@ -39,7 +40,7 @@ internal object YoloPlugin {
             modelFormats = listOf(YoloModelFormat.NCNN),
             devices = listOf(YoloDevice.CPU),
             pixelFormats = listOf(YoloPixelFormat.RGBA_8888),
-            decoderIds = listOf(DECODER_ID),
+            decoderIds = YoloDecoderRegistry.decoderIds,
             artifactRoles = listOf(
                 YoloContract.REQUIRED_MANIFEST_ROLE,
                 "ncnn-param",

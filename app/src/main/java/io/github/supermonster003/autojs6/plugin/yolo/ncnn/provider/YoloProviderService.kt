@@ -180,6 +180,8 @@ class YoloProviderService : Service() {
         is SecurityException -> error
         is YoloSessionOpenTimeoutException ->
             YoloProviderServiceErrors.sessionOpenTimedOut(error.message.orEmpty())
+        is YoloModelRejectedException ->
+            YoloProviderServiceErrors.modelRejected(error.message.orEmpty())
         is IllegalArgumentException -> {
             if (YoloOpenSessionFailureCodec.decode(error) != null) {
                 error

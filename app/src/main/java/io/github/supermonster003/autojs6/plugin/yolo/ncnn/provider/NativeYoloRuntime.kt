@@ -1,7 +1,6 @@
 package io.github.supermonster003.autojs6.plugin.yolo.ncnn.provider
 
 import io.github.supermonster003.autojs6.plugin.yolo.ncnn.BuildConfig
-import io.github.supermonster003.autojs6.plugin.yolo.ncnn.YoloPlugin
 import org.autojs.plugin.yolo.api.YoloOpenSessionRequest
 import java.util.concurrent.atomic.AtomicReference
 
@@ -38,28 +37,46 @@ internal object NativeYoloRuntime {
     ): YoloInferenceEngine {
         deadline.requireRemaining()
         requireReady()
-        require(request.decoderId == YoloPlugin.DECODER_ID) { "Unsupported YOLO decoder" }
+        val decoder = YoloDecoderRegistry.require(request.decoderId)
 
         val byRole = model.artifacts.groupBy(MaterializedModelArtifact::role)
         require(byRole.keys == setOf("manifest", "ncnn-param", "ncnn-bin")) {
-            "YOLO11n requires exactly manifest, ncnn-param, and ncnn-bin artifacts"
+            "YOLO NCNN models require exactly manifest, ncnn-param, and ncnn-bin artifacts"
         }
         require(byRole.values.all { it.size == 1 }) { "YOLO model artifact roles must be unique" }
 
         val manifest = YoloModelManifest.parse(byRole.getValue("manifest").single().file)
-        require(request.decoderId == "ultralytics-detect") {
-            "Session decoder does not match the model manifest"
+        if (decoder.id != manifest.decoderId) {
+            throw YoloModelRejectedException(
+                "MANIFEST_DECODER_MISMATCH",
+                "Session decoder ${decoder.id} does not match manifest decoder ${manifest.decoderId}",
+            )
         }
         deadline.requireRemaining()
 
-        val handle = nativeCreate(
-            paramPath = byRole.getValue("ncnn-param").single().file.absolutePath,
-            binPath = byRole.getValue("ncnn-bin").single().file.absolutePath,
-            inputName = manifest.inputName,
-            outputName = manifest.outputName,
-            cpuThreads = request.cpuThreads,
-        )
-        check(handle != 0L) { "NCNN returned an invalid detector handle" }
+        val handle = try {
+            nativeCreate(
+                paramPath = byRole.getValue("ncnn-param").single().file.absolutePath,
+                binPath = byRole.getValue("ncnn-bin").single().file.absolutePath,
+                inputName = manifest.inputName,
+                outputName = manifest.outputName,
+                cpuThreads = request.cpuThreads,
+                classCount = manifest.labels.size,
+                outputRows = manifest.outputRows,
+            ).also { check(it != 0L) { "NCNN returned an invalid detector handle" } }
+        } catch (error: IllegalArgumentException) {
+            throw YoloModelRejectedException(
+                "MODEL_GRAPH_REJECTED",
+                error.message ?: "NCNN rejected the model graph",
+                error,
+            )
+        } catch (error: IllegalStateException) {
+            throw YoloModelRejectedException(
+                "MODEL_GRAPH_REJECTED",
+                error.message ?: "NCNN rejected the model graph",
+                error,
+            )
+        }
         return try {
             deadline.requireRemaining()
             NativeYoloEngine(handle, manifest.labels)
@@ -122,5 +139,7 @@ internal object NativeYoloRuntime {
         inputName: String,
         outputName: String,
         cpuThreads: Int,
+        classCount: Int,
+        outputRows: Int,
     ): Long
 }

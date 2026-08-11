@@ -7,6 +7,7 @@ internal object YoloProviderServiceErrors {
     val INVALID_REQUEST = YoloErrorCode.INVALID_REQUEST.wireCode
     val NATIVE_RUNTIME_NOT_READY = YoloErrorCode.UNSUPPORTED_CAPABILITY.wireCode
     val PROVIDER_BUSY = YoloErrorCode.BUSY.wireCode
+    val MODEL_REJECTED = YoloErrorCode.MODEL_REJECTED.wireCode
     val SESSION_OPEN_FAILED = YoloErrorCode.INTERNAL.wireCode
 
     fun invalidRequest(message: String): IllegalArgumentException =
@@ -23,6 +24,9 @@ internal object YoloProviderServiceErrors {
             YoloErrorCode.BUSY,
             "YOLO provider already owns its single session",
         )
+
+    fun modelRejected(message: String): IllegalArgumentException =
+        YoloOpenSessionFailureCodec.exception(YoloErrorCode.MODEL_REJECTED, bounded(message))
 
     fun sessionOpenFailed(message: String): IllegalArgumentException =
         YoloOpenSessionFailureCodec.exception(YoloErrorCode.INTERNAL, bounded(message))

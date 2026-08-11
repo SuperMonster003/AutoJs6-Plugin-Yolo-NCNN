@@ -20,8 +20,8 @@
 namespace {
 
 constexpr int kInputSize = 640;
-constexpr int kClassCount = 80;
-constexpr int kOutputRows = 4 + kClassCount;
+constexpr int kBoxFields = 4;
+constexpr int kMaxClassCount = 256;
 constexpr int kOutputColumns = 8400;
 constexpr int kDetectionFields = 6;
 
@@ -29,6 +29,8 @@ struct Detector {
     ncnn::Net net;
     std::string input_name;
     std::string output_name;
+    int class_count;
+    int output_rows;
     std::atomic<jlong> cancelled_sequence{0};
     std::atomic<jlong> active_sequence{0};
 };
@@ -174,7 +176,9 @@ Java_io_github_supermonster003_autojs6_plugin_yolo_ncnn_provider_NativeYoloRunti
     jstring bin_path,
     jstring input_name,
     jstring output_name,
-    jint cpu_threads
+    jint cpu_threads,
+    jint class_count,
+    jint output_rows
 ) {
     if (param_path == nullptr || bin_path == nullptr || input_name == nullptr || output_name == nullptr) {
         throw_argument(env, "NCNN model paths and tensor names are required");
@@ -182,6 +186,10 @@ Java_io_github_supermonster003_autojs6_plugin_yolo_ncnn_provider_NativeYoloRunti
     }
     if (cpu_threads < 1 || cpu_threads > 64) {
         throw_argument(env, "NCNN CPU thread count is invalid");
+        return 0;
+    }
+    if (class_count < 1 || class_count > kMaxClassCount || output_rows != kBoxFields + class_count) {
+        throw_argument(env, "NCNN decoder class count and output rows are incompatible");
         return 0;
     }
 
@@ -195,13 +203,15 @@ Java_io_github_supermonster003_autojs6_plugin_yolo_ncnn_provider_NativeYoloRunti
         return 0;
     }
     if (std::strcmp(input_chars.get(), "in0") != 0 || std::strcmp(output_chars.get(), "out0") != 0) {
-        throw_argument(env, "R1 supports only in0 and out0 tensor names");
+        throw_argument(env, "Manifest v1 supports only in0 and out0 tensor names");
         return 0;
     }
 
     Detector* detector = new Detector();
     detector->input_name = input_chars.get();
     detector->output_name = output_chars.get();
+    detector->class_count = class_count;
+    detector->output_rows = output_rows;
     detector->net.opt.num_threads = cpu_threads;
     detector->net.opt.use_vulkan_compute = false;
     detector->net.opt.use_fp16_packed = false;
@@ -339,12 +349,13 @@ Java_io_github_supermonster003_autojs6_plugin_yolo_ncnn_provider_NativeYoloRunti
         throw_cancelled(env);
         return nullptr;
     }
-    if (output.dims != 2 || output.w != kOutputColumns || output.h != kOutputRows ||
+    if (output.dims != 2 || output.w != kOutputColumns || output.h != detector->output_rows ||
         output.elemsize != sizeof(float) || output.elempack != 1) {
         detector->active_sequence.store(0, std::memory_order_release);
         throw_state(
             env,
-            "NCNN out0 must be float32 [84,8400], got dims=" + std::to_string(output.dims) +
+            "NCNN out0 must be float32 [" + std::to_string(detector->output_rows) +
+                ",8400], got dims=" + std::to_string(output.dims) +
                 " w=" + std::to_string(output.w) + " h=" + std::to_string(output.h)
         );
         return nullptr;
@@ -364,7 +375,7 @@ Java_io_github_supermonster003_autojs6_plugin_yolo_ncnn_provider_NativeYoloRunti
         }
         int class_id = 0;
         float confidence = output.row(4)[column];
-        for (int class_index = 1; class_index < kClassCount; ++class_index) {
+        for (int class_index = 1; class_index < detector->class_count; ++class_index) {
             const float score = output.row(4 + class_index)[column];
             if (score > confidence) {
                 confidence = score;
