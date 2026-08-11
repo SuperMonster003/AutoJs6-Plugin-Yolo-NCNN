@@ -37,6 +37,7 @@ __pycache__/
 /release/
 /releases/
 /tools/*
+!/tools/r4_custom_fixture.py
 
 /gradle/wrappers/backup/
 

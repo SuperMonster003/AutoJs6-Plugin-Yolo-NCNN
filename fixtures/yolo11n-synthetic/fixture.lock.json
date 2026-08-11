@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "state": "local-validation-only",
+  "family": "yolo11n-synthetic",
+  "task": "detect",
+  "backend": "ncnn",
+  "decoderId": "ultralytics-detect",
+  "classCount": 1,
+  "outputShape": [1, 5, 8400],
+  "generator": {
+    "path": "tools/r4_custom_fixture.py",
+    "version": 1,
+    "sha256AtTraining": "2344b70628c635bca6cc76666a3bef5b905e2c18a0d384b25ec433a094cb7f2a",
+    "currentSourceSha256": "2e7ffae10c8ea24ea0ff94ba0672d1a2f965fec0554c5b41fc0490f5487d9bd1",
+    "postTrainingAdjustment": "Only held-out acceptance thresholds changed; model and dataset bytes are unchanged"
+  },
+  "toolchain": {
+    "python": "3.12.5",
+    "ultralytics": "8.4.117",
+    "torch": "2.13.0+cpu",
+    "torchvision": "0.28.0",
+    "ncnn": "1.0.20260526",
+    "pnnx": "20260526"
+  },
+  "training": {
+    "baseModelSource": "https://github.com/ultralytics/assets/releases/download/v8.4.0/yolo11n.pt",
+    "baseModelLength": 5613764,
+    "baseModelSha256": "0ebbc80d4a7680d14987a577cd21342b65ecfd94632bd9a8da63ae6417644ee1",
+    "seed": 20260811,
+    "trainImages": 24,
+    "validationImages": 6,
+    "heldOutImages": 1,
+    "epochs": 24,
+    "trainImageSize": 320,
+    "cpuOnly": true,
+    "syntheticDataset": true,
+    "thirdPartyImageInputs": false,
+    "validationMetrics": {
+      "precision": 1.0,
+      "recall": 0.9778,
+      "mAP50": 0.995,
+      "mAP50to95": 0.79043
+    }
+  },
+  "artifacts": [
+    {"name": "model.best.pt", "length": 5428826, "sha256": "ca74798265403c1eb07baf0cd7a12873f7acbb7d066909f762ea129b53d61bb5", "tracked": false},
+    {"name": "model.ncnn.param", "length": 22638, "sha256": "7da440f6d3627d695211d079b5b2fa6bde4e331ce04e0321535c9bb222c59496", "tracked": false},
+    {"name": "model.ncnn.bin", "length": 10430540, "sha256": "4470cc8498b96d04dad02a087a9d310786fca1142ba3113efcab23ffb77b3c15", "tracked": false},
+    {"name": "metadata.yaml", "length": 494, "sha256": "1fb971a9ff822fb7b40403717c168d4ff357e07efa06f1315ac41d9a52a69f49", "tracked": false},
+    {"name": "synthetic-heldout.png", "length": 4173, "sha256": "0c8143456c8dcb248a64ff12c66dd1287538c07768cac2a3fa14df0b767b2e9c", "tracked": false},
+    {"name": "dataset-index.json", "length": 11676, "sha256": "583d6685970df5986f1c0992b74624eefd6357d557c431377a6e7d7c8f8322c0", "tracked": false},
+    {"name": "training-recipe.json", "length": 1061, "sha256": "ba37c6f1ef810287fa41770afac78698c86ffb2e4777419c9f4033b5811f5f86", "tracked": false},
+    {"name": "model-manifest-v1.json", "length": 531, "sha256": "a560f1810b25a62a7ad9a09867ab18f65cf5758e0168e6eaa3f9525d7e29ac27", "tracked": true},
+    {"name": "expected-synthetic-detection.json", "length": 877, "sha256": "e1da675f9d39efc90e53254d282e86951031ac48859a31256a2d136be18683b9", "tracked": true}
+  ],
+  "licenseBoundary": {
+    "baseModelAndExporter": "Ultralytics metadata records AGPL-3.0; fine-tuning and NCNN conversion do not assert a license change",
+    "syntheticDataset": "Programmatically generated without third-party image input",
+    "distributionPolicy": "Model, dataset, and image bytes remain local-only and are absent from Git and the Provider APK"
+  }
+}

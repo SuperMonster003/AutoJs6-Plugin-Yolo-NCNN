@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "image": {
+    "logicalName": "synthetic-heldout.png",
+    "width": 640,
+    "height": 640,
+    "sha256": "0c8143456c8dcb248a64ff12c66dd1287538c07768cac2a3fa14df0b767b2e9c"
+  },
+  "detectOptions": {
+    "confidence": 0.03,
+    "iouThreshold": 0.45,
+    "maxDetections": 20
+  },
+  "groundTruth": {
+    "classId": 0,
+    "label": "synthetic-target",
+    "bounds": [285.0, 159.0, 506.0, 306.0]
+  },
+  "localNcnnReference": {
+    "tool": "ultralytics 8.4.117 NCNN backend",
+    "classId": 0,
+    "label": "synthetic-target",
+    "confidence": 0.035259149968624115,
+    "bounds": [287.9212646484375, 160.68710327148438, 503.3575439453125, 301.07958984375],
+    "groundTruthIoU": 0.922389505095964
+  },
+  "acceptance": {
+    "detectionCount": 1,
+    "minimumGroundTruthIoU": 0.90,
+    "minimumReferenceIoU": 0.999,
+    "maximumConfidenceDelta": 0.001
+  }
+}
