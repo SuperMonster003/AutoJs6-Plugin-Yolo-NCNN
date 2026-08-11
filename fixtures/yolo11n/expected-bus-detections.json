@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "image": {
+    "name": "bus.jpg",
+    "width": 810,
+    "height": 1080,
+    "sha256": "c02019c4979c191eb739ddd944445ef408dad5679acab6fd520ef9d434bfbc63"
+  },
+  "options": {
+    "confidenceThreshold": 0.25,
+    "iouThreshold": 0.45,
+    "maxDetections": 100,
+    "classAgnosticNms": false
+  },
+  "comparison": {
+    "minimumBoxIou": 0.95,
+    "maximumConfidenceDelta": 0.02
+  },
+  "detections": [
+    {
+      "classId": 5,
+      "label": "bus",
+      "confidence": 0.9392048716545105,
+      "bounds": [11.9184065, 228.3942261, 799.2250977, 735.2150269]
+    },
+    {
+      "classId": 0,
+      "label": "person",
+      "confidence": 0.9019901752471924,
+      "bounds": [48.5926933, 397.9607849, 243.2127075, 904.5357056]
+    },
+    {
+      "classId": 0,
+      "label": "person",
+      "confidence": 0.8492761254310608,
+      "bounds": [670.5563965, 392.5901184, 810.0, 879.6233521]
+    },
+    {
+      "classId": 0,
+      "label": "person",
+      "confidence": 0.8327868580818176,
+      "bounds": [223.1195984, 405.5779419, 345.2289734, 859.7220459]
+    },
+    {
+      "classId": 0,
+      "label": "person",
+      "confidence": 0.3993438184261322,
+      "bounds": [0.0, 550.1926880, 66.0081940, 871.7786255]
+    }
+  ]
+}

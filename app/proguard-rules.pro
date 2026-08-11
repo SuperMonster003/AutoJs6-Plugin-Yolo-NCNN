@@ -1,0 +1,2 @@
+-keep class org.autojs.plugin.yolo.api.** { *; }
+-keep class io.github.supermonster003.autojs6.plugin.yolo.ncnn.**Service { *; }

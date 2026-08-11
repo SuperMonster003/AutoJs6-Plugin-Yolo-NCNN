@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "state": "staged",
+  "sourceRepository": "AutoJs6 work-yolo",
+  "sourceRevision": "3c170896d8e4b528f1aa85953a4698d1742c8344",
+  "sourceSnapshotSha256": "4cd47305c70b5c1533fbb16efe85bd9c572e571d05b841770976ee3593dd9174",
+  "artifacts": [
+    {
+      "name": "common-plugin-api.aar",
+      "length": 10882,
+      "sha256": "d745bb24d6a6995e68ebea27d592faec162f0bad4f9bf70cb038a480ad8c6df2"
+    },
+    {
+      "name": "protocol-wire-api.aar",
+      "length": 30717,
+      "sha256": "6c597ec095852eac7e6277574191141100dc96b6c5a803725ed540f42aa7d871"
+    },
+    {
+      "name": "yolo-api.aar",
+      "length": 129532,
+      "sha256": "ce9763faa62977ef90af65ca42cf96670a8d59e68a057e309b92e9615ba06a37"
+    }
+  ]
+}

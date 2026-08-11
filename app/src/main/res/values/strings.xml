@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">AutoJs6 YOLO NCNN</string>
+    <string name="plugin_description">Process-isolated NCNN object detection provider for AutoJs6</string>
+</resources>
