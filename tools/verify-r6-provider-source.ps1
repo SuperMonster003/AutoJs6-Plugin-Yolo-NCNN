@@ -3,7 +3,8 @@
 param(
     [switch] $SkipBuild,
     [switch] $RequireClean,
-    [string] $ReportPath = ""
+    [string] $ReportPath = "",
+    [switch] $SelfTestFailAfterReportInvalidation
 )
 
 Set-StrictMode -Version Latest
@@ -112,6 +113,45 @@ function Get-R6ProviderRequiredFile {
 function Get-R6ProviderSha256 {
     param([Parameter(Mandatory = $true)][string] $Path)
     return (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash.ToLowerInvariant()
+}
+
+function Resolve-R6ProviderReportPath {
+    param([string] $RequestedPath)
+    $reportRoot = [System.IO.Path]::GetFullPath((Join-Path $repository "build/reports/yolo"))
+    $candidate = if ([string]::IsNullOrWhiteSpace($RequestedPath)) {
+        Join-Path $reportRoot "r6-provider-source.generated.json"
+    } elseif ([System.IO.Path]::IsPathRooted($RequestedPath)) {
+        $RequestedPath
+    } else {
+        Join-Path $repository $RequestedPath
+    }
+    $candidate = [System.IO.Path]::GetFullPath($candidate)
+    $rootPrefix = $reportRoot.TrimEnd(
+        [System.IO.Path]::DirectorySeparatorChar,
+        [System.IO.Path]::AltDirectorySeparatorChar
+    ) + [System.IO.Path]::DirectorySeparatorChar
+    Assert-R6ProviderCondition (
+        $candidate.StartsWith($rootPrefix, [System.StringComparison]::OrdinalIgnoreCase)
+    ) "R6 Provider report must remain under the fixed build/reports/yolo directory"
+    Assert-R6ProviderCondition (
+        [System.IO.Path]::GetExtension($candidate) -ceq ".json"
+    ) "R6 Provider report must be a JSON file"
+    return $candidate
+}
+
+function Assert-R6ProviderRetainedReport {
+    param(
+        [Parameter(Mandatory = $true)][string] $Path,
+        [Parameter(Mandatory = $true)][string] $ExpectedResult,
+        [Parameter(Mandatory = $true)][bool] $ExpectedBuildIdentity
+    )
+    $parsed = Get-Content -LiteralPath $Path -Raw | ConvertFrom-Json
+    Assert-R6ProviderCondition ([int]$parsed.schemaVersion -eq 2) "Retained Provider report schema differs"
+    Assert-R6ProviderCondition ([string]$parsed.gate -ceq "yolo-r6-provider-source") "Retained Provider report gate differs"
+    Assert-R6ProviderCondition ([string]$parsed.result -ceq $ExpectedResult) "Retained Provider report result differs"
+    Assert-R6ProviderCondition ([bool]$parsed.buildIdentityProven -eq $ExpectedBuildIdentity) (
+        "Retained Provider report build-identity boundary differs"
+    )
 }
 
 function Get-R6ProviderOnlyFile {
@@ -361,6 +401,9 @@ function Get-R6ProviderTestReceipt {
 }
 
 $gateLock = $null
+$resolvedReportPath = $null
+$pendingReportPath = $null
+$bodyCompleted = $false
 Push-Location -LiteralPath $repository
 try {
     $gateLockPath = Join-Path $repository "build/locks/yolo-r6-provider-source.lock"
@@ -375,6 +418,22 @@ try {
     } catch [System.IO.IOException] {
         throw "Another YOLO R6 Provider gate already holds the build lock: $gateLockPath"
     }
+
+    # Invalidate an older receipt only after acquiring this gate's own lock. A contender that
+    # fails to acquire the lock must not delete the active holder's output.
+    $resolvedReportPath = Resolve-R6ProviderReportPath -RequestedPath $ReportPath
+    if (Test-Path -LiteralPath $resolvedReportPath) {
+        Assert-R6ProviderCondition (
+            Test-Path -LiteralPath $resolvedReportPath -PathType Leaf
+        ) "R6 Provider report path is not a file: $resolvedReportPath"
+        Remove-Item -LiteralPath $resolvedReportPath -Force
+    }
+    New-Item -ItemType Directory -Force -Path (Split-Path -Parent $resolvedReportPath) | Out-Null
+    $ReportPath = $resolvedReportPath
+    if ($SelfTestFailAfterReportInvalidation) {
+        throw "Intentional R6 Provider receipt invalidation self-test failure"
+    }
+
     Assert-R6ProviderCondition (
         -not (Test-Path -LiteralPath (Join-Path $repository "sign.properties"))
     ) "R6 Provider source preflight refuses to run while production signing material is present"
@@ -663,14 +722,6 @@ try {
         [string]$rcMetadata.elements[0].versionName -match '-rc-test-signed$'
     ) "RC version name must identify the TEST-SIGNED channel"
 
-    if ([string]::IsNullOrWhiteSpace($ReportPath)) {
-        $ReportPath = Join-Path $repository "build/reports/yolo/r6-provider-source.generated.json"
-    } elseif (-not [System.IO.Path]::IsPathRooted($ReportPath)) {
-        $ReportPath = Join-Path $repository $ReportPath
-    }
-    $ReportPath = [System.IO.Path]::GetFullPath($ReportPath)
-    New-Item -ItemType Directory -Force -Path (Split-Path -Parent $ReportPath) | Out-Null
-
     $report = [ordered]@{
         schemaVersion = 2
         gate = "yolo-r6-provider-source"
@@ -793,7 +844,20 @@ try {
             deviceVerified = $false
         }
     }
-    $report | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $ReportPath -Encoding utf8NoBOM
+    $expectedResult = if ($buildIdentityProven) { "PASS" } else { "DIAGNOSTIC_COMPLETE" }
+    $pendingReportPath = "$ReportPath.pending-$PID-$([Guid]::NewGuid().ToString('N'))"
+    $report | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $pendingReportPath -Encoding utf8NoBOM
+    Assert-R6ProviderRetainedReport `
+        -Path $pendingReportPath `
+        -ExpectedResult $expectedResult `
+        -ExpectedBuildIdentity $buildIdentityProven
+    Move-Item -LiteralPath $pendingReportPath -Destination $ReportPath
+    $pendingReportPath = $null
+    Assert-R6ProviderRetainedReport `
+        -Path $ReportPath `
+        -ExpectedResult $expectedResult `
+        -ExpectedBuildIdentity $buildIdentityProven
+    $bodyCompleted = $true
     if ($buildIdentityProven) {
         Write-Host "YOLO R6 Provider full clean-build preflight PASS"
     } else {
@@ -801,6 +865,19 @@ try {
     }
     Write-Host "Report: $ReportPath"
 } finally {
-    if ($null -ne $gateLock) { $gateLock.Dispose() }
-    Pop-Location
+    $cleanupErrors = [System.Collections.Generic.List[string]]::new()
+    if ($null -ne $pendingReportPath -and (Test-Path -LiteralPath $pendingReportPath)) {
+        try { Remove-Item -LiteralPath $pendingReportPath -Force } catch { $cleanupErrors.Add($_.Exception.Message) }
+    }
+    if (-not $bodyCompleted -and $null -ne $resolvedReportPath -and (Test-Path -LiteralPath $resolvedReportPath)) {
+        try { Remove-Item -LiteralPath $resolvedReportPath -Force } catch { $cleanupErrors.Add($_.Exception.Message) }
+    }
+    try { if ($null -ne $gateLock) { $gateLock.Dispose() } } catch { $cleanupErrors.Add($_.Exception.Message) }
+    try { Pop-Location } catch { $cleanupErrors.Add($_.Exception.Message) }
+    if ($cleanupErrors.Count -gt 0) {
+        if ($null -ne $resolvedReportPath -and (Test-Path -LiteralPath $resolvedReportPath)) {
+            try { Remove-Item -LiteralPath $resolvedReportPath -Force } catch { $cleanupErrors.Add($_.Exception.Message) }
+        }
+        throw "R6 Provider gate cleanup failed: $($cleanupErrors -join '; ')"
+    }
 }
