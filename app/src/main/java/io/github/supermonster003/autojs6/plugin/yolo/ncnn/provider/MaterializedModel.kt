@@ -31,7 +31,7 @@ internal class MaterializedModel private constructor(
             maximumArtifactBytes: Long,
             deadline: YoloSessionOpenDeadline,
         ): MaterializedModel {
-            val root = File(context.noBackupFilesDir, "yolo-model-sessions")
+            val root = File(context.noBackupFilesDir, YOLO_MODEL_SESSION_DIRECTORY)
             check(root.isDirectory || root.mkdirs()) { "Cannot create private YOLO model root" }
             val directory = File(root, UUID.randomUUID().toString())
             check(directory.mkdir()) { "Cannot create private YOLO model session" }

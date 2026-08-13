@@ -33,6 +33,9 @@ class YoloProviderService : Service() {
 
     override fun onCreate() {
         super.onCreate()
+        // No session can be active before this process-local Service is created. Clean crash
+        // residue before constructing or publishing any Binder-facing state.
+        StaleModelSessionCleanup.clean(noBackupFilesDir)
         callerVerifier = HostCallerVerifier(this)
         worker = ThreadPoolExecutor(
             1,
@@ -219,10 +222,9 @@ class YoloProviderService : Service() {
         }
     }.getOrNull() ?: YoloProviderDiagnosticsSnapshot.UNAVAILABLE_LONG
 
-    private fun modelSessionRoot() = File(noBackupFilesDir, MODEL_SESSION_DIRECTORY)
+    private fun modelSessionRoot() = File(noBackupFilesDir, YOLO_MODEL_SESSION_DIRECTORY)
 
     private companion object {
-        const val MODEL_SESSION_DIRECTORY = "yolo-model-sessions"
         const val PROC_RSS_PREFIX = "VmRSS:"
     }
 }
