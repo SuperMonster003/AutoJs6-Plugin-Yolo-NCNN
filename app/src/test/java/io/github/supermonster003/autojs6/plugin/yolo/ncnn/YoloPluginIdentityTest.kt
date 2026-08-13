@@ -10,6 +10,6 @@ class YoloPluginIdentityTest {
         assertEquals("yolo-ncnn", YoloPlugin.PLUGIN_ID)
         assertEquals("yolo", YoloPlugin.ENGINE)
         assertEquals("ncnn", YoloPlugin.VARIANT)
-        assertEquals(5_274L, YoloPlugin.REQUIRED_HOST_VERSION)
+        assertEquals(5_275L, YoloPlugin.REQUIRED_HOST_VERSION)
     }
 }

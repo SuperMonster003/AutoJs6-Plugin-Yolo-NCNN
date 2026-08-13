@@ -66,7 +66,7 @@ upgrade, or rollback evidence. Those remain R6 deliverables.
 - [x] Export the fixed plugin ID, engine, variant, and minimum Host version as
   Android string resources for offline official-index generation.
 - [x] Keep the two service manifest declarations and runtime capability at
-  minimum Host version code `5274`.
+  minimum Host version code `5275`.
 - [x] Resolve the flat-AAR Parcelize dependency explicitly and admit both the
   unsigned release build and TEST-SIGNED RC through R8 and resource shrinking.
 - [x] Add the third-party notice index, model/validation-asset license policy,

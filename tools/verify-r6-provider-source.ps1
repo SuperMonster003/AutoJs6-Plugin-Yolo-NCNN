@@ -18,7 +18,7 @@ $expectedIdentity = [ordered]@{
     plugin_id = "yolo-ncnn"
     plugin_engine = "yolo"
     plugin_variant = "ncnn"
-    plugin_requires_host_version = "5274"
+    plugin_requires_host_version = "5275"
 }
 $expectedNativeEntry = "lib/arm64-v8a/libautojs_yolo.so"
 $requiredApkAssets = [ordered]@{
@@ -464,7 +464,7 @@ try {
         ) "Merged manifest requiresHostVersion missing or duplicated for $serviceName"
         Assert-R6ProviderCondition (
             $metadata[0].GetAttribute("value", $androidNamespace) -ceq $expectedIdentity.plugin_requires_host_version
-        ) "Merged manifest requiresHostVersion must be literal 5274 and match the offline-index resource for $serviceName"
+        ) "Merged manifest requiresHostVersion must be literal 5275 and match the offline-index resource for $serviceName"
     }
 
     $identitySourcePath = Get-R6ProviderRequiredFile (
@@ -478,8 +478,8 @@ try {
     Assert-R6ProviderCondition $hostVersionMatch.Success "Runtime REQUIRED_HOST_VERSION is not a literal Long"
     $runtimeHostVersion = [long]($hostVersionMatch.Groups[1].Value -replace '_', '')
     Assert-R6ProviderCondition (
-        $runtimeHostVersion -eq 5274L
-    ) "Runtime minimum Host version must match release/index resource value 5274"
+        $runtimeHostVersion -eq 5275L
+    ) "Runtime minimum Host version must match release/index resource value 5275"
 
     $noticePath = Get-R6ProviderRequiredFile (Join-Path $repository "THIRD_PARTY_NOTICES.md") "notice index"
     $noticeAssetPath = Get-R6ProviderRequiredFile (
@@ -650,7 +650,7 @@ try {
             pluginId = $expectedIdentity.plugin_id
             engine = $expectedIdentity.plugin_engine
             variant = $expectedIdentity.plugin_variant
-            requiresHostVersion = 5274
+            requiresHostVersion = 5275
         }
         release = [ordered]@{
             artifact = $releaseApkRecord

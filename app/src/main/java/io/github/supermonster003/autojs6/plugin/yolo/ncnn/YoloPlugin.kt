@@ -25,7 +25,7 @@ internal object YoloPlugin {
     const val ENGINE = YoloContract.ENGINE_ID
     const val VARIANT = "ncnn"
     const val PROVIDER_ID = "autojs6-yolo-ncnn"
-    const val REQUIRED_HOST_VERSION = 5_274L
+    const val REQUIRED_HOST_VERSION = 5_275L
     const val DECODER_ID = YoloDecoderRegistry.ULTRALYTICS_DETECT
 
     val supportedAbis = listOf("arm64-v8a")

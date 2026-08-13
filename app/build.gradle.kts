@@ -42,7 +42,7 @@ android {
         resValue("string", "plugin_id", "yolo-ncnn")
         resValue("string", "plugin_engine", "yolo")
         resValue("string", "plugin_variant", "ncnn")
-        resValue("string", "plugin_requires_host_version", "5274")
+        resValue("string", "plugin_requires_host_version", "5275")
         resValue("string", "plugin_version_date", utils.getDateString("MMM d, yyyy", "GMT+08:00"))
     }
 
