@@ -40,6 +40,25 @@ $knownModelLeaves = @(
     "bus.jpg",
     "synthetic-heldout.png"
 )
+$expectedTestSuites = [ordered]@{
+    "io.github.supermonster003.autojs6.plugin.yolo.ncnn.YoloPluginIdentityTest" = @(
+        "releaseIdentityRemainsPinnedForOfflineIndexGeneration"
+    )
+    "io.github.supermonster003.autojs6.plugin.yolo.ncnn.provider.StaleModelSessionCleanupTest" = @(
+        "failsClosedWhenAStaleEntryCannotBeDeleted",
+        "refusesSymbolicEntryWithoutTouchingAnythingOutsideTheRoot",
+        "removesNestedCrashResidueAndKeepsOnlyTheFixedRoot"
+    )
+    "io.github.supermonster003.autojs6.plugin.yolo.ncnn.provider.YoloProviderDiagnosticsTest" = @(
+        "nativeHandleCounterTracksCreateAndDestroy",
+        "nativeHandleCounterDecrementsWhenDestroyThrows",
+        "nativeHandleCounterRejectsUnderflowWithoutMutation",
+        "formatterIsOneDeterministicNonSensitiveJsonLine"
+    )
+    "io.github.supermonster003.autojs6.plugin.yolo.ncnn.provider.YoloProviderServiceErrorsTest" = @(
+        "capabilityAndProtocolIncompatibilityKeepStableOpenFailureCodes"
+    )
+}
 
 function Assert-R6ProviderCondition {
     param(
@@ -125,6 +144,9 @@ function Get-R6ProviderZipSnapshot {
     $archive = [System.IO.Compression.ZipFile]::OpenRead($ApkPath)
     try {
         $entries = @($archive.Entries | ForEach-Object { $_.FullName.Replace('\', '/') })
+        $assetEntries = @($entries | Where-Object {
+            $_.StartsWith("assets/", [StringComparison]::Ordinal) -and -not $_.EndsWith("/", [StringComparison]::Ordinal)
+        } | Sort-Object)
         $assetHashes = [ordered]@{}
         foreach ($entryName in $requiredApkAssets.Keys) {
             $entry = $archive.GetEntry($entryName)
@@ -144,6 +166,7 @@ function Get-R6ProviderZipSnapshot {
         }
         return [pscustomobject][ordered]@{
             entries = $entries
+            assetEntries = $assetEntries
             assetHashes = $assetHashes
         }
     } finally {
@@ -161,33 +184,176 @@ function Get-R6ProviderGeneratedString {
     return [string]$node[0].InnerText
 }
 
+function Get-R6ProviderGitSnapshot {
+    $revision = ((& git rev-parse HEAD) -join "").Trim()
+    Assert-R6ProviderCondition (
+        $LASTEXITCODE -eq 0 -and $revision -match '^[0-9a-f]{40}$'
+    ) "Unable to resolve Provider Git revision"
+    $status = @(& git status --porcelain=v1 --untracked-files=all | ForEach-Object { [string]$_ })
+    return [pscustomobject][ordered]@{
+        revision = $revision
+        status = $status
+        statusText = $status -join [Environment]::NewLine
+        clean = $status.Count -eq 0
+    }
+}
+
+function Get-R6ProviderArtifactRecord {
+    param(
+        [Parameter(Mandatory = $true)][string] $Path,
+        [Parameter(Mandatory = $true)][string] $Label,
+        [Nullable[DateTime]] $BuildStartedUtc,
+        [Parameter(Mandatory = $true)][bool] $BuildIdentityProven
+    )
+    $fullPath = Get-R6ProviderRequiredFile $Path $Label
+    $item = Get-Item -LiteralPath $fullPath
+    $freshAfterBuildStart = if ($BuildIdentityProven) {
+        $item.LastWriteTimeUtc -ge $BuildStartedUtc.Value
+    } else {
+        $null
+    }
+    if ($BuildIdentityProven) {
+        Assert-R6ProviderCondition $freshAfterBuildStart "$Label was not freshly produced after build start: $fullPath"
+    }
+    return [pscustomobject][ordered]@{
+        path = $fullPath
+        bytes = $item.Length
+        sha256 = Get-R6ProviderSha256 $fullPath
+        lastWriteUtc = $item.LastWriteTimeUtc.ToString("o")
+        freshAfterBuildStart = $freshAfterBuildStart
+    }
+}
+
+function Get-R6ProviderTestReceipt {
+    param(
+        [Parameter(Mandatory = $true)][DateTime] $BuildStartedUtc,
+        [Parameter(Mandatory = $true)][bool] $BuildIdentityProven
+    )
+    if (-not $BuildIdentityProven) {
+        return [pscustomobject][ordered]@{
+            status = "NOT_EVALUATED"
+            suites = @()
+            totalTests = $null
+            totalFailures = $null
+            totalErrors = $null
+            totalSkipped = $null
+        }
+    }
+
+    $testRoot = Join-Path $repository "app/build/test-results/testDebugUnitTest"
+    $xmlFiles = @(Get-ChildItem -LiteralPath $testRoot -Filter "TEST-*.xml" -ErrorAction SilentlyContinue |
+        Where-Object { -not $_.PSIsContainer } |
+        Sort-Object Name)
+    Assert-R6ProviderCondition (
+        $xmlFiles.Count -eq $expectedTestSuites.Count
+    ) "Expected exactly $($expectedTestSuites.Count) JVM test XML files; found $($xmlFiles.Count)"
+
+    $suiteReceipts = [System.Collections.Generic.List[object]]::new()
+    $seenSuites = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+    $totalTests = 0
+    $totalFailures = 0
+    $totalErrors = 0
+    $totalSkipped = 0
+    foreach ($xmlFile in $xmlFiles) {
+        Assert-R6ProviderCondition (
+            $xmlFile.LastWriteTimeUtc -ge $BuildStartedUtc
+        ) "JVM test XML was not freshly produced after build start: $($xmlFile.FullName)"
+        [xml]$document = Get-Content -LiteralPath $xmlFile.FullName -Raw
+        $suite = $document.testsuite
+        $suiteName = [string]$suite.name
+        Assert-R6ProviderCondition (
+            $expectedTestSuites.Contains($suiteName)
+        ) "Unexpected JVM test suite: $suiteName"
+        Assert-R6ProviderCondition (
+            $seenSuites.Add($suiteName)
+        ) "Duplicate JVM test suite: $suiteName"
+
+        $testNames = @($suite.testcase | ForEach-Object { [string]$_.name } | Sort-Object)
+        $expectedNames = @($expectedTestSuites[$suiteName] | Sort-Object)
+        Assert-R6ProviderCondition (
+            ($testNames -join "`n") -ceq ($expectedNames -join "`n")
+        ) "JVM test cases differ for suite $suiteName"
+
+        $tests = [int]$suite.tests
+        $failures = [int]$suite.failures
+        $errors = [int]$suite.errors
+        $skipped = [int]$suite.skipped
+        Assert-R6ProviderCondition (
+            $tests -eq $expectedNames.Count -and $failures -eq 0 -and $errors -eq 0 -and $skipped -eq 0
+        ) "JVM test suite is not an exact clean pass: $suiteName"
+        $totalTests += $tests
+        $totalFailures += $failures
+        $totalErrors += $errors
+        $totalSkipped += $skipped
+        $suiteReceipts.Add([pscustomobject][ordered]@{
+            name = $suiteName
+            tests = $tests
+            failures = $failures
+            errors = $errors
+            skipped = $skipped
+            testCases = $testNames
+            xmlPath = $xmlFile.FullName
+            xmlSha256 = Get-R6ProviderSha256 $xmlFile.FullName
+            xmlLastWriteUtc = $xmlFile.LastWriteTimeUtc.ToString("o")
+        })
+    }
+    Assert-R6ProviderCondition (
+        $seenSuites.Count -eq $expectedTestSuites.Count
+    ) "One or more expected JVM test suites were not observed"
+    return [pscustomobject][ordered]@{
+        status = "PASS"
+        suites = @($suiteReceipts)
+        totalTests = $totalTests
+        totalFailures = $totalFailures
+        totalErrors = $totalErrors
+        totalSkipped = $totalSkipped
+    }
+}
+
 Push-Location -LiteralPath $repository
 try {
     Assert-R6ProviderCondition (
         -not (Test-Path -LiteralPath (Join-Path $repository "sign.properties"))
     ) "R6 Provider source preflight refuses to run while production signing material is present"
 
-    $sourceRevision = ((& git rev-parse HEAD) -join "").Trim()
-    Assert-R6ProviderCondition (
-        $LASTEXITCODE -eq 0 -and $sourceRevision -match '^[0-9a-f]{40}$'
-    ) "Unable to resolve Provider Git revision"
-    $sourceStatus = @(& git status --porcelain=v1 --untracked-files=all | ForEach-Object { [string]$_ })
+    $preBuildGit = Get-R6ProviderGitSnapshot
+    $gradleExecutable = ".\gradlew.bat"
+    $gradleArguments = @(
+        "--no-daemon",
+        ":app:clean",
+        ":app:testDebugUnitTest",
+        ":app:assembleRelease",
+        ":app:assembleRc"
+    )
+    $buildStartedUtc = $null
+    $buildFinishedUtc = $null
+    $buildIdentityProven = $false
+
     if ($RequireClean) {
         Assert-R6ProviderCondition (
-            $sourceStatus.Count -eq 0
+            $preBuildGit.clean
         ) "Provider worktree must be clean when -RequireClean is used"
     }
 
     if (-not $SkipBuild) {
-        $gradleArguments = @(
-            "--no-daemon",
-            ":app:testDebugUnitTest",
-            ":app:assembleRelease",
-            ":app:assembleRc"
-        )
-        Write-Host "> .\gradlew.bat $($gradleArguments -join ' ')"
-        & .\gradlew.bat @gradleArguments
+        Assert-R6ProviderCondition (
+            $preBuildGit.clean
+        ) "A full R6 Provider source gate requires a clean worktree before build"
+        $buildStartedUtc = [DateTime]::UtcNow
+        Write-Host "> $gradleExecutable $($gradleArguments -join ' ')"
+        & $gradleExecutable @gradleArguments
+        $buildFinishedUtc = [DateTime]::UtcNow
         Assert-R6ProviderCondition ($LASTEXITCODE -eq 0) "Focused Provider R6 Gradle build failed"
+        $postBuildGit = Get-R6ProviderGitSnapshot
+        Assert-R6ProviderCondition (
+            $postBuildGit.revision -ceq $preBuildGit.revision
+        ) "Provider HEAD changed during the R6 build"
+        Assert-R6ProviderCondition (
+            $postBuildGit.statusText -ceq $preBuildGit.statusText -and $postBuildGit.clean
+        ) "Provider worktree status changed or became dirty during the R6 build"
+        $buildIdentityProven = $true
+    } else {
+        $postBuildGit = Get-R6ProviderGitSnapshot
     }
 
     $releaseApk = Get-R6ProviderOnlyFile -Directory (
@@ -197,21 +363,39 @@ try {
         Join-Path $repository "app/build/outputs/apk/rc"
     ) -Filter "*.apk" -Label "RC APK"
 
-    $shrinkOutputs = @(
-        (Get-R6ProviderRequiredFile (Join-Path $repository "app/build/outputs/mapping/release/mapping.txt") "release R8 mapping"),
-        (Get-R6ProviderRequiredFile (Join-Path $repository "app/build/outputs/mapping/release/resources.txt") "release resource-shrinker report"),
-        (Get-R6ProviderRequiredFile (Join-Path $repository "app/build/outputs/mapping/rc/mapping.txt") "RC R8 mapping"),
-        (Get-R6ProviderRequiredFile (Join-Path $repository "app/build/outputs/mapping/rc/resources.txt") "RC resource-shrinker report")
-    )
-    foreach ($shrinkOutput in $shrinkOutputs) {
+    $artifactBuildStart = if ($buildIdentityProven) { [Nullable[DateTime]]$buildStartedUtc } else { $null }
+    $releaseApkRecord = Get-R6ProviderArtifactRecord $releaseApk "release APK" $artifactBuildStart $buildIdentityProven
+    $rcApkRecord = Get-R6ProviderArtifactRecord $rcApk "RC APK" $artifactBuildStart $buildIdentityProven
+    $releaseMappingRecord = Get-R6ProviderArtifactRecord (
+        Join-Path $repository "app/build/outputs/mapping/release/mapping.txt"
+    ) "release R8 mapping" $artifactBuildStart $buildIdentityProven
+    $releaseResourcesRecord = Get-R6ProviderArtifactRecord (
+        Join-Path $repository "app/build/outputs/mapping/release/resources.txt"
+    ) "release resource-shrinker report" $artifactBuildStart $buildIdentityProven
+    $rcMappingRecord = Get-R6ProviderArtifactRecord (
+        Join-Path $repository "app/build/outputs/mapping/rc/mapping.txt"
+    ) "RC R8 mapping" $artifactBuildStart $buildIdentityProven
+    $rcResourcesRecord = Get-R6ProviderArtifactRecord (
+        Join-Path $repository "app/build/outputs/mapping/rc/resources.txt"
+    ) "RC resource-shrinker report" $artifactBuildStart $buildIdentityProven
+    foreach ($shrinkRecord in @(
+        $releaseMappingRecord,
+        $releaseResourcesRecord,
+        $rcMappingRecord,
+        $rcResourcesRecord
+    )) {
         Assert-R6ProviderCondition (
-            (Get-Item -LiteralPath $shrinkOutput).Length -gt 0
-        ) "Shrinker output is empty: $shrinkOutput"
+            $shrinkRecord.bytes -gt 0
+        ) "Shrinker output is empty: $($shrinkRecord.path)"
     }
+    $testReceipt = Get-R6ProviderTestReceipt -BuildStartedUtc (
+        if ($buildIdentityProven) { $buildStartedUtc } else { [DateTime]::MinValue }
+    ) -BuildIdentityProven $buildIdentityProven
 
-    $generatedResourcesPath = Get-R6ProviderRequiredFile (
+    $generatedResourcesRecord = Get-R6ProviderArtifactRecord (
         Join-Path $repository "app/build/generated/res/resValues/release/values/gradleResValues.xml"
-    ) "release generated resource values"
+    ) "release generated resource values" $artifactBuildStart $buildIdentityProven
+    $generatedResourcesPath = $generatedResourcesRecord.path
     [xml]$generatedResources = Get-Content -LiteralPath $generatedResourcesPath -Raw
     foreach ($entry in $expectedIdentity.GetEnumerator()) {
         $actual = Get-R6ProviderGeneratedString -Resources $generatedResources -Name $entry.Key
@@ -220,9 +404,10 @@ try {
         ) "Generated resource '$($entry.Key)' expected '$($entry.Value)' but was '$actual'"
     }
 
-    $mergedManifestPath = Get-R6ProviderRequiredFile (
+    $mergedManifestRecord = Get-R6ProviderArtifactRecord (
         Join-Path $repository "app/build/intermediates/merged_manifest/release/processReleaseMainManifest/AndroidManifest.xml"
-    ) "release merged manifest"
+    ) "release merged manifest" $artifactBuildStart $buildIdentityProven
+    $mergedManifestPath = $mergedManifestRecord.path
     [xml]$mergedManifest = Get-Content -LiteralPath $mergedManifestPath -Raw
     $androidNamespace = "http://schemas.android.com/apk/res/android"
     $requiredServices = @(
@@ -268,6 +453,15 @@ try {
     Assert-R6ProviderCondition (
         (Get-R6ProviderSha256 $noticePath) -ceq (Get-R6ProviderSha256 $noticeAssetPath)
     ) "Repository and APK-source third-party notice indexes differ"
+    $noticeText = Get-Content -LiteralPath $noticePath -Raw
+    Assert-R6ProviderCondition (
+        -not [string]::IsNullOrWhiteSpace($noticeText) -and
+            $noticeText -cmatch 'MPL-2\.0' -and
+            $noticeText -cmatch 'NCNN' -and
+            $noticeText -cmatch 'BSD-3-Clause' -and
+            $noticeText -cmatch '(?i)not\s+distributed' -and
+            $noticeText -cmatch '(?i)users\s+are\s+responsible'
+    ) "Third-party notice must identify MPL-2.0, NCNN BSD-3-Clause, model non-distribution, and user responsibility"
     $modelPolicyPath = Get-R6ProviderRequiredFile (
         Join-Path $repository "docs/model-license-policy.md"
     ) "model license policy"
@@ -278,6 +472,10 @@ try {
     $releaseZip = Get-R6ProviderZipSnapshot -ApkPath $releaseApk
     $rcZip = Get-R6ProviderZipSnapshot -ApkPath $rcApk
     foreach ($snapshot in @($releaseZip, $rcZip)) {
+        $expectedAssetEntries = @($requiredApkAssets.Keys | Sort-Object)
+        Assert-R6ProviderCondition (
+            ($snapshot.assetEntries -join "`n") -ceq ($expectedAssetEntries -join "`n")
+        ) "Provider APK assets must exactly match the four-entry release allowlist; found: $($snapshot.assetEntries -join ', ')"
         $nativeEntries = @($snapshot.entries | Where-Object { $_ -match '^lib/' })
         Assert-R6ProviderCondition (
             $nativeEntries.Count -eq 1 -and $nativeEntries[0] -ceq $expectedNativeEntry
@@ -326,12 +524,14 @@ try {
     Assert-R6ProviderCondition $signerDigest.Success "Unable to resolve RC signer SHA-256 digest"
     $rcSignerSha256 = $signerDigest.Groups[1].Value.ToLowerInvariant()
 
-    $releaseMetadataPath = Get-R6ProviderRequiredFile (
+    $releaseMetadataRecord = Get-R6ProviderArtifactRecord (
         Join-Path $repository "app/build/outputs/apk/release/output-metadata.json"
-    ) "release APK metadata"
-    $rcMetadataPath = Get-R6ProviderRequiredFile (
+    ) "release APK metadata" $artifactBuildStart $buildIdentityProven
+    $releaseMetadataPath = $releaseMetadataRecord.path
+    $rcMetadataRecord = Get-R6ProviderArtifactRecord (
         Join-Path $repository "app/build/outputs/apk/rc/output-metadata.json"
-    ) "RC APK metadata"
+    ) "RC APK metadata" $artifactBuildStart $buildIdentityProven
+    $rcMetadataPath = $rcMetadataRecord.path
     $releaseMetadata = Get-Content -LiteralPath $releaseMetadataPath -Raw | ConvertFrom-Json
     $rcMetadata = Get-Content -LiteralPath $rcMetadataPath -Raw | ConvertFrom-Json
     Assert-R6ProviderCondition (
@@ -353,15 +553,55 @@ try {
     New-Item -ItemType Directory -Force -Path (Split-Path -Parent $ReportPath) | Out-Null
 
     $report = [ordered]@{
-        schemaVersion = 1
+        schemaVersion = 2
         gate = "yolo-r6-provider-source"
-        result = "PASS"
+        mode = if ($buildIdentityProven) { "FULL_CLEAN_BUILD" } else { "EXISTING_ARTIFACT_DIAGNOSTIC" }
+        result = if ($buildIdentityProven) { "PASS" } else { "DIAGNOSTIC_COMPLETE" }
         generatedAtUtc = [DateTime]::UtcNow.ToString("o")
-        evidenceLevel = @("source", "jvm-test", "android-build", "apk-package")
+        evidenceLevel = if ($buildIdentityProven) {
+            @("SOURCE", "JVM_TEST", "ANDROID_BUILD", "APK_PACKAGE")
+        } else {
+            @("SOURCE_STATIC", "EXISTING_ARTIFACT_DIAGNOSTIC")
+        }
+        buildIdentityProven = $buildIdentityProven
         source = [ordered]@{
             repository = $repository
-            revision = $sourceRevision
-            dirty = $sourceStatus.Count -ne 0
+            preBuild = [ordered]@{
+                revision = $preBuildGit.revision
+                clean = $preBuildGit.clean
+                status = @($preBuildGit.status)
+            }
+            postBuild = [ordered]@{
+                revision = $postBuildGit.revision
+                clean = $postBuildGit.clean
+                status = @($postBuildGit.status)
+            }
+            unchangedAcrossBuild = if ($buildIdentityProven) {
+                $preBuildGit.revision -ceq $postBuildGit.revision -and
+                    $preBuildGit.statusText -ceq $postBuildGit.statusText
+            } else {
+                $null
+            }
+        }
+        build = [ordered]@{
+            status = if ($buildIdentityProven) { "PASS" } else { "NOT_RUN" }
+            startedAtUtc = if ($null -ne $buildStartedUtc) { $buildStartedUtc.ToString("o") } else { $null }
+            finishedAtUtc = if ($null -ne $buildFinishedUtc) { $buildFinishedUtc.ToString("o") } else { $null }
+            executable = if ($buildIdentityProven) { $gradleExecutable } else { $null }
+            arguments = if ($buildIdentityProven) { @($gradleArguments) } else { @() }
+            invocation = if ($buildIdentityProven) {
+                "$gradleExecutable $($gradleArguments -join ' ')"
+            } else {
+                $null
+            }
+            cleanTaskIncluded = if ($buildIdentityProven) { $true } else { $null }
+        }
+        tests = $testReceipt
+        buildArtifacts = [ordered]@{
+            generatedResources = $generatedResourcesRecord
+            mergedManifest = $mergedManifestRecord
+            releaseMetadata = $releaseMetadataRecord
+            rcMetadata = $rcMetadataRecord
         }
         identity = [ordered]@{
             applicationId = $applicationId
@@ -371,28 +611,32 @@ try {
             requiresHostVersion = 5274
         }
         release = [ordered]@{
-            path = $releaseApk
-            sha256 = Get-R6ProviderSha256 $releaseApk
-            bytes = (Get-Item -LiteralPath $releaseApk).Length
+            artifact = $releaseApkRecord
             versionName = [string]$releaseMetadata.elements[0].versionName
             signed = $false
-            minified = $true
-            resourcesShrunk = $true
+            minified = if ($buildIdentityProven) { $true } else { $null }
+            resourcesShrunk = if ($buildIdentityProven) { $true } else { $null }
+            mapping = $releaseMappingRecord
+            resourceShrinkerReport = $releaseResourcesRecord
+            packageVerification = if ($buildIdentityProven) { "PASS" } else { "NOT_EVALUATED" }
             abi = "arm64-v8a"
             modelOrImagePayloads = $false
+            assetEntries = @($releaseZip.assetEntries)
         }
         rc = [ordered]@{
-            path = $rcApk
-            sha256 = Get-R6ProviderSha256 $rcApk
-            bytes = (Get-Item -LiteralPath $rcApk).Length
+            artifact = $rcApkRecord
             versionName = [string]$rcMetadata.elements[0].versionName
             signed = $true
             signingClass = "TEST_SIGNED"
             signerSha256 = $rcSignerSha256
-            minified = $true
-            resourcesShrunk = $true
+            minified = if ($buildIdentityProven) { $true } else { $null }
+            resourcesShrunk = if ($buildIdentityProven) { $true } else { $null }
+            mapping = $rcMappingRecord
+            resourceShrinkerReport = $rcResourcesRecord
+            packageVerification = if ($buildIdentityProven) { "PASS" } else { "NOT_EVALUATED" }
             abi = "arm64-v8a"
             modelOrImagePayloads = $false
+            assetEntries = @($rcZip.assetEntries)
         }
         compliance = [ordered]@{
             thirdPartyNoticesSha256 = Get-R6ProviderSha256 $noticePath
@@ -411,7 +655,11 @@ try {
         }
     }
     $report | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $ReportPath -Encoding utf8NoBOM
-    Write-Host "YOLO R6 Provider source preflight PASS"
+    if ($buildIdentityProven) {
+        Write-Host "YOLO R6 Provider full clean-build preflight PASS"
+    } else {
+        Write-Host "YOLO R6 Provider existing-artifact diagnostic complete; build identity NOT PROVEN"
+    }
     Write-Host "Report: $ReportPath"
 } finally {
     Pop-Location

@@ -39,6 +39,13 @@ its earlier, explicitly unshrunk candidate and is not rewritten by this change.
 `sign.properties` is absent. An unsigned local APK is source/build/package
 evidence only and must not be described as publishable.
 
+`tools/verify-r6-provider-source.ps1` defaults to a clean-source build: it
+captures Git state, runs `:app:clean` before the focused tests and two APK
+assemblies, confirms Git state is unchanged, and records exact test XML and
+artifact hashes. `-SkipBuild` is only an existing-artifact diagnostic. It sets
+`buildIdentityProven=false` and makes no test, build, minifier, resource-shrinker,
+or package-pass claim, even when `-RequireClean` is also requested.
+
 The APK source set includes the plugin MPL-2.0 text, the complete pinned NCNN
 license/notices, the third-party notice index, and the NCNN provenance lock under
 `app/src/main/assets`.

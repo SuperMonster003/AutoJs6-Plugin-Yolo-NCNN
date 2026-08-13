@@ -72,10 +72,14 @@ upgrade, or rollback evidence. Those remain R6 deliverables.
 - [x] Add the third-party notice index, model/validation-asset license policy,
   and a release-note draft limited to the actual API/ABI/backend/model scope.
 - [x] Add a non-connected Provider source/build/package preflight that rejects
-  production signing material, model/image payloads, missing notices, and stale
-  or absent shrinker outputs.
+  production signing material, model/image payloads, missing notices, non-
+  allowlisted APK assets, and stale or absent shrinker outputs. Its full mode
+  starts and ends at the same clean Git revision, begins with `:app:clean`, and
+  records exact test XML and APK/mapping/resource-shrinker hashes.
 
 R6 source preflight produces an unsigned release APK and a debug-key
 TEST-SIGNED RC. Neither is a publishable production artifact. Production
 certificate receipts, official-index publication, upgrade/rollback and final
 artifact device evidence remain external R6 acceptance items.
+`-SkipBuild` is explicitly downgraded to a source/static and existing-artifact
+diagnostic; it cannot establish build identity or any build/package pass.

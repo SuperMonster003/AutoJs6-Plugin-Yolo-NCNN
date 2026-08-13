@@ -9,7 +9,7 @@ texts and sources are identified below.
 - Component: Tencent NCNN
 - Version: 20260526
 - Upstream revision: e54f7b1f88434e1d844ea0551b880a1cfb079ce1
-- Primary license: BSD 3-Clause
+- Primary license identifier: BSD-3-Clause
 - Complete upstream license and bundled third-party notices:
   `assets/licenses/ncnn-20260526.txt`
 - Reproducible source/archive identity:
@@ -39,6 +39,7 @@ APK includes `assets/licenses/MPL-2.0.txt`.
 
 ## Models and validation images
 
-No model weights, training data, exporter package, or validation image is part
-of the Provider APK. Those external inputs are therefore not covered by this
-notice. Their original licenses and usage conditions continue to apply.
+Model weights, training data, exporter packages, and validation images are not
+distributed in the Provider APK. Users are responsible for establishing their
+right to use and distribute every external model and related input. Their
+original licenses and usage conditions continue to apply.
