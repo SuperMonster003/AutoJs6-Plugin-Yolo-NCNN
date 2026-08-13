@@ -38,6 +38,7 @@ __pycache__/
 /releases/
 /tools/*
 !/tools/r4_custom_fixture.py
+!/tools/verify-r6-provider-source.ps1
 
 /gradle/wrappers/backup/
 

@@ -60,3 +60,22 @@ revision `2aa5b100edd5e0f7691cb7edb3dd3b38c194f77d` and Host revision
 
 R5 source and packaging evidence are not production signing, publishing,
 upgrade, or rollback evidence. Those remain R6 deliverables.
+
+## R6 source and local artifact preflight
+
+- [x] Export the fixed plugin ID, engine, variant, and minimum Host version as
+  Android string resources for offline official-index generation.
+- [x] Keep the two service manifest declarations and runtime capability at
+  minimum Host version code `5274`.
+- [x] Resolve the flat-AAR Parcelize dependency explicitly and admit both the
+  unsigned release build and TEST-SIGNED RC through R8 and resource shrinking.
+- [x] Add the third-party notice index, model/validation-asset license policy,
+  and a release-note draft limited to the actual API/ABI/backend/model scope.
+- [x] Add a non-connected Provider source/build/package preflight that rejects
+  production signing material, model/image payloads, missing notices, and stale
+  or absent shrinker outputs.
+
+R6 source preflight produces an unsigned release APK and a debug-key
+TEST-SIGNED RC. Neither is a publishable production artifact. Production
+certificate receipts, official-index publication, upgrade/rollback and final
+artifact device evidence remain external R6 acceptance items.

@@ -26,17 +26,22 @@ other ABIs, segmentation, pose, OBB, tracking, and unknown decoders are explicit
 unsupported capabilities; they do not silently fall back. Installing this APK
 alone does not enable the default-off YOLO route in AutoJs6.
 
-`assembleRc` creates the installable, non-debuggable R5 device-test candidate.
-It remains arm64-only and deliberately disables minification/resource shrinking
-so the R5 runtime gate is not coupled to local-AAR shrinker admission. It uses the
-standard Android debug signing config.
-Its version name ends in `-rc-test-signed` and its BuildConfig channel is
-`RC_TEST_SIGNED`. This artifact is TEST-SIGNED, not a production release. It is
-intended to pair with an AutoJs6 debug APK using the same local debug keystore;
-the R5 device gate must still compare the two actual certificate digests.
+`assembleRc` creates an installable, non-debuggable, arm64-only test candidate.
+As of R6 it inherits the release minifier and resource shrinker, while retaining
+the standard Android debug signing config. Its version name ends in
+`-rc-test-signed` and its BuildConfig channel is `RC_TEST_SIGNED`. This artifact
+is TEST-SIGNED, not a production release. It is intended to pair with an AutoJs6
+test APK using the same local debug keystore; every device gate must still compare
+the two actual certificate digests. The historical R5 receipt remains bound to
+its earlier, explicitly unshrunk candidate and is not rewritten by this change.
+
+`assembleRelease` is shrinker-admitted but remains unsigned when
+`sign.properties` is absent. An unsigned local APK is source/build/package
+evidence only and must not be described as publishable.
 
 The APK source set includes the plugin MPL-2.0 text, the complete pinned NCNN
-license/notices, and the NCNN provenance lock under `app/src/main/assets`.
+license/notices, the third-party notice index, and the NCNN provenance lock under
+`app/src/main/assets`.
 Models remain external and retain the license and usage conditions of their own
 source; converting a model to NCNN does not change those conditions.
 
@@ -66,3 +71,6 @@ Models remain external resources supplied by the AutoJs6 host through read-only
 `ParcelFileDescriptor` instances. They are not embedded into this APK.
 
 See [ROADMAP.md](ROADMAP.md) for the source/build/package/native evidence boundary.
+The model distribution rules are in
+[docs/model-license-policy.md](docs/model-license-policy.md), and the current
+release-note draft is [docs/release-notes/0.1.0.md](docs/release-notes/0.1.0.md).

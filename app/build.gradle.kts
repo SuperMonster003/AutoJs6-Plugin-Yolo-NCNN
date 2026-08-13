@@ -39,6 +39,10 @@ android {
         buildConfigField("String", "VERSION_DATE", "\"${utils.getDateString("MMM d, yyyy", "GMT+08:00")}\"")
         buildConfigField("boolean", "NCNN_RUNTIME_STAGED", "true")
         resValue("string", "plugin_author", "SuperMonster003")
+        resValue("string", "plugin_id", "yolo-ncnn")
+        resValue("string", "plugin_engine", "yolo")
+        resValue("string", "plugin_variant", "ncnn")
+        resValue("string", "plugin_requires_host_version", "5274")
         resValue("string", "plugin_version_date", utils.getDateString("MMM d, yyyy", "GMT+08:00"))
     }
 
@@ -79,11 +83,6 @@ android {
         create(buildTypeRc) {
             initWith(getByName(buildTypeRelease))
             isDebuggable = false
-            // R5 validates the non-debuggable runtime/package boundary. Shrinker admission is
-            // intentionally left to R6 so a local AAR's annotation-only references cannot turn
-            // into an unrelated deployment gate.
-            isMinifyEnabled = false
-            isShrinkResources = false
             signingConfig = signingConfigs.getByName(buildTypeDebug)
             matchingFallbacks += listOf(buildTypeRelease)
             versionNameSuffix = "-rc-test-signed"
@@ -159,6 +158,10 @@ androidComponents {
 
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib:2.2.21")
+    // Flat local AARs do not carry the Parcelize runtime dependency metadata that
+    // would normally be supplied by a published POM. R8 must be able to resolve
+    // the binary-retained @Parcelize annotation on PluginInfo while shrinking.
+    implementation("org.jetbrains.kotlin:kotlin-parcelize-runtime:2.2.21")
 
     implementation(files("$rootDir/libs/common-plugin-api.aar"))
     implementation(files("$rootDir/libs/protocol-wire-api.aar"))
