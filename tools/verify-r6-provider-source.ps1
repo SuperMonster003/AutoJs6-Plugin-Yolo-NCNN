@@ -422,9 +422,10 @@ try {
             $shrinkRecord.bytes -gt 0
         ) "Shrinker output is empty: $($shrinkRecord.path)"
     }
-    $testReceipt = Get-R6ProviderTestReceipt -BuildStartedUtc (
-        if ($buildIdentityProven) { $buildStartedUtc } else { [DateTime]::MinValue }
-    ) -BuildIdentityProven $buildIdentityProven
+    $testBuildStartedUtc = if ($buildIdentityProven) { $buildStartedUtc } else { [DateTime]::MinValue }
+    $testReceipt = Get-R6ProviderTestReceipt `
+        -BuildStartedUtc $testBuildStartedUtc `
+        -BuildIdentityProven $buildIdentityProven
 
     $generatedResourcesRecord = Get-R6ProviderArtifactRecord (
         Join-Path $repository "app/build/generated/res/resValues/release/values/gradleResValues.xml"
