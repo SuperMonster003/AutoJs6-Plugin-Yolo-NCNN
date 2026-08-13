@@ -26,9 +26,20 @@ internal object YoloPlugin {
     const val VARIANT = "ncnn"
     const val PROVIDER_ID = "autojs6-yolo-ncnn"
     const val REQUIRED_HOST_VERSION = 5_275L
+    const val RELEASE_RUNTIME_SERVICE =
+        "io.github.supermonster003.autojs6.plugin.yolo.ncnn.provider.YoloProviderService"
+    const val RELEASE_RUNTIME_COMPONENT =
+        "io.github.supermonster003.autojs6.plugin.yolo.ncnn/" +
+            "io.github.supermonster003.autojs6.plugin.yolo.ncnn.provider.YoloProviderService"
+    const val RELEASE_PROTOCOL_API_MIN = "1.0"
+    const val RELEASE_PROTOCOL_API_MAX = "1.0"
+    const val RELEASE_BACKEND = "ncnn"
+    const val RELEASE_TASK = "detect"
+    const val RELEASE_DECODER = "ultralytics-detect"
+    const val RELEASE_SUPPORTED_ABI = "arm64-v8a"
     const val DECODER_ID = YoloDecoderRegistry.ULTRALYTICS_DETECT
 
-    val supportedAbis = listOf("arm64-v8a")
+    val supportedAbis = listOf(RELEASE_SUPPORTED_ABI)
 
     val capabilities: YoloCapabilities
         get() = YoloCapabilities(
@@ -100,7 +111,7 @@ internal object YoloPlugin {
             capabilities = Bundle().apply {
                 putLong(PluginCapabilityKeys.REQUIRES_HOST_VERSION, REQUIRED_HOST_VERSION)
                 putBoolean("runtimeReady", NativeYoloRuntime.isReady)
-                putString("backend", "ncnn")
+                putString("backend", RELEASE_BACKEND)
                 putString("decoder", DECODER_ID)
                 putBoolean("supportsDetect", true)
                 putBoolean("supportsVulkan", false)

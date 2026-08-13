@@ -55,10 +55,20 @@ license/notices, the third-party notice index, and the NCNN provenance lock unde
 Models remain external and retain the license and usage conditions of their own
 source; converting a model to NCNN does not change those conditions.
 
-ELF 16 KiB alignment is packaging evidence only. Production signing, release
-shrinker admission, upgrade/rollback coverage, and real native loading on a 16 KiB page-size target
-remain separate release evidence and are not implied by the source files or an
-ordinary arm64 device smoke.
+ELF 16 KiB alignment is packaging evidence only. Production signing remains
+separate release evidence; release-shrinker admission and static alignment do not
+imply runtime loading on a particular Android environment. A 16 KiB page-size
+native load and API 36 arm64 runtime remain explicitly unclaimed non-blocking
+limitations:
+`NATIVE_LOAD_16K_DEVICE=NOT_RUN_NO_16K_DEVICE` and
+`API36_ARM64_RUNTIME=NOT_RUN_NO_AVAILABLE_ENVIRONMENT`.
+
+Provider `0.1.0` version code `2` is the first release; no version code `1`
+predecessor is produced or retained. Upgrade runtime and version rollback are
+therefore `NOT_RUN_BY_PRODUCT_DECISION`, not R6 release gates. Recovery disables
+the Provider and withdraws its index entry. A verified archived exact version
+code `2` may be reinstalled only as same-version recovery, while defects require
+a forward-fix version code `3`.
 
 This sibling Git repository is independent and has no remote. Canonical receipts
 are tracked in the AutoJs6 worktree; local commits and test APKs do not imply that
@@ -74,8 +84,13 @@ anything was pushed or published.
 | Variant | `ncnn` |
 | Provider ID | `autojs6-yolo-ncnn` |
 | Runtime action | `org.autojs.plugin.YOLO` |
+| Runtime component | `io.github.supermonster003.autojs6.plugin.yolo.ncnn/io.github.supermonster003.autojs6.plugin.yolo.ncnn.provider.YoloProviderService` |
 | Info action | `org.autojs.plugin.INFO` |
 | Runtime process | `:provider` |
+| Protocol API range | `1.0` through `1.0` |
+| Backend / task | `ncnn` / `detect` |
+| Decoder | `ultralytics-detect` |
+| Supported ABI | `arm64-v8a` |
 
 Models remain external resources supplied by the AutoJs6 host through read-only
 `ParcelFileDescriptor` instances. They are not embedded into this APK.

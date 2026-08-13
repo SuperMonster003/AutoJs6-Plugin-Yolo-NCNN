@@ -30,6 +30,27 @@
             <meta-data
                 android:name="requiresHostVersion"
                 android:value="5275" />
+            <meta-data
+                android:name="org.autojs.plugin.contract.RUNTIME_COMPONENT"
+                android:value="@string/plugin_runtime_component" />
+            <meta-data
+                android:name="org.autojs.plugin.contract.PROTOCOL_API_MIN"
+                android:value="@string/plugin_protocol_api_min" />
+            <meta-data
+                android:name="org.autojs.plugin.contract.PROTOCOL_API_MAX"
+                android:value="@string/plugin_protocol_api_max" />
+            <meta-data
+                android:name="org.autojs.plugin.contract.BACKEND"
+                android:value="@string/plugin_backend" />
+            <meta-data
+                android:name="org.autojs.plugin.contract.TASK"
+                android:value="@string/plugin_task" />
+            <meta-data
+                android:name="org.autojs.plugin.contract.DECODER"
+                android:value="@string/plugin_decoder" />
+            <meta-data
+                android:name="org.autojs.plugin.contract.SUPPORTED_ABIS"
+                android:value="@string/plugin_supported_abis" />
         </service>
 
         <service
@@ -45,6 +66,27 @@
             <meta-data
                 android:name="requiresHostVersion"
                 android:value="5275" />
+            <meta-data
+                android:name="org.autojs.plugin.contract.RUNTIME_COMPONENT"
+                android:value="@string/plugin_runtime_component" />
+            <meta-data
+                android:name="org.autojs.plugin.contract.PROTOCOL_API_MIN"
+                android:value="@string/plugin_protocol_api_min" />
+            <meta-data
+                android:name="org.autojs.plugin.contract.PROTOCOL_API_MAX"
+                android:value="@string/plugin_protocol_api_max" />
+            <meta-data
+                android:name="org.autojs.plugin.contract.BACKEND"
+                android:value="@string/plugin_backend" />
+            <meta-data
+                android:name="org.autojs.plugin.contract.TASK"
+                android:value="@string/plugin_task" />
+            <meta-data
+                android:name="org.autojs.plugin.contract.DECODER"
+                android:value="@string/plugin_decoder" />
+            <meta-data
+                android:name="org.autojs.plugin.contract.SUPPORTED_ABIS"
+                android:value="@string/plugin_supported_abis" />
         </service>
 
     </application>

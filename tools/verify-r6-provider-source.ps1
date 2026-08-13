@@ -14,11 +14,40 @@ if (Test-Path variable:PSNativeCommandUseErrorActionPreference) {
 
 $repository = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot ".."))
 $applicationId = "io.github.supermonster003.autojs6.plugin.yolo.ncnn"
+$runtimeService = "$applicationId.provider.YoloProviderService"
+$runtimeComponent = "$applicationId/$runtimeService"
 $expectedIdentity = [ordered]@{
     plugin_id = "yolo-ncnn"
     plugin_engine = "yolo"
     plugin_variant = "ncnn"
     plugin_requires_host_version = "5275"
+    plugin_runtime_component = $runtimeComponent
+    plugin_protocol_api_min = "1.0"
+    plugin_protocol_api_max = "1.0"
+    plugin_backend = "ncnn"
+    plugin_task = "detect"
+    plugin_decoder = "ultralytics-detect"
+    plugin_supported_abis = "arm64-v8a"
+}
+$expectedManifestContract = [ordered]@{
+    "requiresHostVersion" = $expectedIdentity.plugin_requires_host_version
+    "org.autojs.plugin.contract.RUNTIME_COMPONENT" = "@string/plugin_runtime_component"
+    "org.autojs.plugin.contract.PROTOCOL_API_MIN" = "@string/plugin_protocol_api_min"
+    "org.autojs.plugin.contract.PROTOCOL_API_MAX" = "@string/plugin_protocol_api_max"
+    "org.autojs.plugin.contract.BACKEND" = "@string/plugin_backend"
+    "org.autojs.plugin.contract.TASK" = "@string/plugin_task"
+    "org.autojs.plugin.contract.DECODER" = "@string/plugin_decoder"
+    "org.autojs.plugin.contract.SUPPORTED_ABIS" = "@string/plugin_supported_abis"
+}
+$expectedRuntimeContractConstants = [ordered]@{
+    RELEASE_RUNTIME_SERVICE = $runtimeService
+    RELEASE_RUNTIME_COMPONENT = $runtimeComponent
+    RELEASE_PROTOCOL_API_MIN = $expectedIdentity.plugin_protocol_api_min
+    RELEASE_PROTOCOL_API_MAX = $expectedIdentity.plugin_protocol_api_max
+    RELEASE_BACKEND = $expectedIdentity.plugin_backend
+    RELEASE_TASK = $expectedIdentity.plugin_task
+    RELEASE_DECODER = $expectedIdentity.plugin_decoder
+    RELEASE_SUPPORTED_ABI = $expectedIdentity.plugin_supported_abis
 }
 $expectedNativeEntry = "lib/arm64-v8a/libautojs_yolo.so"
 $requiredApkAssets = [ordered]@{
@@ -438,6 +467,18 @@ try {
             $actual -ceq $entry.Value
         ) "Generated resource '$($entry.Key)' expected '$($entry.Value)' but was '$actual'"
     }
+    $buildGradlePath = Get-R6ProviderRequiredFile (
+        Join-Path $repository "app/build.gradle.kts"
+    ) "Provider Gradle release metadata source"
+    $buildGradleText = Get-Content -LiteralPath $buildGradlePath -Raw
+    foreach ($entry in $expectedIdentity.GetEnumerator()) {
+        $literalPattern = 'resValue\(\s*"string"\s*,\s*"' +
+            [regex]::Escape($entry.Key) + '"\s*,\s*"' +
+            [regex]::Escape($entry.Value) + '"\s*\)'
+        Assert-R6ProviderCondition (
+            [regex]::Matches($buildGradleText, $literalPattern).Count -eq 1
+        ) "Index-consumed literal resValue '$($entry.Key)' is missing or duplicated"
+    }
 
     $mergedManifestRecord = Get-R6ProviderArtifactRecord (
         Join-Path $repository "app/build/intermediates/merged_manifest/release/processReleaseMainManifest/AndroidManifest.xml"
@@ -447,7 +488,7 @@ try {
     $androidNamespace = "http://schemas.android.com/apk/res/android"
     $requiredServices = @(
         "$applicationId.YoloPluginInfoService",
-        "$applicationId.provider.YoloProviderService"
+        $runtimeService
     )
     foreach ($serviceName in $requiredServices) {
         $services = @($mergedManifest.manifest.application.service | Where-Object {
@@ -456,15 +497,25 @@ try {
         Assert-R6ProviderCondition (
             $services.Count -eq 1
         ) "Merged manifest service missing or duplicated: $serviceName"
-        $metadata = @($services[0].'meta-data' | Where-Object {
-            $_.GetAttribute("name", $androidNamespace) -ceq "requiresHostVersion"
-        })
+        $actualMetadataNames = @($services[0].'meta-data' | ForEach-Object {
+            $_.GetAttribute("name", $androidNamespace)
+        } | Sort-Object)
+        $expectedMetadataNames = @($expectedManifestContract.Keys | Sort-Object)
         Assert-R6ProviderCondition (
-            $metadata.Count -eq 1
-        ) "Merged manifest requiresHostVersion missing or duplicated for $serviceName"
-        Assert-R6ProviderCondition (
-            $metadata[0].GetAttribute("value", $androidNamespace) -ceq $expectedIdentity.plugin_requires_host_version
-        ) "Merged manifest requiresHostVersion must be literal 5275 and match the offline-index resource for $serviceName"
+            ($actualMetadataNames -join "`n") -ceq ($expectedMetadataNames -join "`n")
+        ) "Merged manifest contract metadata set differs for $serviceName"
+        foreach ($contractEntry in $expectedManifestContract.GetEnumerator()) {
+            $metadata = @($services[0].'meta-data' | Where-Object {
+                $_.GetAttribute("name", $androidNamespace) -ceq $contractEntry.Key
+            })
+            Assert-R6ProviderCondition (
+                $metadata.Count -eq 1
+            ) "Merged manifest metadata '$($contractEntry.Key)' missing or duplicated for $serviceName"
+            $actual = $metadata[0].GetAttribute("value", $androidNamespace)
+            Assert-R6ProviderCondition (
+                $actual -ceq $contractEntry.Value
+            ) "Merged manifest metadata '$($contractEntry.Key)' expected '$($contractEntry.Value)' but was '$actual' for $serviceName"
+        }
     }
 
     $identitySourcePath = Get-R6ProviderRequiredFile (
@@ -480,6 +531,17 @@ try {
     Assert-R6ProviderCondition (
         $runtimeHostVersion -eq 5275L
     ) "Runtime minimum Host version must match release/index resource value 5275"
+    foreach ($contractEntry in $expectedRuntimeContractConstants.GetEnumerator()) {
+        $constantMatch = [regex]::Match(
+            $identitySource,
+            "const\s+val\s+$([regex]::Escape($contractEntry.Key))\s*=\s*`"([^`"]+)`"(?:\s*\+\s*`"([^`"]+)`")?"
+        )
+        Assert-R6ProviderCondition $constantMatch.Success "Runtime release contract constant is not a literal: $($contractEntry.Key)"
+        $actual = $constantMatch.Groups[1].Value + $constantMatch.Groups[2].Value
+        Assert-R6ProviderCondition (
+            $actual -ceq $contractEntry.Value
+        ) "Runtime release contract '$($contractEntry.Key)' expected '$($contractEntry.Value)' but was '$actual'"
+    }
 
     $noticePath = Get-R6ProviderRequiredFile (Join-Path $repository "THIRD_PARTY_NOTICES.md") "notice index"
     $noticeAssetPath = Get-R6ProviderRequiredFile (
@@ -503,6 +565,21 @@ try {
     $releaseNotesPath = Get-R6ProviderRequiredFile (
         Join-Path $repository "docs/release-notes/0.1.0.md"
     ) "release notes draft"
+    $releaseNotesText = Get-Content -LiteralPath $releaseNotesPath -Raw
+    foreach ($releaseBoundaryPattern in @(
+        'Provider version code: `2`; this is the first release',
+        'No version code `1`\s+predecessor is produced or retained',
+        '`UPGRADE_RUNTIME` and `VERSION_ROLLBACK` are\s+`NOT_RUN_BY_PRODUCT_DECISION`',
+        'same-version recovery, not rollback',
+        'forward-fix version code `3`',
+        '`NATIVE_LOAD_16K_DEVICE=NOT_RUN_NO_16K_DEVICE`',
+        '`API36_ARM64_RUNTIME=NOT_RUN_NO_AVAILABLE_ENVIRONMENT`',
+        'neither is a first-release\s+publication gate'
+    )) {
+        Assert-R6ProviderCondition (
+            $releaseNotesText -cmatch $releaseBoundaryPattern
+        ) "Release notes draft is missing the first-release boundary: $releaseBoundaryPattern"
+    }
     $pluginInstructionPath = Get-R6ProviderRequiredFile (
         Join-Path $repository "app/src/main/res/raw/plugin_instruction.md"
     ) "plugin instruction source"
@@ -651,6 +728,13 @@ try {
             engine = $expectedIdentity.plugin_engine
             variant = $expectedIdentity.plugin_variant
             requiresHostVersion = 5275
+            runtimeComponent = $expectedIdentity.plugin_runtime_component
+            protocolApiMin = $expectedIdentity.plugin_protocol_api_min
+            protocolApiMax = $expectedIdentity.plugin_protocol_api_max
+            backend = $expectedIdentity.plugin_backend
+            task = $expectedIdentity.plugin_task
+            decoder = $expectedIdentity.plugin_decoder
+            supportedAbis = @($expectedIdentity.plugin_supported_abis)
         }
         release = [ordered]@{
             artifact = $releaseApkRecord
@@ -692,12 +776,21 @@ try {
             modelsPublished = $false
             validationImagesPublished = $false
         }
+        releaseBoundary = [ordered]@{
+            firstReleaseVersionCode = 2
+            predecessorArtifactApplicable = $false
+            upgradeRuntimeEvidence = "NOT_RUN_BY_PRODUCT_DECISION"
+            versionRollbackEvidence = "NOT_RUN_BY_PRODUCT_DECISION"
+            sameVersionRecovery = "ARCHIVED_EXACT_V2_REINSTALL_ONLY"
+            withdrawalMitigation = "DISABLE_PROVIDER_WITHDRAW_INDEX_PUBLISH_FORWARD_FIX_V3"
+            nativeLoad16kDevice = "NOT_RUN_NO_16K_DEVICE"
+            api36Arm64Runtime = "NOT_RUN_NO_AVAILABLE_ENVIRONMENT"
+        }
         exclusions = [ordered]@{
             productionSigned = $false
             publishable = $false
             published = $false
             deviceVerified = $false
-            upgradeRollbackVerified = $false
         }
     }
     $report | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $ReportPath -Encoding utf8NoBOM

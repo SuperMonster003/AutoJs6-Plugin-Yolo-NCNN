@@ -43,6 +43,13 @@ android {
         resValue("string", "plugin_engine", "yolo")
         resValue("string", "plugin_variant", "ncnn")
         resValue("string", "plugin_requires_host_version", "5275")
+        resValue("string", "plugin_runtime_component", "io.github.supermonster003.autojs6.plugin.yolo.ncnn/io.github.supermonster003.autojs6.plugin.yolo.ncnn.provider.YoloProviderService")
+        resValue("string", "plugin_protocol_api_min", "1.0")
+        resValue("string", "plugin_protocol_api_max", "1.0")
+        resValue("string", "plugin_backend", "ncnn")
+        resValue("string", "plugin_task", "detect")
+        resValue("string", "plugin_decoder", "ultralytics-detect")
+        resValue("string", "plugin_supported_abis", "arm64-v8a")
         resValue("string", "plugin_version_date", utils.getDateString("MMM d, yyyy", "GMT+08:00"))
     }
 

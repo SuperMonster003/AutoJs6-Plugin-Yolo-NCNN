@@ -58,8 +58,11 @@ Canonical R5 evidence is tracked in the AutoJs6 worktree at
 revision `2aa5b100edd5e0f7691cb7edb3dd3b38c194f77d` and Host revision
 `c40464957239e1378acd7be92647a4c863ac60e5`.
 
-R5 source and packaging evidence are not production signing, publishing,
-upgrade, or rollback evidence. Those remain R6 deliverables.
+R5 source and packaging evidence are not production signing or publishing
+evidence. Provider `0.1.0` version code `2` is the first release by explicit
+product decision; no version code `1` predecessor is produced or retained, so
+upgrade runtime and version rollback are `NOT_RUN_BY_PRODUCT_DECISION`, not
+deferred R6 deliverables.
 
 ## R6 source and local artifact preflight
 
@@ -79,7 +82,18 @@ upgrade, or rollback evidence. Those remain R6 deliverables.
 
 R6 source preflight produces an unsigned release APK and a debug-key
 TEST-SIGNED RC. Neither is a publishable production artifact. Production
-certificate receipts, official-index publication, upgrade/rollback and final
-artifact device evidence remain external R6 acceptance items.
+certificate receipts, official-index publication, and final artifact device
+evidence remain external R6 acceptance items.
 `-SkipBuild` is explicitly downgraded to a source/static and existing-artifact
 diagnostic; it cannot establish build identity or any build/package pass.
+
+First-release recovery does not invent a predecessor or claim rollback. Disable
+the Provider and withdraw its index entry; an archived byte-identical version
+code `2` APK may be reinstalled only as same-version recovery after package,
+component, production signer, and SHA-256 verification. Defects are shipped as a
+forward-fix version code `3`.
+
+Runtime loading on a 16 KiB page-size target and API 36 arm64 runtime validation
+remain explicit non-blocking limitations:
+`NATIVE_LOAD_16K_DEVICE=NOT_RUN_NO_16K_DEVICE` and
+`API36_ARM64_RUNTIME=NOT_RUN_NO_AVAILABLE_ENVIRONMENT`.
