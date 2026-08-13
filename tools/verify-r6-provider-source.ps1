@@ -51,6 +51,24 @@ $expectedRuntimeContractConstants = [ordered]@{
     RELEASE_SUPPORTED_ABI = $expectedIdentity.plugin_supported_abis
 }
 $expectedNativeEntry = "lib/arm64-v8a/libautojs_yolo.so"
+$expectedProtocolHandoff = [ordered]@{
+    sourceRevision = "7c48add4a5a77efcee7a0fa782749312d3eee5f1"
+    sourceSnapshotSha256 = "4cd47305c70b5c1533fbb16efe85bd9c572e571d05b841770976ee3593dd9174"
+    artifacts = [ordered]@{
+        "common-plugin-api.aar" = [ordered]@{
+            length = 10882L
+            sha256 = "d745bb24d6a6995e68ebea27d592faec162f0bad4f9bf70cb038a480ad8c6df2"
+        }
+        "protocol-wire-api.aar" = [ordered]@{
+            length = 30717L
+            sha256 = "6c597ec095852eac7e6277574191141100dc96b6c5a803725ed540f42aa7d871"
+        }
+        "yolo-api.aar" = [ordered]@{
+            length = 129532L
+            sha256 = "ce9763faa62977ef90af65ca42cf96670a8d59e68a057e309b92e9615ba06a37"
+        }
+    }
+}
 $requiredApkAssets = [ordered]@{
     "assets/THIRD_PARTY_NOTICES.md" = "app/src/main/assets/THIRD_PARTY_NOTICES.md"
     "assets/licenses/MPL-2.0.txt" = "app/src/main/assets/licenses/MPL-2.0.txt"
@@ -115,6 +133,91 @@ function Get-R6ProviderSha256 {
     return (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash.ToLowerInvariant()
 }
 
+function Get-R6ProviderProtocolAarHandoff {
+    $lockPath = Get-R6ProviderRequiredFile (
+        Join-Path $repository "libs/protocol-aars.lock.json"
+    ) "protocol AAR handoff lock"
+    $readmePath = Get-R6ProviderRequiredFile (
+        Join-Path $repository "libs/README.md"
+    ) "protocol AAR handoff README"
+    $lock = Get-Content -LiteralPath $lockPath -Raw | ConvertFrom-Json
+
+    Assert-R6ProviderCondition ([int]$lock.schemaVersion -eq 1) "Protocol AAR lock schemaVersion must be 1"
+    Assert-R6ProviderCondition ([string]$lock.state -ceq "staged") "Protocol AAR lock state must be staged"
+    Assert-R6ProviderCondition (
+        [string]$lock.sourceRevision -ceq $expectedProtocolHandoff.sourceRevision
+    ) "Protocol AAR lock sourceRevision differs from the exact frozen source commit"
+    Assert-R6ProviderCondition (
+        [string]$lock.sourceSnapshotSha256 -ceq $expectedProtocolHandoff.sourceSnapshotSha256
+    ) "Protocol AAR lock source snapshot SHA-256 differs"
+
+    $readmeText = Get-Content -LiteralPath $readmePath -Raw
+    Assert-R6ProviderCondition (
+        [regex]::Matches($readmeText, [regex]::Escape($expectedProtocolHandoff.sourceRevision)).Count -eq 1
+    ) "Protocol AAR README must identify the exact frozen source commit once"
+    Assert-R6ProviderCondition (
+        [regex]::Matches($readmeText, [regex]::Escape($expectedProtocolHandoff.sourceSnapshotSha256)).Count -eq 1
+    ) "Protocol AAR README must identify the corroborating source snapshot once"
+    Assert-R6ProviderCondition (
+        $readmeText -cmatch 'exact frozen AutoJs6 source commit' -and
+            $readmeText -cmatch 'corroborates that source identity'
+    ) "Protocol AAR README must describe exact-source and snapshot-corroboration semantics"
+
+    $lockArtifacts = @($lock.artifacts)
+    Assert-R6ProviderCondition (
+        $lockArtifacts.Count -eq $expectedProtocolHandoff.artifacts.Count
+    ) "Protocol AAR lock must contain exactly three artifacts"
+    $seenNames = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+    $artifactReceipts = [System.Collections.Generic.List[object]]::new()
+    foreach ($entry in $lockArtifacts) {
+        $name = [string]$entry.name
+        Assert-R6ProviderCondition ($seenNames.Add($name)) "Protocol AAR lock contains a duplicate artifact: $name"
+        Assert-R6ProviderCondition (
+            $expectedProtocolHandoff.artifacts.Contains($name)
+        ) "Protocol AAR lock contains an unexpected artifact: $name"
+        $expected = $expectedProtocolHandoff.artifacts[$name]
+        $lockedSha256 = ([string]$entry.sha256).ToLowerInvariant()
+        Assert-R6ProviderCondition (
+            [long]$entry.length -eq [long]$expected.length
+        ) "Protocol AAR lock length differs for $name"
+        Assert-R6ProviderCondition (
+            $lockedSha256 -ceq [string]$expected.sha256
+        ) "Protocol AAR lock SHA-256 differs for $name"
+
+        $artifactPath = Get-R6ProviderRequiredFile (
+            Join-Path $repository "libs/$name"
+        ) "locked protocol AAR $name"
+        $actualLength = (Get-Item -LiteralPath $artifactPath).Length
+        $actualSha256 = Get-R6ProviderSha256 $artifactPath
+        Assert-R6ProviderCondition (
+            $actualLength -eq [long]$entry.length
+        ) "Protocol AAR byte length does not match the lock for $name"
+        Assert-R6ProviderCondition (
+            $actualSha256 -ceq $lockedSha256
+        ) "Protocol AAR SHA-256 does not match the lock for $name"
+        $artifactReceipts.Add([ordered]@{
+            name = $name
+            path = $artifactPath
+            length = $actualLength
+            sha256 = $actualSha256
+        })
+    }
+    foreach ($name in $expectedProtocolHandoff.artifacts.Keys) {
+        Assert-R6ProviderCondition ($seenNames.Contains($name)) "Protocol AAR lock is missing $name"
+    }
+
+    return [pscustomobject][ordered]@{
+        status = "PASS"
+        lockPath = $lockPath
+        lockSha256 = Get-R6ProviderSha256 $lockPath
+        readmePath = $readmePath
+        readmeSha256 = Get-R6ProviderSha256 $readmePath
+        sourceRevision = [string]$lock.sourceRevision
+        sourceSnapshotSha256 = [string]$lock.sourceSnapshotSha256
+        artifacts = @($artifactReceipts)
+    }
+}
+
 function Resolve-R6ProviderReportPath {
     param([string] $RequestedPath)
     $reportRoot = [System.IO.Path]::GetFullPath((Join-Path $repository "build/reports/yolo"))
@@ -152,6 +255,12 @@ function Assert-R6ProviderRetainedReport {
     Assert-R6ProviderCondition ([bool]$parsed.buildIdentityProven -eq $ExpectedBuildIdentity) (
         "Retained Provider report build-identity boundary differs"
     )
+    Assert-R6ProviderCondition (
+        [string]$parsed.protocolAarHandoff.status -ceq "PASS" -and
+            [string]$parsed.protocolAarHandoff.sourceRevision -ceq $expectedProtocolHandoff.sourceRevision -and
+            [string]$parsed.protocolAarHandoff.sourceSnapshotSha256 -ceq $expectedProtocolHandoff.sourceSnapshotSha256 -and
+            @($parsed.protocolAarHandoff.artifacts).Count -eq 3
+    ) "Retained Provider report protocol AAR handoff differs"
 }
 
 function Get-R6ProviderOnlyFile {
@@ -438,6 +547,7 @@ try {
         -not (Test-Path -LiteralPath (Join-Path $repository "sign.properties"))
     ) "R6 Provider source preflight refuses to run while production signing material is present"
 
+    $protocolAarHandoff = Get-R6ProviderProtocolAarHandoff
     $preBuildGit = Get-R6ProviderGitSnapshot
     $gradleExecutable = ".\gradlew.bat"
     $gradleArguments = @(
@@ -767,6 +877,7 @@ try {
             cleanTaskIncluded = if ($buildIdentityProven) { $true } else { $null }
         }
         tests = $testReceipt
+        protocolAarHandoff = $protocolAarHandoff
         buildArtifacts = [ordered]@{
             generatedResources = $generatedResourcesRecord
             mergedManifest = $mergedManifestRecord
