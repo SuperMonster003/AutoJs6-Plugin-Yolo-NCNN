@@ -42,7 +42,10 @@ evidence only and must not be described as publishable.
 `tools/verify-r6-provider-source.ps1` defaults to a clean-source build: it
 captures Git state, runs `:app:clean` before the focused tests and two APK
 assemblies, confirms Git state is unchanged, and records exact test XML and
-artifact hashes. `-SkipBuild` is only an existing-artifact diagnostic. It sets
+artifact hashes. A process lock prevents concurrent gate runs from racing the
+clean/build boundary. The APK check uses an exact four-file asset allowlist and
+identifies the compiled raw plugin instruction by content rather than a generated
+resource filename. `-SkipBuild` is only an existing-artifact diagnostic. It sets
 `buildIdentityProven=false` and makes no test, build, minifier, resource-shrinker,
 or package-pass claim, even when `-RequireClean` is also requested.
 

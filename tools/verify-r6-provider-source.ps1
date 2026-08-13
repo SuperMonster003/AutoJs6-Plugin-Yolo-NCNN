@@ -147,6 +147,9 @@ function Get-R6ProviderZipSnapshot {
         $assetEntries = @($entries | Where-Object {
             $_.StartsWith("assets/", [StringComparison]::Ordinal) -and -not $_.EndsWith("/", [StringComparison]::Ordinal)
         } | Sort-Object)
+        $rawMarkdownEntries = @($archive.Entries | Where-Object {
+            $_.FullName.Replace('\', '/') -match '^res/[^/]+\.md$'
+        })
         $assetHashes = [ordered]@{}
         foreach ($entryName in $requiredApkAssets.Keys) {
             $entry = $archive.GetEntry($entryName)
@@ -164,10 +167,28 @@ function Get-R6ProviderZipSnapshot {
                 $algorithm.Dispose()
             }
         }
+        $rawMarkdownHash = $null
+        if ($rawMarkdownEntries.Count -eq 1) {
+            $algorithm = [System.Security.Cryptography.SHA256]::Create()
+            try {
+                $stream = $rawMarkdownEntries[0].Open()
+                try {
+                    $rawMarkdownHash = (($algorithm.ComputeHash($stream) | ForEach-Object {
+                        $_.ToString("x2")
+                    }) -join "")
+                } finally {
+                    $stream.Dispose()
+                }
+            } finally {
+                $algorithm.Dispose()
+            }
+        }
         return [pscustomobject][ordered]@{
             entries = $entries
             assetEntries = $assetEntries
             assetHashes = $assetHashes
+            rawMarkdownEntries = @($rawMarkdownEntries | ForEach-Object { $_.FullName.Replace('\', '/') })
+            rawMarkdownSha256 = $rawMarkdownHash
         }
     } finally {
         $archive.Dispose()
@@ -310,8 +331,21 @@ function Get-R6ProviderTestReceipt {
     }
 }
 
+$gateLock = $null
 Push-Location -LiteralPath $repository
 try {
+    $gateLockPath = Join-Path $repository "build/locks/yolo-r6-provider-source.lock"
+    New-Item -ItemType Directory -Force -Path (Split-Path -Parent $gateLockPath) | Out-Null
+    try {
+        $gateLock = [System.IO.File]::Open(
+            $gateLockPath,
+            [System.IO.FileMode]::OpenOrCreate,
+            [System.IO.FileAccess]::ReadWrite,
+            [System.IO.FileShare]::None
+        )
+    } catch [System.IO.IOException] {
+        throw "Another YOLO R6 Provider gate already holds the build lock: $gateLockPath"
+    }
     Assert-R6ProviderCondition (
         -not (Test-Path -LiteralPath (Join-Path $repository "sign.properties"))
     ) "R6 Provider source preflight refuses to run while production signing material is present"
@@ -459,7 +493,7 @@ try {
             $noticeText -cmatch 'MPL-2\.0' -and
             $noticeText -cmatch 'NCNN' -and
             $noticeText -cmatch 'BSD-3-Clause' -and
-            $noticeText -cmatch '(?i)not\s+distributed' -and
+            $noticeText -cmatch '(?is)model\s+weights.*not\s+distributed' -and
             $noticeText -cmatch '(?i)users\s+are\s+responsible'
     ) "Third-party notice must identify MPL-2.0, NCNN BSD-3-Clause, model non-distribution, and user responsibility"
     $modelPolicyPath = Get-R6ProviderRequiredFile (
@@ -468,6 +502,9 @@ try {
     $releaseNotesPath = Get-R6ProviderRequiredFile (
         Join-Path $repository "docs/release-notes/0.1.0.md"
     ) "release notes draft"
+    $pluginInstructionPath = Get-R6ProviderRequiredFile (
+        Join-Path $repository "app/src/main/res/raw/plugin_instruction.md"
+    ) "plugin instruction source"
 
     $releaseZip = Get-R6ProviderZipSnapshot -ApkPath $releaseApk
     $rcZip = Get-R6ProviderZipSnapshot -ApkPath $rcApk
@@ -476,6 +513,10 @@ try {
         Assert-R6ProviderCondition (
             ($snapshot.assetEntries -join "`n") -ceq ($expectedAssetEntries -join "`n")
         ) "Provider APK assets must exactly match the four-entry release allowlist; found: $($snapshot.assetEntries -join ', ')"
+        Assert-R6ProviderCondition (
+            $snapshot.rawMarkdownEntries.Count -eq 1 -and
+                $snapshot.rawMarkdownSha256 -ceq (Get-R6ProviderSha256 $pluginInstructionPath)
+        ) "Provider APK must contain exactly one dynamically named compiled raw Markdown entry matching plugin_instruction.md"
         $nativeEntries = @($snapshot.entries | Where-Object { $_ -match '^lib/' })
         Assert-R6ProviderCondition (
             $nativeEntries.Count -eq 1 -and $nativeEntries[0] -ceq $expectedNativeEntry
@@ -622,6 +663,8 @@ try {
             abi = "arm64-v8a"
             modelOrImagePayloads = $false
             assetEntries = @($releaseZip.assetEntries)
+            pluginInstructionEntry = $releaseZip.rawMarkdownEntries[0]
+            pluginInstructionSha256 = $releaseZip.rawMarkdownSha256
         }
         rc = [ordered]@{
             artifact = $rcApkRecord
@@ -637,6 +680,8 @@ try {
             abi = "arm64-v8a"
             modelOrImagePayloads = $false
             assetEntries = @($rcZip.assetEntries)
+            pluginInstructionEntry = $rcZip.rawMarkdownEntries[0]
+            pluginInstructionSha256 = $rcZip.rawMarkdownSha256
         }
         compliance = [ordered]@{
             thirdPartyNoticesSha256 = Get-R6ProviderSha256 $noticePath
@@ -662,5 +707,6 @@ try {
     }
     Write-Host "Report: $ReportPath"
 } finally {
+    if ($null -ne $gateLock) { $gateLock.Dispose() }
     Pop-Location
 }
