@@ -463,8 +463,8 @@ try {
             $metadata.Count -eq 1
         ) "Merged manifest requiresHostVersion missing or duplicated for $serviceName"
         Assert-R6ProviderCondition (
-            $metadata[0].GetAttribute("value", $androidNamespace) -ceq "@string/plugin_requires_host_version"
-        ) "Merged manifest requiresHostVersion must reference the offline-index resource for $serviceName"
+            $metadata[0].GetAttribute("value", $androidNamespace) -ceq $expectedIdentity.plugin_requires_host_version
+        ) "Merged manifest requiresHostVersion must be literal 5274 and match the offline-index resource for $serviceName"
     }
 
     $identitySourcePath = Get-R6ProviderRequiredFile (

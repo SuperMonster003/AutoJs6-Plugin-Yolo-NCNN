@@ -29,7 +29,7 @@
             </intent-filter>
             <meta-data
                 android:name="requiresHostVersion"
-                android:value="@string/plugin_requires_host_version" />
+                android:value="5274" />
         </service>
 
         <service
@@ -44,7 +44,7 @@
             </intent-filter>
             <meta-data
                 android:name="requiresHostVersion"
-                android:value="@string/plugin_requires_host_version" />
+                android:value="5274" />
         </service>
 
     </application>
