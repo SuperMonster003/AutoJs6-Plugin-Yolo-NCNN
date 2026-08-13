@@ -229,7 +229,7 @@ function Get-R6ProviderArtifactRecord {
     $fullPath = Get-R6ProviderRequiredFile $Path $Label
     $item = Get-Item -LiteralPath $fullPath
     $freshAfterBuildStart = if ($BuildIdentityProven) {
-        $item.LastWriteTimeUtc -ge $BuildStartedUtc.Value
+        $item.LastWriteTimeUtc -ge $BuildStartedUtc
     } else {
         $null
     }
