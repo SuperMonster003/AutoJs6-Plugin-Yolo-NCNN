@@ -46,11 +46,17 @@ Canonical R1 evidence is tracked in the AutoJs6 worktree at
 - [x] Map protocol and capability incompatibility to the matching stable
   open-session error codes; no unsupported-capability fallback is permitted.
 - [x] Add focused source tests for the open-session error mapping.
-- [ ] Run the focused JVM/Android tests and build a current source-bound candidate.
-- [ ] Verify the candidate APK ABI, native dependencies, license assets, and ELF
+- [x] Run the focused JVM/Android tests and build a current source-bound candidate.
+- [x] Verify the candidate APK ABI, native dependencies, license assets, and ELF
   16 KiB alignment in an independently generated packaging report.
-- [ ] Run candidate native load/inference on an arm64 target. A separate 16 KiB
-  page-size target is required before claiming `NATIVE_LOAD_16K_DEVICE`.
+- [x] Run candidate native load/inference on an arm64 target. This passed on
+  `QV710AF65F` (API 31, arm64-v8a, 4 KiB page size); a separate 16 KiB page-size
+  target is still required before claiming `NATIVE_LOAD_16K_DEVICE`.
+
+Canonical R5 evidence is tracked in the AutoJs6 worktree at
+`docs/dev/yolo-evidence/r5-summary.json`. It binds the device run to provider
+revision `2aa5b100edd5e0f7691cb7edb3dd3b38c194f77d` and Host revision
+`c40464957239e1378acd7be92647a4c863ac60e5`.
 
 R5 source and packaging evidence are not production signing, publishing,
 upgrade, or rollback evidence. Those remain R6 deliverables.
