@@ -83,8 +83,9 @@ deferred R6 deliverables.
 
 R6 source preflight produces an unsigned release APK and a debug-key
 TEST-SIGNED RC. Neither is a publishable production artifact. Production
-certificate receipts, official-index publication, and final artifact device
-evidence remain external R6 acceptance items.
+certificate, signed-build, final-artifact device, index, and publication status
+are external evidence facts and must be read from the exact R6 evidence archive;
+they are never inferred from this source roadmap.
 `-SkipBuild` is explicitly downgraded to a source/static and existing-artifact
 diagnostic; it cannot establish build identity or any build/package pass.
 
