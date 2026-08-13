@@ -12,6 +12,7 @@ plugins {
 val globalApplicationId = "io.github.supermonster003.autojs6.plugin.yolo.ncnn"
 val supportedAbi = "arm64-v8a"
 val buildTypeDebug = "debug"
+val buildTypeRc = "rc"
 val buildTypeRelease = "release"
 
 android {
@@ -74,6 +75,19 @@ android {
             isShrinkResources = true
             proguardFiles(*rules)
             releaseSigning?.let { signingConfig = it }
+        }
+        create(buildTypeRc) {
+            initWith(getByName(buildTypeRelease))
+            isDebuggable = false
+            // R5 validates the non-debuggable runtime/package boundary. Shrinker admission is
+            // intentionally left to R6 so a local AAR's annotation-only references cannot turn
+            // into an unrelated deployment gate.
+            isMinifyEnabled = false
+            isShrinkResources = false
+            signingConfig = signingConfigs.getByName(buildTypeDebug)
+            matchingFallbacks += listOf(buildTypeRelease)
+            versionNameSuffix = "-rc-test-signed"
+            buildConfigField("String", "BUILD_CHANNEL", "\"RC_TEST_SIGNED\"")
         }
     }
 

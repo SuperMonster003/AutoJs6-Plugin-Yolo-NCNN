@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "state": "staged",
+  "name": "ncnn",
+  "version": "20260526",
+  "sourceUrl": "https://github.com/Tencent/ncnn/releases/download/20260526/ncnn-20260526-android.zip",
+  "sourceRevision": "e54f7b1f88434e1d844ea0551b880a1cfb079ce1",
+  "archiveLength": 21045913,
+  "archiveSha256": "85b18b875488585c2d21360430e0e54abb6c04aa88094b471c20208ab55ff796",
+  "arm64StaticLibrary": {
+    "path": "20260526/arm64-v8a/lib/libncnn.a",
+    "length": 7275272,
+    "sha256": "505e484ae18b59e51cb35343506146ab101e608a86f8c1d0834e761b99b2a490"
+  },
+  "license": "BSD-3-Clause",
+  "licenseFile": "LICENSE-20260526.txt",
+  "licenseSha256": "7c974bac98848df46be1af5bdaa3c3c9c01f6082a90f55caeb7f60c6208aa255",
+  "ndkVersion": "29.0.14206865",
+  "cmakeVersion": "3.22.1",
+  "stl": "c++_static",
+  "abis": ["arm64-v8a"],
+  "vulkan": false
+}

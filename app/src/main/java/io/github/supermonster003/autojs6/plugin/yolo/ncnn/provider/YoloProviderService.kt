@@ -4,14 +4,19 @@ import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import android.os.ParcelFileDescriptor
+import android.os.Process
 import io.github.supermonster003.autojs6.plugin.yolo.ncnn.YoloPlugin
 import org.autojs.plugin.yolo.api.IYoloCallback
 import org.autojs.plugin.yolo.api.IYoloProvider
 import org.autojs.plugin.yolo.api.IYoloSession
 import org.autojs.plugin.yolo.api.YoloCodec
 import org.autojs.plugin.yolo.api.YoloContract
-import org.autojs.plugin.yolo.api.YoloOpenSessionFailureCodec
+import org.autojs.plugin.yolo.api.YoloContractException
+import org.autojs.plugin.yolo.api.YoloContractViolation
 import org.autojs.plugin.yolo.api.YoloValidation
+import java.io.File
+import java.io.FileDescriptor
+import java.io.PrintWriter
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.SynchronousQueue
@@ -43,6 +48,11 @@ class YoloProviderService : Service() {
 
     // AidlPluginHost later binds an exact component without an Intent action.
     override fun onBind(intent: Intent?): IBinder = binder
+
+    /** Release-safe counts for shell diagnostics; no model names, paths, hashes, or caller data. */
+    override fun dump(fd: FileDescriptor, writer: PrintWriter, args: Array<out String>) {
+        writer.println(diagnosticsSnapshot().formatLine())
+    }
 
     override fun onDestroy() {
         sessions.toList().forEach(RemoteYoloSession::serviceDestroyed)
@@ -89,10 +99,15 @@ class YoloProviderService : Service() {
                 incoming = requireNotNull(modelDescriptors) { "YOLO model descriptors are missing" }
                 safeCallback = requireNotNull(callback) { "YOLO callback is missing" }
                 decoded = YoloCodec.decodeOpenSessionRequest(metadata, incoming.size)
-                require(
-                    decoded.protocolVersion >= capabilities.protocolMin &&
-                        decoded.protocolVersion <= capabilities.protocolMax,
-                ) { "YOLO protocol version is outside the provider range" }
+                if (
+                    decoded.protocolVersion < capabilities.protocolMin ||
+                    decoded.protocolVersion > capabilities.protocolMax
+                ) {
+                    throw YoloContractException(
+                        YoloContractViolation.PROTOCOL_INCOMPATIBLE,
+                        "YOLO protocol version is outside the provider range",
+                    )
+                }
                 YoloValidation.validateOpenSessionRequestAgainst(
                     request = decoded,
                     descriptorCount = incoming.size,
@@ -106,7 +121,7 @@ class YoloProviderService : Service() {
                 }
             } catch (error: Throwable) {
                 OwnedParcelFileDescriptors.closeIncoming(modelDescriptors)
-                throw mapOpenFailure(error)
+                throw YoloProviderServiceErrors.mapOpenFailure(error)
             }
 
             val ownedDescriptors = try {
@@ -171,28 +186,43 @@ class YoloProviderService : Service() {
                 model?.close()
                 ownedDescriptors.close()
                 sessionGate.set(false)
-                throw mapOpenFailure(error)
+                throw YoloProviderServiceErrors.mapOpenFailure(error)
             }
         }
     }
 
-    private fun mapOpenFailure(error: Throwable): Throwable = when (error) {
-        is SecurityException -> error
-        is YoloSessionOpenTimeoutException ->
-            YoloProviderServiceErrors.sessionOpenTimedOut(error.message.orEmpty())
-        is YoloModelRejectedException ->
-            YoloProviderServiceErrors.modelRejected(error.message.orEmpty())
-        is IllegalArgumentException -> {
-            if (YoloOpenSessionFailureCodec.decode(error) != null) {
-                error
+    private fun diagnosticsSnapshot() = YoloProviderDiagnosticsSnapshot(
+        pid = Process.myPid(),
+        activeSessions = sessions.size,
+        sessionGate = sessionGate.get(),
+        activeNativeHandles = NativeYoloRuntime.activeHandleCount,
+        selfFdCount = File("/proc/self/fd").list()?.size
+            ?: YoloProviderDiagnosticsSnapshot.UNAVAILABLE_INT,
+        selfRssKb = readSelfRssKb(),
+        modelDirCount = modelSessionRoot().let { root ->
+            if (!root.exists()) {
+                0
             } else {
-                YoloProviderServiceErrors.invalidRequest(
-                    error.message ?: "Invalid YOLO session request",
-                )
+                root.listFiles()?.count { it.isDirectory }
+                    ?: YoloProviderDiagnosticsSnapshot.UNAVAILABLE_INT
             }
+        },
+    )
+
+    private fun readSelfRssKb(): Long = runCatching {
+        File("/proc/self/status").useLines { lines ->
+            lines.firstOrNull { it.startsWith(PROC_RSS_PREFIX) }
+                ?.removePrefix(PROC_RSS_PREFIX)
+                ?.trim()
+                ?.substringBefore(' ')
+                ?.toLongOrNull()
         }
-        else -> YoloProviderServiceErrors.sessionOpenFailed(
-            error.message ?: "YOLO session could not be opened",
-        )
+    }.getOrNull() ?: YoloProviderDiagnosticsSnapshot.UNAVAILABLE_LONG
+
+    private fun modelSessionRoot() = File(noBackupFilesDir, MODEL_SESSION_DIRECTORY)
+
+    private companion object {
+        const val MODEL_SESSION_DIRECTORY = "yolo-model-sessions"
+        const val PROC_RSS_PREFIX = "VmRSS:"
     }
 }

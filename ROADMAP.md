@@ -1,4 +1,4 @@
-# YOLO NCNN Provider R1
+# YOLO NCNN Provider Roadmap
 
 ## R1-SOURCE
 
@@ -36,3 +36,21 @@ runtime guarantee is claimed; that hardening remains a later reliability item.
 
 Canonical R1 evidence is tracked in the AutoJs6 worktree at
 `docs/dev/yolo-evidence/r1-summary.json`.
+
+## R5 CPU/arm64 RC baseline
+
+- [x] Package the plugin MPL-2.0 text, complete pinned NCNN license/notices, and
+  NCNN provenance lock as main APK assets.
+- [x] Keep advertised capabilities limited to CPU, `arm64-v8a`, detect, NCNN,
+  RGBA_8888, and the registered decoder set.
+- [x] Map protocol and capability incompatibility to the matching stable
+  open-session error codes; no unsupported-capability fallback is permitted.
+- [x] Add focused source tests for the open-session error mapping.
+- [ ] Run the focused JVM/Android tests and build a current source-bound candidate.
+- [ ] Verify the candidate APK ABI, native dependencies, license assets, and ELF
+  16 KiB alignment in an independently generated packaging report.
+- [ ] Run candidate native load/inference on an arm64 target. A separate 16 KiB
+  page-size target is required before claiming `NATIVE_LOAD_16K_DEVICE`.
+
+R5 source and packaging evidence are not production signing, publishing,
+upgrade, or rollback evidence. Those remain R6 deliverables.

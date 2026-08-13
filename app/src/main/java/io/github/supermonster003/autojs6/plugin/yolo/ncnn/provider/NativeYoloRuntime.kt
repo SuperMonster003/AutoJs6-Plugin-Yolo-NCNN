@@ -2,6 +2,7 @@ package io.github.supermonster003.autojs6.plugin.yolo.ncnn.provider
 
 import io.github.supermonster003.autojs6.plugin.yolo.ncnn.BuildConfig
 import org.autojs.plugin.yolo.api.YoloOpenSessionRequest
+import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
 
 /**
@@ -10,6 +11,7 @@ import java.util.concurrent.atomic.AtomicReference
  */
 internal object NativeYoloRuntime {
     private val loadFailure = AtomicReference<Throwable?>(null)
+    private val activeNativeHandles = AtomicInteger(0)
 
     init {
         if (BuildConfig.NCNN_RUNTIME_STAGED) {
@@ -23,6 +25,9 @@ internal object NativeYoloRuntime {
 
     val backendVersion: String
         get() = if (isReady) nativeBackendVersion() else "not-staged"
+
+    val activeHandleCount: Int
+        get() = activeNativeHandles.get()
 
     fun requireReady() {
         if (!isReady) {
@@ -55,15 +60,17 @@ internal object NativeYoloRuntime {
         deadline.requireRemaining()
 
         val handle = try {
-            nativeCreate(
-                paramPath = byRole.getValue("ncnn-param").single().file.absolutePath,
-                binPath = byRole.getValue("ncnn-bin").single().file.absolutePath,
-                inputName = manifest.inputName,
-                outputName = manifest.outputName,
-                cpuThreads = request.cpuThreads,
-                classCount = manifest.labels.size,
-                outputRows = manifest.outputRows,
-            ).also { check(it != 0L) { "NCNN returned an invalid detector handle" } }
+            registerNativeHandle(
+                nativeCreate(
+                    paramPath = byRole.getValue("ncnn-param").single().file.absolutePath,
+                    binPath = byRole.getValue("ncnn-bin").single().file.absolutePath,
+                    inputName = manifest.inputName,
+                    outputName = manifest.outputName,
+                    cpuThreads = request.cpuThreads,
+                    classCount = manifest.labels.size,
+                    outputRows = manifest.outputRows,
+                ).also { check(it != 0L) { "NCNN returned an invalid detector handle" } },
+            )
         } catch (error: IllegalArgumentException) {
             throw YoloModelRejectedException(
                 "MODEL_GRAPH_REJECTED",
@@ -81,7 +88,7 @@ internal object NativeYoloRuntime {
             deadline.requireRemaining()
             NativeYoloEngine(handle, manifest.labels)
         } catch (error: Throwable) {
-            nativeDestroy(handle)
+            destroy(handle)
             throw error
         }
     }
@@ -112,7 +119,21 @@ internal object NativeYoloRuntime {
 
     internal fun cancel(handle: Long, sequence: Long) = nativeCancel(handle, sequence)
 
-    internal fun destroy(handle: Long) = nativeDestroy(handle)
+    internal fun destroy(handle: Long) = NativeHandleCountPolicy.destroy(
+        counter = activeNativeHandles,
+        handle = handle,
+        nativeDestroy = ::nativeDestroy,
+    )
+
+    private fun registerNativeHandle(handle: Long): Long {
+        try {
+            NativeHandleCountPolicy.onCreated(activeNativeHandles)
+            return handle
+        } catch (error: Throwable) {
+            runCatching { nativeDestroy(handle) }
+            throw error
+        }
+    }
 
     private external fun nativeDetect(
         handle: Long,

@@ -1,5 +1,7 @@
 package io.github.supermonster003.autojs6.plugin.yolo.ncnn.provider
 
+import org.autojs.plugin.yolo.api.YoloContractException
+import org.autojs.plugin.yolo.api.YoloContractViolation
 import org.autojs.plugin.yolo.api.YoloErrorCode
 import org.autojs.plugin.yolo.api.YoloOpenSessionFailureCodec
 
@@ -33,6 +35,39 @@ internal object YoloProviderServiceErrors {
 
     fun sessionOpenTimedOut(message: String): IllegalArgumentException =
         YoloOpenSessionFailureCodec.exception(YoloErrorCode.TIMEOUT, bounded(message))
+
+    fun unsupportedCapability(message: String): IllegalArgumentException =
+        YoloOpenSessionFailureCodec.exception(
+            YoloErrorCode.UNSUPPORTED_CAPABILITY,
+            bounded(message),
+        )
+
+    fun unsupportedProtocol(message: String): IllegalArgumentException =
+        YoloOpenSessionFailureCodec.exception(
+            YoloErrorCode.UNSUPPORTED_PROTOCOL,
+            bounded(message),
+        )
+
+    fun mapOpenFailure(error: Throwable): Throwable = when (error) {
+        is SecurityException -> error
+        is YoloSessionOpenTimeoutException -> sessionOpenTimedOut(error.message.orEmpty())
+        is YoloModelRejectedException -> modelRejected(error.message.orEmpty())
+        is YoloContractException -> when (error.violation) {
+            YoloContractViolation.CAPABILITY_INCOMPATIBLE ->
+                unsupportedCapability(error.message.orEmpty())
+            YoloContractViolation.PROTOCOL_INCOMPATIBLE ->
+                unsupportedProtocol(error.message.orEmpty())
+            else -> invalidRequest(error.message ?: "Invalid YOLO session request")
+        }
+        is IllegalArgumentException -> {
+            if (YoloOpenSessionFailureCodec.decode(error) != null) {
+                error
+            } else {
+                invalidRequest(error.message ?: "Invalid YOLO session request")
+            }
+        }
+        else -> sessionOpenFailed(error.message ?: "YOLO session could not be opened")
+    }
 
     private fun bounded(message: String): String =
         message.take(1_024).ifBlank { "YOLO session open failed" }
