@@ -24,7 +24,11 @@ components identified by the upstream binary distribution.
 - Version requested by this project: 2.2.21
 - Copyright: JetBrains s.r.o. and Kotlin contributors
 - License: Apache License 2.0
-- License text: https://www.apache.org/licenses/LICENSE-2.0
+- Complete license text: `assets/licenses/Apache-2.0.txt`
+
+The Maven POMs for `org.jetbrains.kotlin:kotlin-stdlib:2.2.21` and
+`org.jetbrains.kotlin:kotlin-parcelize-runtime:2.2.21` both identify
+`Apache-2.0` and the upstream Apache License 2.0 text.
 
 The Parcelize runtime is declared explicitly because the local protocol AAR has
 no POM from which Gradle could recover its annotation dependency. R8 may remove

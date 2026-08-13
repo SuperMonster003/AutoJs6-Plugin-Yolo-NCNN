@@ -51,6 +51,8 @@ $expectedRuntimeContractConstants = [ordered]@{
     RELEASE_SUPPORTED_ABI = $expectedIdentity.plugin_supported_abis
 }
 $expectedNativeEntry = "lib/arm64-v8a/libautojs_yolo.so"
+$expectedApache20Length = 11358L
+$expectedApache20Sha256 = "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
 $expectedProtocolHandoff = [ordered]@{
     sourceRevision = "7c48add4a5a77efcee7a0fa782749312d3eee5f1"
     sourceSnapshotSha256 = "4cd47305c70b5c1533fbb16efe85bd9c572e571d05b841770976ee3593dd9174"
@@ -71,6 +73,7 @@ $expectedProtocolHandoff = [ordered]@{
 }
 $requiredApkAssets = [ordered]@{
     "assets/THIRD_PARTY_NOTICES.md" = "app/src/main/assets/THIRD_PARTY_NOTICES.md"
+    "assets/licenses/Apache-2.0.txt" = "app/src/main/assets/licenses/Apache-2.0.txt"
     "assets/licenses/MPL-2.0.txt" = "app/src/main/assets/licenses/MPL-2.0.txt"
     "assets/licenses/ncnn-20260526.txt" = "app/src/main/assets/licenses/ncnn-20260526.txt"
     "assets/third_party/ncnn/provenance.lock.json" = "app/src/main/assets/third_party/ncnn/provenance.lock.json"
@@ -722,12 +725,21 @@ try {
     $noticeText = Get-Content -LiteralPath $noticePath -Raw
     Assert-R6ProviderCondition (
         -not [string]::IsNullOrWhiteSpace($noticeText) -and
+            $noticeText -cmatch 'Apache-2\.0' -and
+            $noticeText -cmatch 'assets/licenses/Apache-2\.0\.txt' -and
             $noticeText -cmatch 'MPL-2\.0' -and
             $noticeText -cmatch 'NCNN' -and
             $noticeText -cmatch 'BSD-3-Clause' -and
             $noticeText -cmatch '(?is)model\s+weights.*not\s+distributed' -and
             $noticeText -cmatch '(?i)users\s+are\s+responsible'
-    ) "Third-party notice must identify MPL-2.0, NCNN BSD-3-Clause, model non-distribution, and user responsibility"
+    ) "Third-party notice must identify the packaged Apache-2.0 text, MPL-2.0, NCNN BSD-3-Clause, model non-distribution, and user responsibility"
+    $apache20Path = Get-R6ProviderRequiredFile (
+        Join-Path $repository "app/src/main/assets/licenses/Apache-2.0.txt"
+    ) "packaged Apache-2.0 license text"
+    Assert-R6ProviderCondition (
+        (Get-Item -LiteralPath $apache20Path).Length -eq $expectedApache20Length -and
+            (Get-R6ProviderSha256 $apache20Path) -ceq $expectedApache20Sha256
+    ) "Packaged Apache-2.0 text must be the complete canonical 11358-byte LF text"
     $modelPolicyPath = Get-R6ProviderRequiredFile (
         Join-Path $repository "docs/model-license-policy.md"
     ) "model license policy"
@@ -743,7 +755,8 @@ try {
         'forward-fix version code `3`',
         '`NATIVE_LOAD_16K_DEVICE=NOT_RUN_NO_16K_DEVICE`',
         '`API36_ARM64_RUNTIME=NOT_RUN_NO_AVAILABLE_ENVIRONMENT`',
-        'neither is a first-release\s+publication gate'
+        'neither is a first-release\s+publication gate',
+        'complete Apache-2\.0 text for the\s+Kotlin runtime'
     )) {
         Assert-R6ProviderCondition (
             $releaseNotesText -cmatch $releaseBoundaryPattern
@@ -759,7 +772,7 @@ try {
         $expectedAssetEntries = @($requiredApkAssets.Keys | Sort-Object)
         Assert-R6ProviderCondition (
             ($snapshot.assetEntries -join "`n") -ceq ($expectedAssetEntries -join "`n")
-        ) "Provider APK assets must exactly match the four-entry release allowlist; found: $($snapshot.assetEntries -join ', ')"
+        ) "Provider APK assets must exactly match the five-entry release allowlist; found: $($snapshot.assetEntries -join ', ')"
         Assert-R6ProviderCondition (
             $snapshot.rawMarkdownEntries.Count -eq 1 -and
                 $snapshot.rawMarkdownSha256 -ceq (Get-R6ProviderSha256 $pluginInstructionPath)

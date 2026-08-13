@@ -43,14 +43,15 @@ evidence only and must not be described as publishable.
 captures Git state, runs `:app:clean` before the focused tests and two APK
 assemblies, confirms Git state is unchanged, and records exact test XML and
 artifact hashes. A process lock prevents concurrent gate runs from racing the
-clean/build boundary. The APK check uses an exact four-file asset allowlist and
+clean/build boundary. The APK check uses an exact five-file asset allowlist and
 identifies the compiled raw plugin instruction by content rather than a generated
 resource filename. `-SkipBuild` is only an existing-artifact diagnostic. It sets
 `buildIdentityProven=false` and makes no test, build, minifier, resource-shrinker,
 or package-pass claim, even when `-RequireClean` is also requested.
 
-The APK source set includes the plugin MPL-2.0 text, the complete pinned NCNN
-license/notices, the third-party notice index, and the NCNN provenance lock under
+The APK source set includes the plugin MPL-2.0 text, the complete Apache-2.0
+text for the Kotlin runtime, the complete pinned NCNN license/notices, the
+third-party notice index, and the NCNN provenance lock under
 `app/src/main/assets`.
 Models remain external and retain the license and usage conditions of their own
 source; converting a model to NCNN does not change those conditions.
@@ -70,9 +71,12 @@ the Provider and withdraws its index entry. A verified archived exact version
 code `2` may be reinstalled only as same-version recovery, while defects require
 a forward-fix version code `3`.
 
-This sibling Git repository is independent and has no remote. Canonical receipts
-are tracked in the AutoJs6 worktree; local commits and test APKs do not imply that
-anything was pushed or published.
+This sibling Git repository is independent. Its current GitHub remote is a
+private evidence archive only: it is not a public distribution channel, has no
+published release, and is not admitted to the official plugin index. Canonical
+raw receipts remain local to the AutoJs6 worktree. The repository must not be
+made public until a compatible AutoJs6 Host is formally released and a separate
+public-release review has passed.
 
 ## Fixed identity
 

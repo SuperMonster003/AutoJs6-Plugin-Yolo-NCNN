@@ -39,8 +39,9 @@ Canonical R1 evidence is tracked in the AutoJs6 worktree at
 
 ## R5 CPU/arm64 RC baseline
 
-- [x] Package the plugin MPL-2.0 text, complete pinned NCNN license/notices, and
-  NCNN provenance lock as main APK assets.
+- [x] Package the plugin MPL-2.0 text, complete Apache-2.0 text for the Kotlin
+  runtime, complete pinned NCNN license/notices, and NCNN provenance lock as
+  main APK assets.
 - [x] Keep advertised capabilities limited to CPU, `arm64-v8a`, detect, NCNN,
   RGBA_8888, and the registered decoder set.
 - [x] Map protocol and capability incompatibility to the matching stable
@@ -92,6 +93,12 @@ the Provider and withdraw its index entry; an archived byte-identical version
 code `2` APK may be reinstalled only as same-version recovery after package,
 component, production signer, and SHA-256 verification. Defects are shipped as a
 forward-fix version code `3`.
+
+The current GitHub repository is private and is used only to stage source and
+evidence. Before a compatible AutoJs6 Host is publicly released, do not change
+repository visibility, publish a Release, or submit the Provider to the official
+plugin index. A private Draft Release may be created only after its exact APK and
+sanitized evidence assets have passed the refreshed R6 gates.
 
 Runtime loading on a 16 KiB page-size target and API 36 arm64 runtime validation
 remain explicit non-blocking limitations:
