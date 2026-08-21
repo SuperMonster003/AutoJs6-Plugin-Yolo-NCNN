@@ -8,7 +8,7 @@ revision or source snapshot:
 - `yolo-api.aar`
 
 Record their SHA-256 values and source identity in `protocol-aars.lock.json`.
-The three AARs are staged from the exact frozen AutoJs6 source commit
+The three AARs are staged from the exact frozen AutoJs6 Host source commit
 `7c48add4a5a77efcee7a0fa782749312d3eee5f1`. The deterministic YOLO API
 `src/main` snapshot SHA-256
 `4cd47305c70b5c1533fbb16efe85bd9c572e571d05b841770976ee3593dd9174`

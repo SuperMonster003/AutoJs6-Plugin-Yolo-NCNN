@@ -34,7 +34,7 @@ R1 does not claim Host/provider Binder-PFD end-to-end or production readiness.
 Native model construction is not yet cooperatively abortable, so no hard-timeout
 runtime guarantee is claimed; that hardening remains a later reliability item.
 
-Canonical R1 evidence is tracked in the AutoJs6 worktree at
+Canonical R1 evidence is tracked in the AutoJs6 Host repository at
 `docs/dev/yolo-evidence/r1-summary.json`.
 
 ## R5 CPU/arm64 RC baseline
@@ -54,7 +54,7 @@ Canonical R1 evidence is tracked in the AutoJs6 worktree at
   `QV710AF65F` (API 31, arm64-v8a, 4 KiB page size); a separate 16 KiB page-size
   target is still required before claiming `NATIVE_LOAD_16K_DEVICE`.
 
-Canonical R5 evidence is tracked in the AutoJs6 worktree at
+Canonical R5 evidence is tracked in the AutoJs6 Host repository at
 `docs/dev/yolo-evidence/r5-summary.json`. It binds the device run to provider
 revision `2aa5b100edd5e0f7691cb7edb3dd3b38c194f77d` and Host revision
 `c40464957239e1378acd7be92647a4c863ac60e5`.

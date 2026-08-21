@@ -74,9 +74,27 @@ a forward-fix version code `3`.
 This sibling Git repository is independent. Its current GitHub remote is a
 private evidence archive only: it is not a public distribution channel, has no
 published release, and is not admitted to the official plugin index. Canonical
-raw receipts remain local to the AutoJs6 worktree. The repository must not be
-made public until a compatible AutoJs6 Host is formally released and a separate
-public-release review has passed.
+raw receipts remain in the AutoJs6 Host repository under
+`docs/dev/yolo-evidence`. The repository must not be made public until a
+compatible AutoJs6 Host is formally released and a separate public-release
+review has passed.
+
+## Source ownership and protocol handoff
+
+Provider-owned code is maintained here: the Provider services and sessions,
+NCNN/JNI runtime, model validation and decoder implementation, Provider tests,
+and Provider source/build/package gate. Host-owned code remains in AutoJs6: the
+versioned `plugin-api:yolo-api` source and AIDL, exact-component Binder/PFD Host,
+Rhino API, cross-process conformance tests, samples, evidence receipts, and
+release orchestration. Keeping this boundary avoids maintaining divergent
+copies of security-sensitive transport and lifecycle code.
+
+The three AARs in `libs` are an immutable handoff from one exact AutoJs6 source
+revision. If the Host protocol changes, rebuild and stage all three AARs from a
+single new AutoJs6 commit, then update `libs/protocol-aars.lock.json`,
+`libs/README.md`, and the pinned expectations in
+`tools/verify-r6-provider-source.ps1` together. Re-run both repositories' focused
+protocol/Provider gates before changing the advertised protocol range.
 
 ## Fixed identity
 
