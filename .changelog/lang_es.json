@@ -1,0 +1,34 @@
+{
+  "changelog_label_hint": "Aviso",
+  "changelog_label_feature": "Novedad",
+  "changelog_label_fix": "Corrección",
+  "changelog_label_improvement": "Mejora",
+  "changelog_label_dependency": "Dependencia",
+  "$data": {
+    "v0.1.0": {
+      "released_date": "2026/08/13",
+      "hint": [
+        "Primera versión (código de versión {{ version_build }}, sin predecesor de código 1); requiere AutoJs6 con código de versión no inferior a {{ required_host_build }} ({{ required_host_version }}+) firmado con el mismo certificado que el plugin",
+        "Actualmente en fase de preparación privada: la publicación pública y el envío al índice oficial de plugins seguirán al lanzamiento formal del host compatible; el alcance de capacidades es CPU / arm64-v8a / detección de objetos"
+      ],
+      "feature": [
+        "Provider de detección de objetos YOLO aislado en proceso: el proceso separado `:provider` sirve la inferencia `org.autojs.plugin.YOLO` y el descubrimiento `org.autojs.plugin.INFO`, ambos protegidos por el permiso `org.autojs.permission.PLUGIN`",
+        "Backend de inferencia CPU NCNN {{ ncnn_version }} integrado con el decodificador `{{ decoder_id }}`, compatible con modelos YOLO11 detect y números de clases personalizados declarados por manifiesto (1 a {{ max_labels }})",
+        "Contrato Model Manifest v1 en vigor: la apertura de sesión verifica longitudes declaradas y SHA-256, la ejecución verifica la forma de salida, y las discrepancias se rechazan con códigos de error estables",
+        "Los modelos llegan del host mediante descriptores de solo lectura y toda la apertura comparte una única fecha límite monótona; el APK del plugin no incluye modelos ni realiza llamadas de red",
+        "Protección del ciclo de vida de sesiones: inferencia serial de una petición por sesión (cola cero), detección de muerte del callback, cierre idempotente y liberación diferida de recursos nativos"
+      ],
+      "fix": [
+        "Las sesiones de modelo obsoletas se limpian al arrancar, evitando recursos nativos residuales tras una salida anómala del host"
+      ],
+      "improvement": [
+        "Las compilaciones release y RC TEST-SIGNED pasan por R8 y reducción de recursos, con empaquetado alineado ELF de 16 KiB",
+        "El APK incluye íntegramente las licencias MPL-2.0, Apache-2.0 de Kotlin y NCNN con sus bloqueos de procedencia, más un índice de avisos de terceros",
+        "Nueva puerta sin conexión de fuente/compilación/empaquetado `tools/verify-r6-provider-source.ps1`: rechaza derivas en 22 artefactos README/CHANGELOG generados, parte de fuentes limpias, registra hashes de pruebas y artefactos, y verifica el APK contra una lista blanca de cinco archivos de assets"
+      ],
+      "dependency": [
+        "NCNN {{ ncnn_version }} fijado (BSD-3-Clause, con bloqueos de procedencia y hash), Kotlin 2.2.21 y AAR del protocolo YOLO {{ protocol_version }} (transferidos desde una revisión congelada del código de AutoJs6)"
+      ]
+    }
+  }
+}

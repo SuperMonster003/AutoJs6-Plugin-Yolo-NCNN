@@ -1,4 +1,5 @@
-# R6 source/build/package preflight. It intentionally performs no ADB or production signing.
+# R6 source/build/package preflight with the R7 generated-document consistency gate.
+# It intentionally performs no ADB or production signing.
 [CmdletBinding()]
 param(
     [switch] $SkipBuild,
@@ -264,6 +265,12 @@ function Assert-R6ProviderRetainedReport {
             [string]$parsed.protocolAarHandoff.sourceSnapshotSha256 -ceq $expectedProtocolHandoff.sourceSnapshotSha256 -and
             @($parsed.protocolAarHandoff.artifacts).Count -eq 3
     ) "Retained Provider report protocol AAR handoff differs"
+    Assert-R6ProviderCondition (
+        [string]$parsed.documentation.status -ceq "PASS" -and
+            [int]$parsed.documentation.languageCount -eq 10 -and
+            [int]$parsed.documentation.artifactCount -eq 22 -and
+            [string]$parsed.documentation.mode -ceq "CHECK"
+    ) "Retained Provider report generated-document receipt differs"
 }
 
 function Get-R6ProviderOnlyFile {
@@ -287,6 +294,67 @@ function Invoke-R6ProviderCapture {
     return [pscustomobject][ordered]@{
         exitCode = $LASTEXITCODE
         output = $output
+    }
+}
+
+function Resolve-R6ProviderPython {
+    $candidates = @(
+        [pscustomobject]@{ name = "python"; prefixArguments = @() },
+        [pscustomobject]@{ name = "python3"; prefixArguments = @() },
+        [pscustomobject]@{ name = "py"; prefixArguments = @("-3") }
+    )
+    foreach ($candidate in $candidates) {
+        $commands = @(Get-Command -Name $candidate.name -CommandType Application -ErrorAction SilentlyContinue)
+        foreach ($command in $commands) {
+            $probeArguments = @($candidate.prefixArguments) + @("--version")
+            $probe = Invoke-R6ProviderCapture -FilePath $command.Source -Arguments $probeArguments
+            $probeText = ($probe.output -join [Environment]::NewLine).Trim()
+            $versionMatch = [regex]::Match($probeText, '(?i)Python\s+([0-9]+)\.([0-9]+)(?:\.([0-9]+))?')
+            if ($probe.exitCode -ne 0 -or -not $versionMatch.Success) { continue }
+            $major = [int]$versionMatch.Groups[1].Value
+            $minor = [int]$versionMatch.Groups[2].Value
+            if ($major -lt 3 -or ($major -eq 3 -and $minor -lt 10)) { continue }
+            return [pscustomobject][ordered]@{
+                path = $command.Source
+                prefixArguments = @($candidate.prefixArguments)
+                version = $versionMatch.Value
+            }
+        }
+    }
+    throw "Generated-document verification requires Python 3.10 or newer (python, python3, or py -3)"
+}
+
+function Get-R6ProviderDocumentationReceipt {
+    $generatorPath = Get-R6ProviderRequiredFile (
+        Join-Path $repository ".python/generate_markdown.py"
+    ) "localized Markdown generator"
+    $python = Resolve-R6ProviderPython
+    $arguments = @($python.prefixArguments) + @(
+        $generatorPath,
+        "--check",
+        "--root",
+        $repository
+    )
+    Write-Host "> $($python.path) $($arguments -join ' ')"
+    $check = Invoke-R6ProviderCapture -FilePath $python.path -Arguments $arguments
+    $checkText = $check.output -join [Environment]::NewLine
+    Assert-R6ProviderCondition (
+        $check.exitCode -eq 0
+    ) "Generated README/CHANGELOG consistency check failed:`n$checkText"
+    Assert-R6ProviderCondition (
+        $checkText -cmatch '(?m)^MARKDOWN_OK languages=10 artifacts=22 mode=check\r?$'
+    ) "Generated-document check did not report the exact 10-language/22-artifact inventory"
+    return [pscustomobject][ordered]@{
+        status = "PASS"
+        mode = "CHECK"
+        languageCount = 10
+        artifactCount = 22
+        generatorPath = $generatorPath
+        generatorSha256 = Get-R6ProviderSha256 $generatorPath
+        pythonPath = $python.path
+        pythonVersion = $python.version
+        arguments = @($arguments)
+        output = @($check.output)
     }
 }
 
@@ -545,6 +613,8 @@ try {
     if ($SelfTestFailAfterReportInvalidation) {
         throw "Intentional R6 Provider receipt invalidation self-test failure"
     }
+
+    $documentationReceipt = Get-R6ProviderDocumentationReceipt
 
     Assert-R6ProviderCondition (
         -not (Test-Path -LiteralPath (Join-Path $repository "sign.properties"))
@@ -852,9 +922,9 @@ try {
         result = if ($buildIdentityProven) { "PASS" } else { "DIAGNOSTIC_COMPLETE" }
         generatedAtUtc = [DateTime]::UtcNow.ToString("o")
         evidenceLevel = if ($buildIdentityProven) {
-            @("SOURCE", "JVM_TEST", "ANDROID_BUILD", "APK_PACKAGE")
+            @("SOURCE", "DOCUMENTATION", "JVM_TEST", "ANDROID_BUILD", "APK_PACKAGE")
         } else {
-            @("SOURCE_STATIC", "EXISTING_ARTIFACT_DIAGNOSTIC")
+            @("SOURCE_STATIC", "DOCUMENTATION", "EXISTING_ARTIFACT_DIAGNOSTIC")
         }
         buildIdentityProven = $buildIdentityProven
         source = [ordered]@{
@@ -891,6 +961,7 @@ try {
         }
         tests = $testReceipt
         protocolAarHandoff = $protocolAarHandoff
+        documentation = $documentationReceipt
         buildArtifacts = [ordered]@{
             generatedResources = $generatedResourcesRecord
             mergedManifest = $mergedManifestRecord

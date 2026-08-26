@@ -1,4 +1,143 @@
-# YOLO NCNN Provider Roadmap
+# Roadmap — AutoJs6 Plugin: YOLO NCNN
+
+> 当前版本: `0.1.0` (版本号 2) · 协议 1.0 · 要求宿主 ≥ 5275 (AutoJs6 6.8.0) · 私有暂存阶段, 未公开发布
+>
+> R1–R6 已完成 (2026-08-11 至 2026-08-13): 进程隔离 Provider, NCNN 20260526 CPU/arm64 detect,
+> Model Manifest v1, R8/资源收缩接入与离线源码/构建/打包门禁; 逐条证据记录原样保留于文末
+> "历史里程碑 (R1–R6)" 章节, 工程叙述全文见 [docs/engineering-notes.md](docs/engineering-notes.md).
+>
+> R7 本地文档线已完成 (2026-08-27): 十语言 README / CHANGELOG 生成流水线与发布前一致性门禁落地,
+> 根文档面向最终用户重写; 公开仓库后的链接与渲染核对仍待发布窗口执行.
+
+## 一、能力现状评估 (结论)
+
+**协议 1.0 能力面在当前冻结范围内已全覆盖, 插件按既定边界"功能完备":**
+
+| 维度 | 协议/合约定义 | 插件实现 | 状态 |
+|---|---|---|---|
+| 推理任务 | detect (YOLO11, `ultralytics-detect`) | NCNN CPU 推理 + 显式解码器注册表 | ✅ 全覆盖 |
+| 模型合约 | Model Manifest v1 (声明长度 / SHA-256 / 输出形状 / 标签 1–256) | 打开时全量校验 + 运行时形状核验 | ✅ 全覆盖 |
+| 隔离与安全 | 独立进程, `PLUGIN` 权限, 只读常规文件 PFD, fail-closed | `:provider` 进程 + 单调打开截止时间 + 幂等关闭 | ✅ 全覆盖 |
+| 会话模型 | 单会话串行, 零队列, 打开/推理超时上限 | 已实现并有聚焦测试与错误码映射 | ✅ 全覆盖 |
+| 不支持面 | Vulkan / 其他 ABI / seg / pose / OBB / 跟踪 / 未知解码器 | 显式拒绝, 无静默回退 | ✅ 按设计拒绝 |
+
+**因此继续精进的空间不在"补功能", 而在四个方向:**
+
+1. **文档与维护 (R7)** — 多语言文档流水线与漂移门禁已落地, 剩余公开后核对及逐版同步;
+2. **公开发布工程 (R8)** — 生产签名, 转公开, GitHub Release 与官方索引, 节奏受宿主发布约束;
+3. **平台与运行时验证 (R9)** — 16 KiB 页设备与 API 36 真机等显式未验证项, 受硬件可得性约束;
+4. **能力扩展候选 (R10)** — GPU / 更多任务 / 动态尺寸 / 有界队列等, 多数需宿主协议联动, 未排期不承诺.
+
+## 二、验证约定 (网络受限环境)
+
+- 本地 Gradle 验证与维护者门禁默认离线执行; `tools/verify-r6-provider-source.ps1` 为非联网门禁,
+  文档生成 `.python/generate_markdown.py` 为纯标准库零联网实现.
+- 需要联网的条目 (依赖刷新, GitHub 操作) 显式标注 **[需联网]** 并集中在单一时间窗口执行;
+  遇 Cloudflare 502/524/529 (尤其 524 源站超时) 仅整窗重试该窗口, 不阻塞其他离线条目.
+- GitHub Actions 属云端网络, 不受本地网络约束, 视为离线条目.
+
+---
+
+## R7 — 文档易读性与多语言资源 (文档线, 2026-08-27 启动)
+
+> 背景: 用户反馈原审计式 README 与发行说明晦涩难懂, 难以理解插件功能与用法. 参照
+> Kotlin/Lua Runtime 等姊妹插件的 Python 多语言生成方案重建文档流水线; 深度工程内容
+> 保留在 `docs/engineering-notes.md` 与本路线图, README / CHANGELOG 面向最终用户.
+> 因 R6 门禁锁定 APK 五文件资产白名单, 本仓库采用非 Android 耦合布局: 多语言 CHANGELOG
+> 输出至 `.changelog/` 而非 `app/src/main/assets`, 不改变任何 APK 输入.
+
+### 7.1 多语言生成流水线 (已落地 2026-08-27)
+
+- [x] 建立 `.readme/` (common.json + 模板 + 10 语言 JSON) 与 `.changelog/` (模板 + 10 语言 JSON) 资源;
+  `.python/generate_markdown.py` 内置重复键拒绝, 键奇偶/类型/列表长度校验, 版本号与
+  `version.properties` 对齐断言, 全角标点与翻译占位符检查, 未解析占位符断言与 `--check` 漂移检测;
+  全部 22 份输出 (10 README + 10 CHANGELOG + 根目录 2 份 zh-Hans 副本) 生成通过
+- [x] 以用户视角重写 README: 简介 (含固定身份信息块) / 功能 / 快速上手 (装—启用—跑—排错,
+  含 `COMPONENT_REQUIRED`, `PROVIDER_UNAVAILABLE`, `MODEL_REJECTED` 等稳定错误类别指引) /
+  使用示例 (对齐宿主 `sample/yolo/detect.js`) / 模型准备 (Ultralytics NCNN 导出 + Manifest v1 契约) /
+  脚本 API (含全部默认值与上限) / 能力边界 / 安全与隔离 / 兼容性 / 项目状态 / 构建 / 发行历史 / 许可
+- [x] 以用户可读语言新建 CHANGELOG: `v0.1.0` 按 提示/新增/修复/优化/依赖 分类覆盖 R1–R6
+  用户可感知成果, 摒弃工程内审措辞; 私有暂存状态与宿主版本要求置于提示条目
+- [x] 生成并核对 zh-Hans / zh-Hant-HK / zh-Hant-TW / en / fr / es / ja / ko / ru / ar 十语言文档;
+  根 `README.md` 与 `CHANGELOG.md` 为 zh-Hans 逐字节副本; `--check` 通过, 且连续两次生成的
+  全部产物 SHA-256 清单一致 (确定性验证)
+- [x] 原审计式 README 全文迁移至 `docs/engineering-notes.md` (证据措辞原样保留, 仅调整相对链接),
+  并从新 README 的"延伸阅读"小节与本路线图链接
+
+### 7.2 文档门禁与后续
+
+- [x] 将 `python .\.python\generate_markdown.py --check` 并入
+  `tools/verify-r6-provider-source.ps1` 发布前门禁 (2026-08-27): 在签名材料与 Gradle 构建检查前
+  快速校验十语言 / 22 生成物, 并在门禁报告中记录 Python 版本、生成器 SHA-256、清单规模与输出;
+  可恢复负向测试临时手改 `.readme/README-en.md` 后门禁以退出码 1 报告精确漂移文件且不保留报告,
+  还原后 `--check` 再次通过
+- [ ] 仓库转公开后核对 README 徽章 (Release / Issues / Created / License) 与全部 GitHub 深链可达,
+  并抽查十语言在 GitHub 上的渲染 (重点: 阿拉伯语 RTL 与代码块混排)
+- [ ] 每次发布同步更新 `.changelog/lang_*.json` 十语言条目并重新生成; 版本头必须与
+  `version.properties` 的 `VERSION_NAME` 对齐 (脚本已强制断言, 流程上禁止手改生成物)
+
+---
+
+## R8 — 公开发布线 (前置: 宿主 AutoJs6 6.8.0 / 5275 正式发布) **[需联网]**
+
+> 在兼容宿主正式发布并通过独立公开评审前, 不改变仓库可见性, 不发布 Release,
+> 不提交官方插件索引 (与 R6 冻结的发布边界一致).
+
+- [ ] 使用生产证书完成 `assembleRelease` 签名构建, 与宿主正式 APK 完成双向证书 digest 比对并记录
+- [ ] 公开前复查: 确认仓库不含签名材料 (`sign.properties` / `*.jks`), 不含模型与图像负载
+  (`fixtures/local/` 保持忽略), 不含私有路径与内部主机信息
+- [ ] 转公开仓库并创建首个公开 GitHub Release (附 APK 与 SHA-256), 使 Release 徽章生效
+- [ ] 以 R6 已导出的离线索引字符串资源 (插件 ID / 引擎 / 变体 / 最低宿主版本) 提交官方插件索引条目并确认收录
+- [ ] 在公开宿主上完成 安装 → 启用/信任 → 运行 `sample/yolo/detect.js` 全链路真机冒烟, 结果回填证据档案
+
+---
+
+## R9 — 平台与运行时验证 (前置: 获得对应硬件/系统环境)
+
+> 以下为 R6 显式声明的非阻塞未验证项, 逐项解除时更新对应限制码; 在解除前不得从
+> 静态打包证据 (如 ELF 对齐) 推断运行时结论.
+
+- [ ] 16 KiB 页大小设备真机原生加载与单次定点推理验证, 解除
+  `NATIVE_LOAD_16K_DEVICE=NOT_RUN_NO_16K_DEVICE`; 完成判据: 记录设备型号 / 页大小 / APK 哈希与推理输出
+- [ ] API 36 arm64 真机运行验证 (加载 + 打开会话 + 推理 + 关闭), 解除
+  `API36_ARM64_RUNTIME=NOT_RUN_NO_AVAILABLE_ENVIRONMENT`
+- [ ] 首次前向修复 (版本号 3) 发布时补测 版本号 2 → 3 升级安装运行链路, 记录 `UPGRADE_RUNTIME` 证据
+  (首发版本按产品决策无回滚路径, 恢复仅限验证过的同版本重装)
+
+---
+
+## R10 — 能力候选方向 (未排期; 启动前不承诺, 不虚假声明, 多数需宿主协议联动)
+
+- [ ] 可协作中止的原生模型构造: 让模型打开具备硬超时保证 (R1 明确遗留的可靠性项);
+  完成判据: NCNN 图构造覆盖协作中止点, 新增超时注入测试证明截止后构造可被中断且资源可回收
+- [ ] Vulkan/GPU 设备档: `options.device="gpu"` 会话档位与能力协商 (需协议能力位与宿主联动);
+  完成判据: 逐设备验证矩阵, GPU 不可用时按 `UNSUPPORTED_CAPABILITY` 显式拒绝而非静默回退 CPU
+- [ ] 更多任务解码器: segmentation / pose / OBB 的解码器注册与 Model Manifest profile 扩展
+  (输出形状族与解码语义); 每项配定点 fixture, 期望结果与未知档位拒绝路径测试
+- [ ] 动态输入尺寸档: 640 之外的方形/矩形 letterbox 档位 (manifest 驱动);
+  完成判据: 预处理与像素坐标反变换在新尺寸下有精确测试
+- [ ] 有界推理队列: 每会话可配置排队上限 (当前固定 0), 保持超时 / 取消 / 回调死亡语义不变;
+  完成判据: 队列满拒绝, 排队请求超时与会话关闭清空队列均有测试
+- [ ] 模型工具链: 从 Ultralytics 导出产物 (`metadata.yaml` 等) 一键生成 `model.json` 的脚本与
+  转换指南文档, 降低自定义模型接入门槛; 完成判据: 对官方 YOLO11n 与单类自训练模型均能生成
+  通过 Provider 校验的 manifest
+
+---
+
+## 持续任务 (不绑定里程碑, 每次触发即执行)
+
+- [ ] 文档改动只编辑 `.readme/` 与 `.changelog/` JSON 源, 改后运行生成器并跑 `--check`; 生成物不手改
+- [ ] 协议 AAR 刷新一律三 AAR 同源同刷: 从同一 AutoJs6 提交重建 `common-plugin-api` /
+  `protocol-wire-api` / `yolo-api`, 同步更新 `libs/protocol-aars.lock.json`, `libs/README.md` 与
+  `tools/verify-r6-provider-source.ps1` 钉住值, 并重跑两仓聚焦协议/Provider 门禁后才可变更协议范围
+- [ ] 本地验证默认离线; **[需联网]** 条目集中单一时间窗口执行, 遇 Cloudflare 502/524/529 仅重试该窗口
+
+---
+
+## 历史里程碑 (R1–R6, 已完成)
+
+> 以下为已完成里程碑的证据记录, 自原路线图原样保留 (英文措辞不作改写);
+> 其中的证据边界声明持续有效.
 
 ## R1-SOURCE
 
