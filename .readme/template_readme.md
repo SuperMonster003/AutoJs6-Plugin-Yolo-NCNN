@@ -141,6 +141,8 @@ models/yolo11n/
 
 {{ p_models_export }}
 
+{{ p_models_generate }}
+
 {{ p_models_note }}
 
 ******
@@ -208,6 +210,8 @@ models/yolo11n/
 {{ p_build_variants }}
 
 {{ p_build_gate }}
+
+{{ p_build_toolchain }}
 
 ******
 

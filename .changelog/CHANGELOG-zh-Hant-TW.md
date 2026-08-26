@@ -10,6 +10,7 @@
 
 * `提示` 首個版本 (版本號 2, 無版本號 1 前身); 需 AutoJs6 版本號不低於 5275 (6.8.0+) 且與插件以同一憑證簽章
 * `提示` 目前處於私有暫存階段: 待相容宿主正式發布後再公開發布並提交官方插件索引; 能力範圍為 CPU / arm64-v8a / 物件偵測
+* `新增` 新增離線 `tools/generate_yolo_ncnn_manifest.py`: 從 Ultralytics YOLO11 NCNN 中繼資料生成 `model.json`, 核驗固定中繼資料/標籤/圖檔位並輸出產物雜湊
 * `新增` 程序隔離的 YOLO 物件偵測 Provider 成型: 獨立 `:provider` 程序提供 `org.autojs.plugin.YOLO` 推論服務與 `org.autojs.plugin.INFO` 發現服務, 均受 `org.autojs.permission.PLUGIN` 權限保護
 * `新增` 內建 NCNN 20260526 CPU 推論後端與 `ultralytics-detect` 解碼器, 支援 YOLO11 detect 模型與 manifest 宣告的自訂類別數 (1 到 256)
 * `新增` 落地 Model Manifest v1 模型契約: 開啟工作階段時核驗宣告長度與 SHA-256, 執行期核驗輸出形狀, 不符即以穩定錯誤碼拒絕

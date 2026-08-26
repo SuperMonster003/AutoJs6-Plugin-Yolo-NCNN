@@ -1,4 +1,4 @@
-# R6 source/build/package preflight with the R7 generated-document consistency gate.
+# R6 source/build/package preflight with the R7 document and R10 model-toolchain gates.
 # It intentionally performs no ADB or production signing.
 [CmdletBinding()]
 param(
@@ -271,6 +271,10 @@ function Assert-R6ProviderRetainedReport {
             [int]$parsed.documentation.artifactCount -eq 22 -and
             [string]$parsed.documentation.mode -ceq "CHECK"
     ) "Retained Provider report generated-document receipt differs"
+    Assert-R6ProviderCondition (
+        [string]$parsed.modelToolchain.status -ceq "PASS" -and
+            [int]$parsed.modelToolchain.testCount -eq 8
+    ) "Retained Provider report model-toolchain receipt differs"
 }
 
 function Get-R6ProviderOnlyFile {
@@ -290,9 +294,20 @@ function Invoke-R6ProviderCapture {
         [Parameter(Mandatory = $true)][string] $FilePath,
         [Parameter(Mandatory = $true)][string[]] $Arguments
     )
-    $output = @(& $FilePath @Arguments 2>&1 | ForEach-Object { [string]$_ })
+    # Windows PowerShell promotes redirected native stderr to ErrorRecord. A
+    # command such as unittest therefore trips the script-wide Stop policy even
+    # when it exits successfully. Capture both streams under Continue, then use
+    # the native exit code as the authoritative result.
+    $previousErrorActionPreference = $ErrorActionPreference
+    try {
+        $ErrorActionPreference = "Continue"
+        $output = @(& $FilePath @Arguments 2>&1 | ForEach-Object { [string]$_ })
+        $exitCode = $LASTEXITCODE
+    } finally {
+        $ErrorActionPreference = $previousErrorActionPreference
+    }
     return [pscustomobject][ordered]@{
-        exitCode = $LASTEXITCODE
+        exitCode = $exitCode
         output = $output
     }
 }
@@ -355,6 +370,48 @@ function Get-R6ProviderDocumentationReceipt {
         pythonVersion = $python.version
         arguments = @($arguments)
         output = @($check.output)
+    }
+}
+
+function Get-R6ProviderModelToolchainReceipt {
+    $generatorPath = Get-R6ProviderRequiredFile (
+        Join-Path $repository "tools/generate_yolo_ncnn_manifest.py"
+    ) "YOLO NCNN manifest generator"
+    $testPath = Get-R6ProviderRequiredFile (
+        Join-Path $repository "tools/tests/test_generate_yolo_ncnn_manifest.py"
+    ) "YOLO NCNN manifest generator tests"
+    $testDirectory = Split-Path -Parent $testPath
+    $python = Resolve-R6ProviderPython
+    $arguments = @($python.prefixArguments) + @(
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        $testDirectory,
+        "-p",
+        (Split-Path -Leaf $testPath)
+    )
+    Write-Host "> $($python.path) $($arguments -join ' ')"
+    $test = Invoke-R6ProviderCapture -FilePath $python.path -Arguments $arguments
+    $testText = $test.output -join [Environment]::NewLine
+    Assert-R6ProviderCondition (
+        $test.exitCode -eq 0
+    ) "YOLO NCNN manifest generator tests failed:`n$testText"
+    Assert-R6ProviderCondition (
+        $testText -cmatch '(?m)^Ran 8 tests in [0-9.]+s\r?$' -and
+            $testText -cmatch '(?m)^OK\r?$'
+    ) "Model-toolchain tests did not report the exact eight-test passing inventory"
+    return [pscustomobject][ordered]@{
+        status = "PASS"
+        testCount = 8
+        generatorPath = $generatorPath
+        generatorSha256 = Get-R6ProviderSha256 $generatorPath
+        testPath = $testPath
+        testSha256 = Get-R6ProviderSha256 $testPath
+        pythonPath = $python.path
+        pythonVersion = $python.version
+        arguments = @($arguments)
+        output = @($test.output)
     }
 }
 
@@ -615,6 +672,7 @@ try {
     }
 
     $documentationReceipt = Get-R6ProviderDocumentationReceipt
+    $modelToolchainReceipt = Get-R6ProviderModelToolchainReceipt
 
     Assert-R6ProviderCondition (
         -not (Test-Path -LiteralPath (Join-Path $repository "sign.properties"))
@@ -922,9 +980,9 @@ try {
         result = if ($buildIdentityProven) { "PASS" } else { "DIAGNOSTIC_COMPLETE" }
         generatedAtUtc = [DateTime]::UtcNow.ToString("o")
         evidenceLevel = if ($buildIdentityProven) {
-            @("SOURCE", "DOCUMENTATION", "JVM_TEST", "ANDROID_BUILD", "APK_PACKAGE")
+            @("SOURCE", "DOCUMENTATION", "MODEL_TOOLCHAIN", "JVM_TEST", "ANDROID_BUILD", "APK_PACKAGE")
         } else {
-            @("SOURCE_STATIC", "DOCUMENTATION", "EXISTING_ARTIFACT_DIAGNOSTIC")
+            @("SOURCE_STATIC", "DOCUMENTATION", "MODEL_TOOLCHAIN", "EXISTING_ARTIFACT_DIAGNOSTIC")
         }
         buildIdentityProven = $buildIdentityProven
         source = [ordered]@{
@@ -962,6 +1020,7 @@ try {
         tests = $testReceipt
         protocolAarHandoff = $protocolAarHandoff
         documentation = $documentationReceipt
+        modelToolchain = $modelToolchainReceipt
         buildArtifacts = [ordered]@{
             generatedResources = $generatedResourcesRecord
             mergedManifest = $mergedManifestRecord

@@ -12,6 +12,7 @@
         "현재 비공개 스테이징 단계: 호환 호스트의 정식 출시 후 공개 릴리스와 공식 플러그인 인덱스 제출을 진행; 기능 범위는 CPU / arm64-v8a / 객체 탐지"
       ],
       "feature": [
+        "오프라인 `tools/generate_yolo_ncnn_manifest.py`가 Ultralytics YOLO11 NCNN 메타데이터를 `model.json`로 변환하고 고정 메타데이터/레이블/그래프 프로필을 검증하며 산출물 해시를 출력",
         "프로세스 격리형 YOLO 객체 탐지 Provider 완성: 독립된 `:provider` 프로세스가 `org.autojs.plugin.YOLO` 추론 서비스와 `org.autojs.plugin.INFO` 발견 서비스를 제공하며, 모두 `org.autojs.permission.PLUGIN` 권한으로 보호",
         "NCNN {{ ncnn_version }} CPU 추론 백엔드와 `{{ decoder_id }}` 디코더 내장, YOLO11 detect 모델과 매니페스트로 선언한 커스텀 클래스 수 (1부터 {{ max_labels }}까지) 지원",
         "Model Manifest v1 계약 구현: 세션 오픈 시 선언 길이와 SHA-256을 검증하고, 실행 시 출력 형태를 검증하며, 불일치는 안정적인 오류 코드로 거부",

@@ -10,6 +10,7 @@
 
 * `Note` Première version (code de version 2, sans prédécesseur de code 1) ; nécessite AutoJs6 avec un code de version d'au moins 5275 (6.8.0+) signé avec le même certificat que le plugin
 * `Note` Actuellement en phase de préparation privée : la publication publique et la soumission à l'index officiel des plugins suivront la sortie officielle de l'hôte compatible ; le périmètre des capacités est CPU / arm64-v8a / détection d'objets
+* `Nouveauté` L'outil hors ligne `tools/generate_yolo_ncnn_manifest.py` convertit les métadonnées NCNN Ultralytics YOLO11 en `model.json`, valide le profil fixe métadonnées/labels/graphe et émet les empreintes des artefacts
 * `Nouveauté` Provider de détection d'objets YOLO isolé en processus : le processus séparé `:provider` sert l'inférence `org.autojs.plugin.YOLO` et la découverte `org.autojs.plugin.INFO`, tous deux protégés par la permission `org.autojs.permission.PLUGIN`
 * `Nouveauté` Backend d'inférence CPU NCNN 20260526 intégré avec le décodeur `ultralytics-detect`, prenant en charge les modèles YOLO11 detect et les nombres de classes personnalisés déclarés par manifeste (1 à 256)
 * `Nouveauté` Contrat Model Manifest v1 en place : l'ouverture de session vérifie longueurs déclarées et SHA-256, l'exécution vérifie la forme de sortie, et les divergences sont rejetées avec des codes d'erreur stables

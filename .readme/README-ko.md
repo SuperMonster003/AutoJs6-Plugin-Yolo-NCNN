@@ -157,6 +157,8 @@ models/yolo11n/
 
 공식 또는 직접 학습한 Ultralytics YOLO11 detect 모델은 `yolo export format=ncnn imgsz=640`로 내보낼 수 있으며, `model.ncnn.param`과 `model.ncnn.bin`이 생성됩니다 ([Ultralytics NCNN 내보내기 가이드](https://docs.ultralytics.com/integrations/ncnn/) 참조). `model.json`은 Model Manifest v1 문서로, 입력 (`in0`, RGB NCHW, 640x640 letterbox), 출력 (`out0`, `ultralytics-detect` 디코더, 형태 `[1, 4 + N, 8400]`, N은 클래스 수), 라벨 목록을 선언합니다. 완전한 예시는 [fixtures/yolo11n/model-manifest-v1.json](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/fixtures/yolo11n/model-manifest-v1.json)입니다.
 
+`python tools/generate_yolo_ncnn_manifest.py <export-directory>`를 실행하면 Ultralytics `metadata.yaml`에서 `model.json`을 바로 생성합니다. 표준 라이브러리만 사용하는 오프라인 도구가 고정 YOLO11/detect/640/batch/레이블 프로필과 NCNN `in0`/`out0` 그래프 구조를 검증한 뒤 기록하며, `--check`는 쓰기 없이 드리프트를 거부합니다. 정확한 내보내기 명령, 검증 경계와 문제 해결은 [모델 변환 가이드](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/model-conversion.md)를 참조하십시오.
+
 매니페스트는 호환성 계약이지 라벨 갈아붙이기 도구가 아닙니다: 세션 오픈 시 세 파일의 선언 길이와 SHA-256을 검증하고, 실행 시 NCNN 그래프의 실제 출력 형태도 검증하며, 불일치는 `MODEL_REJECTED`로 거부됩니다 (상세 접두사는 `MANIFEST_SHAPE_INVALID`, `MODEL_GRAPH_REJECTED` 등). 모델은 출처의 라이선스와 사용 조건을 유지하며, NCNN 변환은 이를 바꾸지 않습니다. 플러그인이 재배포 권리를 부여하지도 않습니다. 자세한 내용은 [모델 매니페스트 명세](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/model-manifest-v1.md)와 [모델 라이선스 정책](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/model-license-policy.md)을 참조하세요.
 
 ******
@@ -237,6 +239,8 @@ JDK 21+ 권장. Android SDK는 platforms 24과 36, 그리고 NDK 29.0.14206865�
 
 메인테이너 게이트 `tools/verify-r6-provider-source.ps1`은 먼저 `--check`로 10개 언어의 README/CHANGELOG 생성물 22개를 모두 검사하며 드리프트가 있으면 즉시 실패합니다. 그런 다음 기본적으로 깨끗한 소스에서 시작합니다: `:app:clean` 후 집중 테스트와 두 가지 APK 조립을 실행하고, 테스트 XML과 산출물 해시를 기록하며, 다섯 파일 애셋 허용 목록으로 APK를 검증합니다. 로컬 검증과 문서 생성 모두 기본적으로 오프라인 (네트워크 호출 0회)으로 실행하여 개발 네트워크의 Cloudflare 502/524/529 노이즈를 피합니다.
 
+Gradle 빌드 전에 같은 게이트가 `tools/generate_yolo_ncnn_manifest.py`의 표준 라이브러리 전용 테스트 8개도 실행하고 소스 해시와 결과를 기록합니다. 모델 도구 회귀는 오프라인 릴리스 사전 검사에서 차단됩니다.
+
 ******
 
 ### 릴리스 이력
@@ -249,6 +253,7 @@ JDK 21+ 권장. Android SDK는 platforms 24과 36, 그리고 NDK 29.0.14206865�
 
 * `안내` 첫 릴리스 (버전 코드 2, 버전 코드 1의 전신 없음); AutoJs6 버전 코드 5275 이상 (6.8.0+)이며 플러그인과 동일 인증서 서명이 필요
 * `안내` 현재 비공개 스테이징 단계: 호환 호스트의 정식 출시 후 공개 릴리스와 공식 플러그인 인덱스 제출을 진행; 기능 범위는 CPU / arm64-v8a / 객체 탐지
+* `신규` 오프라인 `tools/generate_yolo_ncnn_manifest.py`가 Ultralytics YOLO11 NCNN 메타데이터를 `model.json`로 변환하고 고정 메타데이터/레이블/그래프 프로필을 검증하며 산출물 해시를 출력
 * `신규` 프로세스 격리형 YOLO 객체 탐지 Provider 완성: 독립된 `:provider` 프로세스가 `org.autojs.plugin.YOLO` 추론 서비스와 `org.autojs.plugin.INFO` 발견 서비스를 제공하며, 모두 `org.autojs.permission.PLUGIN` 권한으로 보호
 * `신규` NCNN 20260526 CPU 추론 백엔드와 `ultralytics-detect` 디코더 내장, YOLO11 detect 모델과 매니페스트로 선언한 커스텀 클래스 수 (1부터 256까지) 지원
 * `신규` Model Manifest v1 계약 구현: 세션 오픈 시 선언 길이와 SHA-256을 검증하고, 실행 시 출력 형태를 검증하며, 불일치는 안정적인 오류 코드로 거부

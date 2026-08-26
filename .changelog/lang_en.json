@@ -12,6 +12,7 @@
         "Currently in a private staging phase: public release and the official plugin index submission follow the formal release of the compatible host; the capability scope is CPU / arm64-v8a / object detection"
       ],
       "feature": [
+        "Offline `tools/generate_yolo_ncnn_manifest.py` converts Ultralytics YOLO11 NCNN metadata into `model.json`, validates the fixed metadata/label/graph profile, and emits artifact hashes",
         "Process-isolated YOLO object detection provider: the separate `:provider` process serves `org.autojs.plugin.YOLO` inference and `org.autojs.plugin.INFO` discovery, both protected by the `org.autojs.permission.PLUGIN` permission",
         "Built-in NCNN {{ ncnn_version }} CPU inference backend with the `{{ decoder_id }}` decoder, supporting YOLO11 detect models and manifest-declared custom class counts (1 to {{ max_labels }})",
         "Model Manifest v1 contract in place: session open verifies declared lengths and SHA-256, runtime verifies the output shape, and mismatches are rejected with stable error codes",

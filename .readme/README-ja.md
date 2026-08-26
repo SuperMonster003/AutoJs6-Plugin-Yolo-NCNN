@@ -157,6 +157,8 @@ models/yolo11n/
 
 公式または自前学習の Ultralytics YOLO11 detect モデルは `yolo export format=ncnn imgsz=640` でエクスポートでき, `model.ncnn.param` と `model.ncnn.bin` が得られます ([Ultralytics NCNN エクスポートガイド](https://docs.ultralytics.com/integrations/ncnn/) 参照). `model.json` は Model Manifest v1 文書で, 入力 (`in0`, RGB NCHW, 640x640 letterbox), 出力 (`out0`, `ultralytics-detect` デコーダ, 形状 `[1, 4 + N, 8400]`, N はクラス数), ラベル一覧を宣言します. 完全な例は [fixtures/yolo11n/model-manifest-v1.json](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/fixtures/yolo11n/model-manifest-v1.json) にあります.
 
+`python tools/generate_yolo_ncnn_manifest.py <export-directory>` を実行すると, Ultralytics の `metadata.yaml` から `model.json` を直接生成できます. 標準ライブラリだけで動くオフラインツールが固定 YOLO11/detect/640/batch/ラベルプロファイルと NCNN の `in0`/`out0` グラフ構造を検証してから書き込みます. `--check` は書き込まずにドリフトを拒否します. 正確なエクスポート手順, 検証境界, トラブルシュートは[モデル変換ガイド](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/model-conversion.md)を参照してください.
+
 マニフェストは互換性の契約であり, ラベル貼り替えの道具ではありません: セッションオープン時に 3 ファイルの宣言長と SHA-256 を検証し, 実行時には NCNN グラフの実際の出力形状も検証します. 不一致は `MODEL_REJECTED` で拒否されます (詳細接頭辞は `MANIFEST_SHAPE_INVALID`, `MODEL_GRAPH_REJECTED` など). モデルは出所のライセンスと利用条件を保持し, NCNN への変換でそれは変わりません. プラグインが再配布権を与えることもありません. 詳細は [モデルマニフェスト仕様](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/model-manifest-v1.md) と [モデルライセンスポリシー](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/model-license-policy.md) を参照.
 
 ******
@@ -237,6 +239,8 @@ JDK 21+ 推奨. Android SDK には platforms 24 と 36, さらに NDK 29.0.14206
 
 メンテナゲート `tools/verify-r6-provider-source.ps1` はまず `--check` で 10 言語の README/CHANGELOG 生成物 22 件をすべて検証し, ドリフトがあれば直ちに失敗します. その後は既定でクリーンなソースから開始します: `:app:clean` の後に焦点テストと 2 種類の APK 組み立てを実行し, テスト XML と成果物ハッシュを記録し, 5 ファイルのアセット許可リストで APK を検証します. ローカル検証もドキュメント生成も既定でオフライン実行 (ネットワーク呼び出しゼロ) とし, 開発ネットワークの Cloudflare 502/524/529 ノイズを避けます.
 
+Gradle ビルド前に同じゲートが `tools/generate_yolo_ncnn_manifest.py` の標準ライブラリのみで動く 8 テストも実行し, ソースハッシュと結果を記録します. モデルツールの回帰はオフラインのリリース事前検証で遮断されます.
+
 ******
 
 ### リリース履歴
@@ -249,6 +253,7 @@ JDK 21+ 推奨. Android SDK には platforms 24 と 36, さらに NDK 29.0.14206
 
 * `ヒント` 初回リリース (バージョンコード 2, バージョンコード 1 の前身なし); AutoJs6 バージョンコード 5275 以上 (6.8.0+) かつプラグインと同一証明書での署名が必要
 * `ヒント` 現在はプライベートなステージング段階: 互換ホストの正式リリース後に公開リリースと公式プラグインインデックスへの提出を行う; 機能範囲は CPU / arm64-v8a / 物体検出
+* `新機能` オフラインの `tools/generate_yolo_ncnn_manifest.py` が Ultralytics YOLO11 NCNN メタデータを `model.json` に変換し, 固定メタデータ/ラベル/グラフプロファイルを検証して成果物ハッシュを出力
 * `新機能` プロセス分離型 YOLO 物体検出 Provider が成立: 独立した `:provider` プロセスが `org.autojs.plugin.YOLO` 推論サービスと `org.autojs.plugin.INFO` 発見サービスを提供し, いずれも `org.autojs.permission.PLUGIN` 権限で保護
 * `新機能` NCNN 20260526 CPU 推論バックエンドと `ultralytics-detect` デコーダを内蔵し, YOLO11 detect モデルとマニフェスト宣言のカスタムクラス数 (1 から 256) に対応
 * `新機能` Model Manifest v1 契約を実装: セッションオープン時に宣言長と SHA-256 を検証し, 実行時に出力形状を検証, 不一致は安定エラーコードで拒否

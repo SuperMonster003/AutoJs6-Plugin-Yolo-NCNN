@@ -12,6 +12,7 @@
         "現在はプライベートなステージング段階: 互換ホストの正式リリース後に公開リリースと公式プラグインインデックスへの提出を行う; 機能範囲は CPU / arm64-v8a / 物体検出"
       ],
       "feature": [
+        "オフラインの `tools/generate_yolo_ncnn_manifest.py` が Ultralytics YOLO11 NCNN メタデータを `model.json` に変換し, 固定メタデータ/ラベル/グラフプロファイルを検証して成果物ハッシュを出力",
         "プロセス分離型 YOLO 物体検出 Provider が成立: 独立した `:provider` プロセスが `org.autojs.plugin.YOLO` 推論サービスと `org.autojs.plugin.INFO` 発見サービスを提供し, いずれも `org.autojs.permission.PLUGIN` 権限で保護",
         "NCNN {{ ncnn_version }} CPU 推論バックエンドと `{{ decoder_id }}` デコーダを内蔵し, YOLO11 detect モデルとマニフェスト宣言のカスタムクラス数 (1 から {{ max_labels }}) に対応",
         "Model Manifest v1 契約を実装: セッションオープン時に宣言長と SHA-256 を検証し, 実行時に出力形状を検証, 不一致は安定エラーコードで拒否",

@@ -157,6 +157,8 @@ models/yolo11n/
 
 Official or self-trained Ultralytics YOLO11 detect models can be exported with `yolo export format=ncnn imgsz=640`, which produces `model.ncnn.param` and `model.ncnn.bin` (see the [Ultralytics NCNN export guide](https://docs.ultralytics.com/integrations/ncnn/)). `model.json` is a Model Manifest v1 document: it declares the input (`in0`, RGB NCHW, 640x640 letterbox), the output (`out0`, `ultralytics-detect` decoder, shape `[1, 4 + N, 8400]` where N is the class count), and the label list; a complete example is [fixtures/yolo11n/model-manifest-v1.json](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/fixtures/yolo11n/model-manifest-v1.json).
 
+Run `python tools/generate_yolo_ncnn_manifest.py <export-directory>` to generate `model.json` directly from the Ultralytics `metadata.yaml`. The offline standard-library helper validates the fixed YOLO11/detect/640/batch/label profile and the NCNN `in0`/`out0` graph structure before writing; use `--check` to reject drift without writing. See the [model conversion guide](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/model-conversion.md) for the exact export command, validation boundary, and troubleshooting.
+
 The manifest is a compatibility contract, not a relabeling tool: session open verifies the declared lengths and SHA-256 of all three files, and the actual NCNN graph output shape is verified at runtime; mismatches are rejected with `MODEL_REJECTED` (detail prefixes such as `MANIFEST_SHAPE_INVALID`, `MODEL_GRAPH_REJECTED`). Models keep the license and usage conditions of their source; converting to NCNN does not change them, and the plugin grants no redistribution rights. See the [model manifest specification](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/model-manifest-v1.md) and the [model license policy](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/model-license-policy.md).
 
 ******
@@ -237,6 +239,8 @@ JDK 21+ is recommended; the Android SDK must provide platforms 24 and 36, plus N
 
 The maintainer gate `tools/verify-r6-provider-source.ps1` first runs `--check` over all 22 generated README/CHANGELOG artifacts for 10 languages and fails immediately on drift. It then starts from clean sources by default: after `:app:clean` it runs the focused tests and both APK assemblies, records test XML and artifact hashes, and verifies the APK against a five-file asset allowlist. Local verification and doc generation both run offline by default (zero network calls) to stay clear of Cloudflare 502/524/529 noise on the development network.
 
+Before any Gradle build, the same gate also runs the eight standard-library tests for `tools/generate_yolo_ncnn_manifest.py` and records their source hashes and receipt, so model-toolchain regressions fail the release preflight offline.
+
 ******
 
 ### Release History
@@ -249,6 +253,7 @@ The maintainer gate `tools/verify-r6-provider-source.ps1` first runs `--check` o
 
 * `Hint` First release (version code 2, no version code 1 predecessor); requires AutoJs6 with a version code of at least 5275 (6.8.0+) signed with the same certificate as the plugin
 * `Hint` Currently in a private staging phase: public release and the official plugin index submission follow the formal release of the compatible host; the capability scope is CPU / arm64-v8a / object detection
+* `Feature` Offline `tools/generate_yolo_ncnn_manifest.py` converts Ultralytics YOLO11 NCNN metadata into `model.json`, validates the fixed metadata/label/graph profile, and emits artifact hashes
 * `Feature` Process-isolated YOLO object detection provider: the separate `:provider` process serves `org.autojs.plugin.YOLO` inference and `org.autojs.plugin.INFO` discovery, both protected by the `org.autojs.permission.PLUGIN` permission
 * `Feature` Built-in NCNN 20260526 CPU inference backend with the `ultralytics-detect` decoder, supporting YOLO11 detect models and manifest-declared custom class counts (1 to 256)
 * `Feature` Model Manifest v1 contract in place: session open verifies declared lengths and SHA-256, runtime verifies the output shape, and mismatches are rejected with stable error codes

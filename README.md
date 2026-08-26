@@ -157,6 +157,8 @@ models/yolo11n/
 
 官方或自训练的 Ultralytics YOLO11 detect 模型可用 `yolo export format=ncnn imgsz=640` 导出, 得到 `model.ncnn.param` 与 `model.ncnn.bin` (参见 [Ultralytics NCNN 导出指南](https://docs.ultralytics.com/integrations/ncnn/)). `model.json` 为 Model Manifest v1 文档: 声明输入 (`in0`, RGB NCHW, 640x640 letterbox), 输出 (`out0`, `ultralytics-detect` 解码器, 形状 `[1, 4 + N, 8400]`, N 为类别数) 与标签列表; 完整示例见 [fixtures/yolo11n/model-manifest-v1.json](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/fixtures/yolo11n/model-manifest-v1.json).
 
+运行 `python tools/generate_yolo_ncnn_manifest.py <导出目录>` 可从 Ultralytics `metadata.yaml` 直接生成 `model.json`. 该纯标准库离线工具会先核验固定的 YOLO11/detect/640/batch/标签档位与 NCNN `in0`/`out0` 图结构; `--check` 可在不写文件的情况下阻断漂移. 精确导出命令, 验证边界与排错说明见 [模型转换指南](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/model-conversion.md).
+
 manifest 是兼容性契约而非重标签工具: 打开会话时核验三个文件的声明长度与 SHA-256, 运行时还会核验 NCNN 图的实际输出形状, 不符将以 `MODEL_REJECTED` 拒绝 (详情前缀如 `MANIFEST_SHAPE_INVALID`, `MODEL_GRAPH_REJECTED`). 模型保留其来源的许可与使用条件, 转换为 NCNN 不改变许可; 插件不代用户获得任何再分发权利. 详见 [模型 manifest 规范](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/model-manifest-v1.md) 与 [模型许可政策](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/model-license-policy.md).
 
 ******
@@ -237,6 +239,8 @@ manifest 是兼容性契约而非重标签工具: 打开会话时核验三个文
 
 维护者门禁 `tools/verify-r6-provider-source.ps1` 首先用 `--check` 校验十语言 README/CHANGELOG 的全部 22 个生成物, 任一漂移立即失败. 随后默认从干净源码起跑: 执行 `:app:clean` 后运行聚焦测试与两种 APK 组装, 记录测试 XML 与产物哈希, 并按五文件资产白名单核验 APK 内容. 本地验证与文档生成均默认离线执行 (零联网), 以避开开发网络中的 Cloudflare 502/524/529 波动.
 
+任何 Gradle 构建前, 同一门禁还会运行 `tools/generate_yolo_ncnn_manifest.py` 的 8 项纯标准库离线测试并记录源码哈希与回执, 使模型工具链回归直接阻断发布预检.
+
 ******
 
 ### 发行历史
@@ -249,6 +253,7 @@ manifest 是兼容性契约而非重标签工具: 打开会话时核验三个文
 
 * `提示` 首个版本 (版本号 2, 无版本号 1 前身); 需 AutoJs6 版本号不低于 5275 (6.8.0+) 且与插件同证书签名
 * `提示` 当前处于私有暂存阶段: 待兼容宿主正式发布后再公开发布并提交官方插件索引; 能力范围为 CPU / arm64-v8a / 目标检测
+* `新增` 新增离线 `tools/generate_yolo_ncnn_manifest.py`: 从 Ultralytics YOLO11 NCNN 元数据生成 `model.json`, 核验固定元数据/标签/图档位并输出产物哈希
 * `新增` 进程隔离的 YOLO 目标检测 Provider 成型: 独立 `:provider` 进程提供 `org.autojs.plugin.YOLO` 推理服务与 `org.autojs.plugin.INFO` 发现服务, 均受 `org.autojs.permission.PLUGIN` 权限保护
 * `新增` 内置 NCNN 20260526 CPU 推理后端与 `ultralytics-detect` 解码器, 支持 YOLO11 detect 模型与 manifest 声明的自定义类别数 (1 到 256)
 * `新增` 落地 Model Manifest v1 模型契约: 打开会话时核验声明长度与 SHA-256, 运行时核验输出形状, 不符即以稳定错误码拒绝

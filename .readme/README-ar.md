@@ -157,6 +157,8 @@ models/yolo11n/
 
 يمكن تصدير نماذج Ultralytics YOLO11 detect الرسمية أو المدرَّبة ذاتيًا بالأمر `yolo export format=ncnn imgsz=640`، الذي ينتج `model.ncnn.param` و `model.ncnn.bin` (انظر [دليل تصدير NCNN من Ultralytics](https://docs.ultralytics.com/integrations/ncnn/)). أما `model.json` فهو مستند Model Manifest v1: يعلن المدخل (`in0`، RGB NCHW، letterbox بمقاس 640x640)، والمخرج (`out0`، مفكك الترميز `ultralytics-detect`، الشكل `[1, 4 + N, 8400]` حيث N عدد الفئات)، وقائمة التسميات؛ ومثال كامل في [fixtures/yolo11n/model-manifest-v1.json](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/fixtures/yolo11n/model-manifest-v1.json).
 
+شغّل `python tools/generate_yolo_ncnn_manifest.py <export-directory>` لإنشاء `model.json` مباشرة من `metadata.yaml` الخاص بـ Ultralytics. تتحقق الأداة غير المتصلة والمعتمدة على المكتبة القياسية فقط من ملف YOLO11/detect/640/batch/labels الثابت ومن بنية رسم NCNN ذات `in0` و `out0` قبل الكتابة, ويمنع `--check` الانحراف دون كتابة. يوضح [دليل تحويل النموذج](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/model-conversion.md) أمر التصدير وحدود التحقق واستكشاف الأخطاء.
+
 الـ manifest عقد توافق لا أداة لإعادة التسمية: عند فتح الجلسة تُتحقق الأطوال المعلنة و SHA-256 للملفات الثلاثة، ويُتحقق أثناء التشغيل من الشكل الفعلي لمخرج مخطط NCNN؛ ويُرفض أي تعارض بالخطأ `MODEL_REJECTED` (بادئات التفاصيل مثل `MANIFEST_SHAPE_INVALID` و `MODEL_GRAPH_REJECTED`). تحتفظ النماذج برخصة مصدرها وشروط استخدامه؛ والتحويل إلى NCNN لا يغيّرها، ولا تمنح الإضافة أي حقوق لإعادة التوزيع. انظر [مواصفة manifest النموذج](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/model-manifest-v1.md) و[سياسة تراخيص النماذج](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/model-license-policy.md).
 
 ******
@@ -237,6 +239,8 @@ models/yolo11n/
 
 تشغّل بوابة الصيانة `tools/verify-r6-provider-source.ps1` أولًا الخيار `--check` على نواتج README/CHANGELOG المولدة وعددها 22 لعشر لغات, وتفشل فورًا عند وجود أي انحراف. ثم تبدأ افتراضيًا من مصادر نظيفة: بعد `:app:clean` تشغّل الاختبارات المركزة وتجميعي APK كليهما, وتسجل XML الاختبارات وبصمات النواتج, وتتحقق من APK وفق قائمة سماح من خمسة ملفات assets. يعمل التحقق المحلي وتوليد الوثائق كلاهما دون اتصال افتراضيًا (صفر نداءات شبكية) لتجنب ضجيج Cloudflare 502/524/529 في شبكة التطوير.
 
+قبل أي بناء Gradle تشغّل البوابة نفسها أيضًا الاختبارات الثمانية المعتمدة على المكتبة القياسية فقط للأداة `tools/generate_yolo_ncnn_manifest.py`, وتسجل بصمات المصدر والنتيجة, ولذلك يمنع أي تراجع في أداة النماذج الفحص التمهيدي غير المتصل للإصدار.
+
 ******
 
 ### سجل الإصدارات
@@ -249,6 +253,7 @@ models/yolo11n/
 
 * `تنبيه` الإصدار الأول (رمز الإصدار 2، دون سلف برمز 1)؛ يتطلب AutoJs6 برمز إصدار لا يقل عن 5275 (6.8.0+) موقّعًا بشهادة الإضافة نفسها
 * `تنبيه` حاليًا في مرحلة تجهيز خاصة: يأتي النشر العام والتقديم إلى فهرس الإضافات الرسمي بعد الإصدار الرسمي للمضيف المتوافق؛ ونطاق القدرات هو CPU / arm64-v8a / كشف الكائنات
+* `جديد` تحوّل الأداة غير المتصلة `tools/generate_yolo_ncnn_manifest.py` بيانات Ultralytics YOLO11 NCNN إلى `model.json`, وتتحقق من ملف metadata/labels/graph الثابت, وتصدر بصمات النواتج
 * `جديد` اكتمل مزوّد كشف كائنات YOLO المعزول في عملية مستقلة: تقدم العملية المنفصلة `:provider` خدمة الاستدلال `org.autojs.plugin.YOLO` وخدمة الاكتشاف `org.autojs.plugin.INFO`، وكلتاهما محمية بإذن `org.autojs.permission.PLUGIN`
 * `جديد` محرك استدلال NCNN 20260526 على المعالج مدمج مع مفكك الترميز `ultralytics-detect`، بدعم نماذج YOLO11 detect وعدد فئات مخصص يعلنه الـ manifest (من 1 إلى 256)
 * `جديد` تفعيل عقد Model Manifest v1: عند فتح الجلسة تُتحقق الأطوال المعلنة و SHA-256، وأثناء التشغيل يُتحقق شكل المخرج، وتُرفض التعارضات برموز أخطاء مستقرة

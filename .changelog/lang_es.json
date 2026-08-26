@@ -12,6 +12,7 @@
         "Actualmente en fase de preparación privada: la publicación pública y el envío al índice oficial de plugins seguirán al lanzamiento formal del host compatible; el alcance de capacidades es CPU / arm64-v8a / detección de objetos"
       ],
       "feature": [
+        "La herramienta sin conexión `tools/generate_yolo_ncnn_manifest.py` convierte metadatos NCNN de Ultralytics YOLO11 en `model.json`, valida el perfil fijo de metadatos/etiquetas/grafo y emite hashes de artefactos",
         "Provider de detección de objetos YOLO aislado en proceso: el proceso separado `:provider` sirve la inferencia `org.autojs.plugin.YOLO` y el descubrimiento `org.autojs.plugin.INFO`, ambos protegidos por el permiso `org.autojs.permission.PLUGIN`",
         "Backend de inferencia CPU NCNN {{ ncnn_version }} integrado con el decodificador `{{ decoder_id }}`, compatible con modelos YOLO11 detect y números de clases personalizados declarados por manifiesto (1 a {{ max_labels }})",
         "Contrato Model Manifest v1 en vigor: la apertura de sesión verifica longitudes declaradas y SHA-256, la ejecución verifica la forma de salida, y las discrepancias se rechazan con códigos de error estables",

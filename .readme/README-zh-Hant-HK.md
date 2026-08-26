@@ -157,6 +157,8 @@ models/yolo11n/
 
 官方或自行訓練的 Ultralytics YOLO11 detect 模型可用 `yolo export format=ncnn imgsz=640` 導出, 得到 `model.ncnn.param` 與 `model.ncnn.bin` (參見 [Ultralytics NCNN 導出指南](https://docs.ultralytics.com/integrations/ncnn/)). `model.json` 為 Model Manifest v1 文件: 聲明輸入 (`in0`, RGB NCHW, 640x640 letterbox), 輸出 (`out0`, `ultralytics-detect` 解碼器, 形狀 `[1, 4 + N, 8400]`, N 為類別數) 與標籤列表; 完整示例見 [fixtures/yolo11n/model-manifest-v1.json](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/fixtures/yolo11n/model-manifest-v1.json).
 
+運行 `python tools/generate_yolo_ncnn_manifest.py <導出目錄>` 可從 Ultralytics `metadata.yaml` 直接生成 `model.json`. 該純標準庫離線工具會先核驗固定的 YOLO11/detect/640/batch/標籤檔位與 NCNN `in0`/`out0` 圖結構; `--check` 可在不寫檔案的情況下阻斷漂移. 精確導出命令, 驗證邊界與排錯說明見 [模型轉換指南](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/model-conversion.md).
+
 manifest 是兼容性契約而非重標籤工具: 打開會話時核驗三個檔案的聲明長度與 SHA-256, 運行時還會核驗 NCNN 圖的實際輸出形狀, 不符將以 `MODEL_REJECTED` 拒絕 (詳情前綴如 `MANIFEST_SHAPE_INVALID`, `MODEL_GRAPH_REJECTED`). 模型保留其來源的許可與使用條件, 轉換為 NCNN 不改變許可; 插件不代用戶獲得任何再分發權利. 詳見 [模型 manifest 規範](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/model-manifest-v1.md) 與 [模型許可政策](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/model-license-policy.md).
 
 ******
@@ -237,6 +239,8 @@ manifest 是兼容性契約而非重標籤工具: 打開會話時核驗三個檔
 
 維護者門禁 `tools/verify-r6-provider-source.ps1` 首先用 `--check` 核驗十語言 README/CHANGELOG 的全部 22 個生成物, 任一漂移立即失敗. 隨後預設從乾淨源碼起跑: 執行 `:app:clean` 後運行聚焦測試與兩種 APK 組裝, 記錄測試 XML 與產物哈希, 並按五檔案資產白名單核驗 APK 內容. 本地驗證與文檔生成均預設離線執行 (零聯網), 以避開開發網絡中的 Cloudflare 502/524/529 波動.
 
+任何 Gradle 構建前, 同一門禁還會運行 `tools/generate_yolo_ncnn_manifest.py` 的 8 項純標準庫離線測試並記錄源碼哈希與回執, 使模型工具鏈回歸直接阻斷發佈預檢.
+
 ******
 
 ### 發行歷史
@@ -249,6 +253,7 @@ manifest 是兼容性契約而非重標籤工具: 打開會話時核驗三個檔
 
 * `提示` 首個版本 (版本號 2, 無版本號 1 前身); 需 AutoJs6 版本號不低於 5275 (6.8.0+) 且與插件同證書簽名
 * `提示` 目前處於私有暫存階段: 待兼容宿主正式發佈後再公開發佈並提交官方插件索引; 能力範圍為 CPU / arm64-v8a / 目標檢測
+* `新增` 新增離線 `tools/generate_yolo_ncnn_manifest.py`: 從 Ultralytics YOLO11 NCNN 元數據生成 `model.json`, 核驗固定元數據/標籤/圖檔位並輸出產物哈希
 * `新增` 進程隔離的 YOLO 目標檢測 Provider 成型: 獨立 `:provider` 進程提供 `org.autojs.plugin.YOLO` 推理服務與 `org.autojs.plugin.INFO` 發現服務, 均受 `org.autojs.permission.PLUGIN` 權限保護
 * `新增` 內置 NCNN 20260526 CPU 推理後端與 `ultralytics-detect` 解碼器, 支援 YOLO11 detect 模型與 manifest 聲明的自訂類別數 (1 到 256)
 * `新增` 落地 Model Manifest v1 模型契約: 打開會話時核驗聲明長度與 SHA-256, 運行時核驗輸出形狀, 不符即以穩定錯誤碼拒絕

@@ -45,6 +45,12 @@ The names select artifact roles only. Model identity and compatibility come
 from `model.json`, not from directory or weight file names. AutoJs6 and the
 provider verify declared lengths and SHA-256 digests before NCNN loads a graph.
 
+For a standard Ultralytics YOLO11 NCNN export, use the offline
+[`tools/generate_yolo_ncnn_manifest.py`](../tools/generate_yolo_ncnn_manifest.py)
+command to validate `metadata.yaml` and the NCNN graph structure and generate
+`model.json`. The complete workflow and rejection boundaries are documented in
+the [model conversion guide](model-conversion.md).
+
 ## Decoder negotiation
 
 The session `decoderId` must equal `output.decoder`. Version 1 currently
@@ -62,4 +68,3 @@ detail prefix. Current prefixes include `MANIFEST_SCHEMA_UNSUPPORTED`,
 
 This contract describes compatibility, not model licensing. Model and dataset
 rights remain the responsibility of the model supplier.
-

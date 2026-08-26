@@ -157,6 +157,8 @@ models/yolo11n/
 
 Los modelos Ultralytics YOLO11 detect, oficiales o auto-entrenados, se exportan con `yolo export format=ncnn imgsz=640`, lo que produce `model.ncnn.param` y `model.ncnn.bin` (ver la [guía de exportación NCNN de Ultralytics](https://docs.ultralytics.com/integrations/ncnn/)). `model.json` es un documento Model Manifest v1: declara la entrada (`in0`, RGB NCHW, letterbox 640x640), la salida (`out0`, decodificador `ultralytics-detect`, forma `[1, 4 + N, 8400]` donde N es el número de clases) y la lista de etiquetas; un ejemplo completo es [fixtures/yolo11n/model-manifest-v1.json](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/fixtures/yolo11n/model-manifest-v1.json).
 
+Ejecuta `python tools/generate_yolo_ncnn_manifest.py <directorio-exportado>` para generar `model.json` directamente desde `metadata.yaml` de Ultralytics. La herramienta sin conexión y basada solo en la biblioteca estándar valida el perfil fijo YOLO11/detect/640/batch/etiquetas y la estructura NCNN `in0`/`out0` antes de escribir; `--check` rechaza derivas sin modificar archivos. La [guía de conversión del modelo](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/model-conversion.md) detalla la exportación, el límite de validación y la solución de problemas.
+
 El manifiesto es un contrato de compatibilidad, no una herramienta de re-etiquetado: al abrir la sesión se verifican las longitudes declaradas y el SHA-256 de los tres archivos, y en ejecución se verifica la forma real de la salida del grafo NCNN; las discrepancias se rechazan con `MODEL_REJECTED` (prefijos de detalle como `MANIFEST_SHAPE_INVALID`, `MODEL_GRAPH_REJECTED`). Los modelos conservan la licencia y condiciones de uso de su origen; convertirlos a NCNN no las cambia, y el plugin no otorga derechos de redistribución. Ver la [especificación del manifiesto](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/model-manifest-v1.md) y la [política de licencias de modelos](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/model-license-policy.md).
 
 ******
@@ -237,6 +239,8 @@ Se recomienda JDK 21+; el SDK de Android debe proporcionar las platforms 24 y 36
 
 La puerta de mantenimiento `tools/verify-r6-provider-source.ps1` primero ejecuta `--check` sobre los 22 artefactos README/CHANGELOG generados para 10 idiomas y falla de inmediato ante cualquier deriva. Después parte por defecto de fuentes limpias: tras `:app:clean` ejecuta las pruebas enfocadas y los dos ensamblados de APK, registra los XML de pruebas y los hashes de los artefactos, y verifica el APK contra una lista blanca de cinco archivos de assets. La verificación local y la generación de documentación se ejecutan sin conexión por defecto (cero llamadas de red) para evitar el ruido Cloudflare 502/524/529 de la red de desarrollo.
 
+Antes de cualquier compilación Gradle, la misma puerta también ejecuta las ocho pruebas basadas solo en la biblioteca estándar de `tools/generate_yolo_ncnn_manifest.py` y registra los hashes de sus fuentes y el recibo, de modo que una regresión de la herramienta de modelos bloquee la prevalidación sin conexión.
+
 ******
 
 ### Historial de versiones
@@ -249,6 +253,7 @@ La puerta de mantenimiento `tools/verify-r6-provider-source.ps1` primero ejecuta
 
 * `Aviso` Primera versión (código de versión 2, sin predecesor de código 1); requiere AutoJs6 con código de versión no inferior a 5275 (6.8.0+) firmado con el mismo certificado que el plugin
 * `Aviso` Actualmente en fase de preparación privada: la publicación pública y el envío al índice oficial de plugins seguirán al lanzamiento formal del host compatible; el alcance de capacidades es CPU / arm64-v8a / detección de objetos
+* `Novedad` La herramienta sin conexión `tools/generate_yolo_ncnn_manifest.py` convierte metadatos NCNN de Ultralytics YOLO11 en `model.json`, valida el perfil fijo de metadatos/etiquetas/grafo y emite hashes de artefactos
 * `Novedad` Provider de detección de objetos YOLO aislado en proceso: el proceso separado `:provider` sirve la inferencia `org.autojs.plugin.YOLO` y el descubrimiento `org.autojs.plugin.INFO`, ambos protegidos por el permiso `org.autojs.permission.PLUGIN`
 * `Novedad` Backend de inferencia CPU NCNN 20260526 integrado con el decodificador `ultralytics-detect`, compatible con modelos YOLO11 detect y números de clases personalizados declarados por manifiesto (1 a 256)
 * `Novedad` Contrato Model Manifest v1 en vigor: la apertura de sesión verifica longitudes declaradas y SHA-256, la ejecución verifica la forma de salida, y las discrepancias se rechazan con códigos de error estables
