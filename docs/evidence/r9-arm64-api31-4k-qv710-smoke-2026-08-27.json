@@ -1,0 +1,171 @@
+{
+  "schemaVersion": 1,
+  "evidenceId": "R9_ARM64_API31_4K_QV710_SMOKE_2026-08-27",
+  "result": "PASS",
+  "capturedAtUtc": "2026-08-27T05:05:53.1746445Z",
+  "source": {
+    "revision": "e74779429a98ad8d9016dffa037c129ab8aeec83",
+    "trackedWorktree": "CLEAN",
+    "buildCommand": ".\\gradlew.bat --offline --no-daemon :app:assembleDebug :app:assembleDebugAndroidTest",
+    "buildResult": "PASS",
+    "executedTaskCount": 79,
+    "gradleVersion": "9.5.0",
+    "agpVersion": "9.2.1",
+    "kotlinGradlePluginVersion": "2.3.20"
+  },
+  "artifacts": {
+    "application": {
+      "packageName": "io.github.supermonster003.autojs6.plugin.yolo.ncnn",
+      "versionCode": 2,
+      "versionName": "0.1.0",
+      "minSdk": 24,
+      "targetSdk": 36,
+      "abi": "arm64-v8a",
+      "bytes": 3646003,
+      "sha256": "9bc4690bcc618f896097ded26f31f58938b088f5d4a3e2a8b146df28fb4dc593"
+    },
+    "instrumentation": {
+      "packageName": "io.github.supermonster003.autojs6.plugin.yolo.ncnn.test",
+      "runner": "androidx.test.runner.AndroidJUnitRunner",
+      "bytes": 10434247,
+      "sha256": "1a769cf107a883af85386210aaa3660ef9a327023f56ff6a42e5758480509b33"
+    },
+    "signer": {
+      "kind": "ANDROID_DEBUG",
+      "certificateSha256": "2e64822e13a6c80c12e1c4b47e8fb32d1e9334526289da75777b7a79145de4b8"
+    },
+    "installedByteIdentityVerified": true
+  },
+  "device": {
+    "serial": "QV710AF65F",
+    "model": "XQ-AT72",
+    "device": "XQ-AT72",
+    "api": 31,
+    "androidRelease": "12",
+    "fingerprint": "Sony/XQ-AT72_CN/XQ-AT72:12/58.2.A.10.44A/058002A0100044A0891821322:user/release-keys",
+    "buildType": "user",
+    "abiList": [
+      "arm64-v8a",
+      "armeabi-v7a",
+      "armeabi"
+    ],
+    "machine": "aarch64",
+    "kernel": "4.19.157-perf+",
+    "pageSizeBytes": 4096
+  },
+  "fixtures": {
+    "manifest": {
+      "bytes": 1689,
+      "sha256": "ab729b5f63cccc22fe63d30b71973778e06db2a4a1354882c46bb35cc3c2d39a"
+    },
+    "ncnnParam": {
+      "bytes": 22713,
+      "sha256": "041f788d58e9831f33fdfe00296e4d815e6d2421146ac55b3056cc8813441998"
+    },
+    "ncnnBin": {
+      "bytes": 10566144,
+      "sha256": "2c75384fc331b576c1de59ae16524578831b1a50b5eed9f63878fa8f16464bbb"
+    },
+    "image": {
+      "name": "bus.jpg",
+      "bytes": 137419,
+      "sha256": "c02019c4979c191eb739ddd944445ef408dad5679acab6fd520ef9d434bfbc63"
+    },
+    "expectedDetections": {
+      "bytes": 1242,
+      "sha256": "b79f7f914fab82cf4a9c80e72e1453e7cf3dd6a986b5e3d45481927410268d5f"
+    }
+  },
+  "instrumentationRun": {
+    "result": "PASS",
+    "reportedDurationSeconds": 0.548,
+    "testCount": 5,
+    "tests": [
+      "NativeYoloSmokeTest.yolo11nBusFixtureProducesReferenceDetections",
+      "YoloModelManifestTest.decoderRegistryHasNoUnknownFallback",
+      "YoloModelManifestTest.modelRejectionsUseTheTypedProtocolCategory",
+      "YoloModelManifestTest.publishedProfileAcceptsOneThroughMaximumLabels",
+      "YoloModelManifestTest.outputShapeMustMatchLabelCount"
+    ]
+  },
+  "nativeInference": {
+    "backendVersion": "ncnn/1.0.20260526",
+    "imageWidth": 810,
+    "imageHeight": 1080,
+    "elapsedMillis": 92,
+    "detections": [
+      {
+        "classId": 5,
+        "label": "bus",
+        "confidence": 0.9392049312591553,
+        "bounds": [
+          11.918380737304688,
+          228.39425659179688,
+          799.22509765625,
+          735.2150268554688
+        ]
+      },
+      {
+        "classId": 0,
+        "label": "person",
+        "confidence": 0.9019904732704163,
+        "bounds": [
+          48.592716217041016,
+          397.960693359375,
+          243.21273803710938,
+          904.5357055664062
+        ]
+      },
+      {
+        "classId": 0,
+        "label": "person",
+        "confidence": 0.8492761254310608,
+        "bounds": [
+          670.556396484375,
+          392.5901184082031,
+          810,
+          879.6233520507812
+        ]
+      },
+      {
+        "classId": 0,
+        "label": "person",
+        "confidence": 0.8327871561050415,
+        "bounds": [
+          223.11959838867188,
+          405.57794189453125,
+          345.2289733886719,
+          859.7220458984375
+        ]
+      },
+      {
+        "classId": 0,
+        "label": "person",
+        "confidence": 0.3993437588214874,
+        "bounds": [
+          0,
+          550.1927490234375,
+          66.00817108154297,
+          871.7786254882812
+        ]
+      }
+    ]
+  },
+  "cleanup": {
+    "targetProcessAbsentAfterInstrumentation": true,
+    "materializedModelSessionDirectoryCount": 0,
+    "applicationUninstalled": true,
+    "instrumentationUninstalled": true,
+    "targetProcessAbsentAfterUninstall": true,
+    "temporaryBuildWorktreeRemoved": true
+  },
+  "claimBoundary": {
+    "nativeArm64LoadAndFixedImageInference": "PASS",
+    "modelManifestInstrumentation": "PASS",
+    "api36Arm64Runtime": "NOT_RUN_NO_API36_ARM64_DEVICE",
+    "nativeLoad16KiBDevice": "NOT_RUN_NO_16K_ARM64_DEVICE",
+    "hostBinderPfdEndToEnd": "NOT_RUN_HOST_NOT_RELEASED",
+    "productionSigning": "NOT_CLAIMED_DEBUG_SIGNER",
+    "nativeConstructionHardTimeout": "NOT_CLAIMED_NON_BLOCKING_PRODUCT_LIMITATION"
+  }
+}

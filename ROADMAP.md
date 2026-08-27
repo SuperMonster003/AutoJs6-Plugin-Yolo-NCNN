@@ -9,9 +9,9 @@
 > R7 本地文档线已完成 (2026-08-27): 十语言 README / CHANGELOG 生成流水线与发布前一致性门禁落地,
 > 根文档面向最终用户重写; 公开仓库后的链接与渲染核对仍待发布窗口执行.
 >
-> R9 补充基线已刷新 (2026-08-27): 干净提交构建在 API 35 / arm64 / 4 KiB 页物理设备完成
-> 5 项 instrumentation 与真实 YOLO11n 定点推理, 安装字节身份和测试后清理均已核验;
-> API 36 arm64 与 16 KiB 页专项仍未执行, 不由该结果替代.
+> R9 补充基线已刷新 (2026-08-27): 两次干净提交构建分别在 API 31 与 API 35 / arm64 /
+> 4 KiB 页物理设备完成 5 项 instrumentation 与真实 YOLO11n 定点推理, 安装字节身份和测试后清理
+> 均已核验; API 36 arm64 与 16 KiB 页专项仍未执行, 不由这些结果替代.
 >
 > R10 首个本地能力项已完成 (2026-08-27): Ultralytics YOLO11 NCNN 导出目录到 `model.json` 的
 > 离线生成、固定档位校验、测试与转换指南落地; 其余能力候选仍未排期.
@@ -111,6 +111,13 @@
   instrumentation 结束后进程退出、模型会话目录为 0, 最终两个包均已卸载; 完整边界与哈希见
   [`docs/evidence/r9-arm64-api35-4k-smoke-2026-08-27.json`](docs/evidence/r9-arm64-api35-4k-smoke-2026-08-27.json).
   此项仅刷新普通 arm64 基线, 不解除以下 API 36 / 16 KiB 限制
+- [x] 在优先测试设备复验 arm64 / API 31 / 4 KiB 基线 (2026-08-27): 从干净提交 `e747794`
+  离线构建 debug 与 instrumentation APK, 在 `XQ-AT72` (`QV710AF65F`) 运行 5/5 测试;
+  NCNN 20260526 对同一固定 `bus.jpg` 推理得到 1 辆 bus 与 4 个人, 推理耗时 92 ms. 设备端
+  APK SHA-256 与本地一致, instrumentation 结束后进程退出、模型会话目录为 0, 最终两个包均已
+  卸载; 完整边界与哈希见
+  [`docs/evidence/r9-arm64-api31-4k-qv710-smoke-2026-08-27.json`](docs/evidence/r9-arm64-api31-4k-qv710-smoke-2026-08-27.json).
+  此项将历史 QV710AF65F 基线重新绑定到当前源码, 同样不解除以下 API 36 / 16 KiB 限制
 - [ ] 16 KiB 页大小设备真机原生加载与单次定点推理验证, 解除
   `NATIVE_LOAD_16K_DEVICE=NOT_RUN_NO_16K_DEVICE`; 完成判据: 记录设备型号 / 页大小 / APK 哈希与推理输出
 - [ ] API 36 arm64 真机运行验证 (加载 + 打开会话 + 推理 + 关闭), 解除
