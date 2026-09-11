@@ -274,3 +274,6 @@ python .\.python\generate_markdown.py --check
 - {{ text_link_ultralytics_export }}: {{ ultralytics_ncnn_url }}
 - {{ text_link_third_party }}: {{ third_party_notices_url }}
 - {{ text_link_license }}: {{ license_url }}
+
+
+[16 KB page alignment and build verification](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/16kb.md)

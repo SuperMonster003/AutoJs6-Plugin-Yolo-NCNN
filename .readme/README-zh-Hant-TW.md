@@ -211,7 +211,7 @@ manifest 是相容性契約而非重貼標籤的工具: 開啟工作階段時核
 
 ******
 
-需要 AutoJs6 版本號不低於 5275 (即 6.8.0 及以上) 且與插件以同一憑證簽章; Android 24+ (Android 7.0), targetSdk 36; 裝置須為 `arm64-v8a`. 插件協定版本 1.0; 目前 Provider 版本 0.1.0 (版本號 2).
+需要 AutoJs6 版本號不低於 5275 (即 6.8.0 及以上) 且與插件以同一憑證簽章; Android 24+ (Android 7.0), targetSdk 36; 裝置須為 `arm64-v8a`. 插件協定版本 1.0; 目前 Provider 版本 0.1.1 (版本號 2).
 
 ******
 
@@ -219,7 +219,7 @@ manifest 是相容性契約而非重貼標籤的工具: 開啟工作階段時核
 
 ******
 
-本儲存庫目前為私有證據暫存庫: 相容宿主 AutoJs6 6.8.0 (5275) 尚未正式發布, 本插件也尚未公開發布或收錄進官方插件索引; 儲存庫公開前, 上方 GitHub 徽章可能無法顯示. `assembleRelease` 在缺少 `sign.properties` 時產出未簽章 APK, 僅作為原始碼/建置證據, 不可視為可發布產物. 首個發布版本為 0.1.0 (版本號 2, 無版本號 1 前身); 缺陷透過前向修復版本號 3 解決, 不做版本回滾. 生產簽章, 真機終驗與發布狀態以外部 R6 證據封存為準, 詳見 [工程紀錄](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/engineering-notes.md).
+本儲存庫目前為私有證據暫存庫: 相容宿主 AutoJs6 6.8.0 (5275) 尚未正式發布, 本插件也尚未公開發布或收錄進官方插件索引; 儲存庫公開前, 上方 GitHub 徽章可能無法顯示. `assembleRelease` 在缺少 `sign.properties` 時產出未簽章 APK, 僅作為原始碼/建置證據, 不可視為可發布產物. 首個發布版本為 0.1.1 (版本號 2, 無版本號 1 前身); 缺陷透過前向修復版本號 3 解決, 不做版本回滾. 生產簽章, 真機終驗與發布狀態以外部 R6 證據封存為準, 詳見 [工程紀錄](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/engineering-notes.md).
 
 ******
 
@@ -246,6 +246,12 @@ manifest 是相容性契約而非重貼標籤的工具: 開啟工作階段時核
 ### 發行歷史
 
 ******
+
+# v0.1.1
+
+###### 2026/09/11
+
+* `優化` 建置階段校驗 64 位原生函式庫的 16 KB 頁面大小對齊, 檢查 manifest 契約並輸出 JSON 報告
 
 # v0.1.0
 
@@ -323,3 +329,6 @@ python .\.python\generate_markdown.py --check
 - Ultralytics NCNN 匯出指南: https://docs.ultralytics.com/integrations/ncnn/
 - 第三方元件聲明: https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/THIRD_PARTY_NOTICES.md
 - 授權條款: https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/LICENSE
+
+
+[16 KB page alignment and build verification](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/16kb.md)

@@ -211,7 +211,7 @@ The plugin is designed fail-closed; the following mechanisms are always in effec
 
 ******
 
-Requires AutoJs6 with a version code of at least 5275 (that is, 6.8.0 or later) signed with the same certificate as the plugin; Android 24+ (Android 7.0), targetSdk 36; the device must be `arm64-v8a`. Plugin protocol version 1.0; current provider version 0.1.0 (version code 2).
+Requires AutoJs6 with a version code of at least 5275 (that is, 6.8.0 or later) signed with the same certificate as the plugin; Android 24+ (Android 7.0), targetSdk 36; the device must be `arm64-v8a`. Plugin protocol version 1.0; current provider version 0.1.1 (version code 2).
 
 ******
 
@@ -219,7 +219,7 @@ Requires AutoJs6 with a version code of at least 5275 (that is, 6.8.0 or later) 
 
 ******
 
-This repository is currently a private staging archive: the compatible host AutoJs6 6.8.0 (5275) has not been formally released, and this plugin is neither publicly released nor listed in the official plugin index; the GitHub badges above may not render until the repository goes public. Without `sign.properties`, `assembleRelease` produces an unsigned APK that is source/build evidence only, not a publishable artifact. The first release is 0.1.0 (version code 2, with no version code 1 predecessor); defects are fixed forward as version code 3, never by rollback. Production signing, final on-device verification, and publication status are bound by the external R6 evidence archive; see the [engineering notes](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/engineering-notes.md).
+This repository is currently a private staging archive: the compatible host AutoJs6 6.8.0 (5275) has not been formally released, and this plugin is neither publicly released nor listed in the official plugin index; the GitHub badges above may not render until the repository goes public. Without `sign.properties`, `assembleRelease` produces an unsigned APK that is source/build evidence only, not a publishable artifact. The first release is 0.1.1 (version code 2, with no version code 1 predecessor); defects are fixed forward as version code 3, never by rollback. Production signing, final on-device verification, and publication status are bound by the external R6 evidence archive; see the [engineering notes](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/engineering-notes.md).
 
 ******
 
@@ -246,6 +246,12 @@ Before any Gradle build, the same gate also runs the eight standard-library test
 ### Release History
 
 ******
+
+# v0.1.1
+
+###### 2026/09/11
+
+* `Improvement` Build verification of 16 KB page alignment for 64-bit native libraries, including manifest contract checks and JSON reports
 
 # v0.1.0
 
@@ -323,3 +329,6 @@ python .\.python\generate_markdown.py --check
 - Ultralytics NCNN export guide: https://docs.ultralytics.com/integrations/ncnn/
 - Third-party notices: https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/THIRD_PARTY_NOTICES.md
 - License: https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/LICENSE
+
+
+[16 KB page alignment and build verification](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/16kb.md)

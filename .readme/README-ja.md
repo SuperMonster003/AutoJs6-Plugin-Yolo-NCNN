@@ -211,7 +211,7 @@ models/yolo11n/
 
 ******
 
-AutoJs6 のバージョンコード 5275 以上 (つまり 6.8.0 以降) で, プラグインと同一証明書で署名されている必要があります. Android 24+ (Android 7.0), targetSdk 36. 端末は `arm64-v8a` 必須. プラグインプロトコルバージョン 1.0, 現在の Provider バージョン 0.1.0 (バージョンコード 2).
+AutoJs6 のバージョンコード 5275 以上 (つまり 6.8.0 以降) で, プラグインと同一証明書で署名されている必要があります. Android 24+ (Android 7.0), targetSdk 36. 端末は `arm64-v8a` 必須. プラグインプロトコルバージョン 1.0, 現在の Provider バージョン 0.1.1 (バージョンコード 2).
 
 ******
 
@@ -219,7 +219,7 @@ AutoJs6 のバージョンコード 5275 以上 (つまり 6.8.0 以降) で, �
 
 ******
 
-本リポジトリは現在プライベートなステージングアーカイブです: 互換ホスト AutoJs6 6.8.0 (5275) は未リリースで, 本プラグインも未公開かつ公式プラグインインデックス未収載です. リポジトリ公開までは上部の GitHub バッジが表示されない場合があります. `sign.properties` がない場合の `assembleRelease` は未署名 APK を生成し, これはソース/ビルドの証跡にすぎず, 公開可能な成果物ではありません. 初回リリースは 0.1.0 (バージョンコード 2, バージョンコード 1 の前身は存在しません). 欠陥はロールバックではなくバージョンコード 3 の前方修正で対処します. 本番署名, 実機での最終検証, 公開状態は外部の R6 証跡アーカイブが確定します. 詳細は [エンジニアリングノート](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/engineering-notes.md) を参照.
+本リポジトリは現在プライベートなステージングアーカイブです: 互換ホスト AutoJs6 6.8.0 (5275) は未リリースで, 本プラグインも未公開かつ公式プラグインインデックス未収載です. リポジトリ公開までは上部の GitHub バッジが表示されない場合があります. `sign.properties` がない場合の `assembleRelease` は未署名 APK を生成し, これはソース/ビルドの証跡にすぎず, 公開可能な成果物ではありません. 初回リリースは 0.1.1 (バージョンコード 2, バージョンコード 1 の前身は存在しません). 欠陥はロールバックではなくバージョンコード 3 の前方修正で対処します. 本番署名, 実機での最終検証, 公開状態は外部の R6 証跡アーカイブが確定します. 詳細は [エンジニアリングノート](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/engineering-notes.md) を参照.
 
 ******
 
@@ -246,6 +246,12 @@ Gradle ビルド前に同じゲートが `tools/generate_yolo_ncnn_manifest.py` 
 ### リリース履歴
 
 ******
+
+# v0.1.1
+
+###### 2026/09/11
+
+* `改善` 64 ビットのネイティブライブラリの 16 KB ページアラインメントをビルド時に検証, manifest 契約の検査と JSON レポートに対応
 
 # v0.1.0
 
@@ -323,3 +329,6 @@ python .\.python\generate_markdown.py --check
 - Ultralytics NCNN エクスポートガイド: https://docs.ultralytics.com/integrations/ncnn/
 - サードパーティ通知: https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/THIRD_PARTY_NOTICES.md
 - ライセンス: https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/LICENSE
+
+
+[16 KB page alignment and build verification](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/16kb.md)

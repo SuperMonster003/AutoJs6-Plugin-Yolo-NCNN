@@ -211,7 +211,7 @@ models/yolo11n/
 
 ******
 
-يتطلب AutoJs6 برمز إصدار لا يقل عن 5275 (أي 6.8.0 أو أحدث) موقّعًا بشهادة الإضافة نفسها؛ و Android 24+ (Android 7.0)، و targetSdk 36؛ ويجب أن يكون الجهاز `arm64-v8a`. إصدار بروتوكول الإضافة 1.0؛ وإصدار المزوّد الحالي 0.1.0 (رمز الإصدار 2).
+يتطلب AutoJs6 برمز إصدار لا يقل عن 5275 (أي 6.8.0 أو أحدث) موقّعًا بشهادة الإضافة نفسها؛ و Android 24+ (Android 7.0)، و targetSdk 36؛ ويجب أن يكون الجهاز `arm64-v8a`. إصدار بروتوكول الإضافة 1.0؛ وإصدار المزوّد الحالي 0.1.1 (رمز الإصدار 2).
 
 ******
 
@@ -219,7 +219,7 @@ models/yolo11n/
 
 ******
 
-هذا المستودع حاليًا أرشيف تجهيز خاص: المضيف المتوافق AutoJs6 6.8.0 (5275) لم يصدر رسميًا بعد، وهذه الإضافة غير منشورة علنًا وغير مدرجة في فهرس الإضافات الرسمي؛ وقد لا تظهر شارات GitHub أعلاه قبل أن يصبح المستودع عامًا. بدون `sign.properties` ينتج `assembleRelease` ملف APK غير موقّع يُعد دليلًا على المصدر/البناء فحسب لا ناتجًا قابلًا للنشر. الإصدار الأول هو 0.1.0 (رمز الإصدار 2، دون سلف برمز 1)؛ وتُصحح العيوب إلى الأمام برمز الإصدار 3 لا بالتراجع. توقيع الإنتاج والتحقق النهائي على الجهاز وحالة النشر يحسمها أرشيف أدلة R6 الخارجي؛ انظر [ملاحظات الهندسة](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/engineering-notes.md).
+هذا المستودع حاليًا أرشيف تجهيز خاص: المضيف المتوافق AutoJs6 6.8.0 (5275) لم يصدر رسميًا بعد، وهذه الإضافة غير منشورة علنًا وغير مدرجة في فهرس الإضافات الرسمي؛ وقد لا تظهر شارات GitHub أعلاه قبل أن يصبح المستودع عامًا. بدون `sign.properties` ينتج `assembleRelease` ملف APK غير موقّع يُعد دليلًا على المصدر/البناء فحسب لا ناتجًا قابلًا للنشر. الإصدار الأول هو 0.1.1 (رمز الإصدار 2، دون سلف برمز 1)؛ وتُصحح العيوب إلى الأمام برمز الإصدار 3 لا بالتراجع. توقيع الإنتاج والتحقق النهائي على الجهاز وحالة النشر يحسمها أرشيف أدلة R6 الخارجي؛ انظر [ملاحظات الهندسة](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/engineering-notes.md).
 
 ******
 
@@ -246,6 +246,12 @@ models/yolo11n/
 ### سجل الإصدارات
 
 ******
+
+# v0.1.1
+
+###### 2026/09/11
+
+* `تحسين` التحقق أثناء البناء من محاذاة صفحات 16 KB للمكتبات الأصلية ذات 64 بت, مع فحص عقد manifest وتقارير JSON
 
 # v0.1.0
 
@@ -323,3 +329,6 @@ python .\.python\generate_markdown.py --check
 - دليل تصدير NCNN من Ultralytics: https://docs.ultralytics.com/integrations/ncnn/
 - إشعارات مكونات الأطراف الثالثة: https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/THIRD_PARTY_NOTICES.md
 - الترخيص: https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/LICENSE
+
+
+[16 KB page alignment and build verification](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/16kb.md)

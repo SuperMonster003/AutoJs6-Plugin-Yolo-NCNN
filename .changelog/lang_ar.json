@@ -5,6 +5,12 @@
   "changelog_label_improvement": "تحسين",
   "changelog_label_dependency": "اعتماديات",
   "$data": {
+    "v0.1.1": {
+      "released_date": "2026/09/11",
+      "improvement": [
+        "التحقق أثناء البناء من محاذاة صفحات 16 KB للمكتبات الأصلية ذات 64 بت, مع فحص عقد manifest وتقارير JSON"
+      ]
+    },
     "v0.1.0": {
       "released_date": "2026/08/13",
       "hint": [
