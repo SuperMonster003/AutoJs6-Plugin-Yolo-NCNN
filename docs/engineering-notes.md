@@ -63,13 +63,19 @@ third-party notice index, and the NCNN provenance lock under
 Models remain external and retain the license and usage conditions of their own
 source; converting a model to NCNN does not change those conditions.
 
-ELF 16 KiB alignment is packaging evidence only. Production signing remains
-separate release evidence; release-shrinker admission and static alignment do not
-imply runtime loading on a particular Android environment. A 16 KiB page-size
-native load and API 36 arm64 runtime remain explicitly unclaimed non-blocking
-limitations:
-`NATIVE_LOAD_16K_DEVICE=NOT_RUN_NO_16K_DEVICE` and
-`API36_ARM64_RUNTIME=NOT_RUN_NO_AVAILABLE_ENVIRONMENT`.
+ELF 16 KiB alignment is packaging evidence only. Separate R9 runtime evidence
+now covers native loading and fixed-image inference on a Samsung SM-A566B with
+Android 16 / API 36, `arm64-v8a`, and 16 KiB pages (2026-09-10). A clean build of
+`dc43e15` passed all five instrumentation tests; NCNN detected one bus and four
+people, and installed APK hashes and post-test cleanup were verified. The
+[source-bound receipt](evidence/r9-arm64-api36-16k-samsung-smoke-2026-09-10.json)
+records `NATIVE_LOAD_16K_DEVICE=PASS_DEBUG_NATIVE_LOAD_AND_FIXED_IMAGE_INFERENCE`
+and `API36_ARM64_RUNTIME=PASS_DEBUG_NATIVE_LIFECYCLE` within that exact debug
+build, fixture, and device scope. This supersedes the lack of a test environment
+for those R9 items without rewriting historical R1-R6 receipts. It does not
+establish Host/Provider Service Binder lifecycle, shrunk RC or final-release APK
+runtime, production signing, or a performance benchmark. The non-connected R6
+source gate remains separate from these device receipts.
 
 Provider `0.1.0` version code `2` is the first release; no version code `1`
 predecessor is produced or retained. Upgrade runtime and version rollback are

@@ -1,0 +1,259 @@
+{
+  "schemaVersion": 1,
+  "evidenceId": "R9_ARM64_API36_16K_SAMSUNG_SMOKE_2026-09-10",
+  "result": "PASS",
+  "capturedAtUtc": "2026-09-10T02:22:34.4028748Z",
+  "source": {
+    "revision": "dc43e15d873e37add904a1b6d32bdf4433ecc785",
+    "trackedWorktree": "CLEAN",
+    "trackedWorktreeUnchangedThroughBuildAndDeviceRun": true,
+    "buildCommand": ".\\gradlew.bat --offline --no-daemon --console=plain :app:clean :app:assembleDebug :app:assembleDebugAndroidTest",
+    "buildResult": "PASS",
+    "buildStartedAtUtc": "2026-09-10T02:19:38.4887128Z",
+    "buildCompletedAtUtc": "2026-09-10T02:20:14.3813724Z",
+    "cleanAppBuild": true,
+    "executedTaskCount": 80,
+    "upToDateTaskCount": 4,
+    "gradleVersion": "9.5.0",
+    "agpVersion": "9.3.2",
+    "agpVersionSource": "META-INF/com/android/build/gradle/app-metadata.properties in the tested APK",
+    "buildJavaMajorVersion": 21,
+    "ndkVersion": "29.0.14206865",
+    "cmakeVersion": "3.22.1"
+  },
+  "artifacts": {
+    "application": {
+      "packageName": "io.github.supermonster003.autojs6.plugin.yolo.ncnn",
+      "buildVariant": "debug",
+      "versionCode": 2,
+      "versionName": "0.1.0",
+      "minSdk": 24,
+      "targetSdk": 36,
+      "abi": "arm64-v8a",
+      "bytes": 3645811,
+      "sha256": "bb254a48116b1aa6895119a02af9d4980c615b349011fe2a7de9d20227b78e30"
+    },
+    "instrumentation": {
+      "packageName": "io.github.supermonster003.autojs6.plugin.yolo.ncnn.test",
+      "buildVariant": "debugAndroidTest",
+      "runner": "androidx.test.runner.AndroidJUnitRunner",
+      "bytes": 10434279,
+      "sha256": "075ff70fdf753190db1f9323c9fa71e3db6062985521634b73213dae8ba33eb7"
+    },
+    "signer": {
+      "kind": "PROJECT_CONFIGURED_SIGNER",
+      "certificateSha256": "31a681fcfffb3e428420cae280ded89292b12a3b0f59e19b7a73e32a8ae4c213",
+      "applicationAndInstrumentationCertificateMatch": true,
+      "apkSignatureVerification": "PASS_BOTH_APKS_V2",
+      "productionSigningClaimed": false
+    },
+    "installedByteIdentityVerified": true,
+    "installedByteIdentityMethod": "Device-side sha256sum of each pm path base.apk matched its local build artifact before instrumentation."
+  },
+  "nativePackaging": [
+    {
+      "entry": "lib/arm64-v8a/libautojs_yolo.so",
+      "bytes": 5431864,
+      "sha256": "3a4c3c7909dedf3263b0ca709e5004803d34d2131f466f208b2df825463fef77",
+      "zipCompression": "DEFLATED",
+      "loadSegments": [
+        {
+          "offset": 0,
+          "virtualAddress": 0,
+          "alignmentBytes": 16384
+        },
+        {
+          "offset": 5364752,
+          "virtualAddress": 5381136,
+          "alignmentBytes": 16384
+        },
+        {
+          "offset": 5419264,
+          "virtualAddress": 5452032,
+          "alignmentBytes": 16384
+        }
+      ],
+      "elf16KiBAligned": true
+    }
+  ],
+  "device": {
+    "serial": "REDACTED_REMOTE_ADB_ENDPOINT",
+    "transport": "USER_AUTHORIZED_REMOTE_ADB",
+    "manufacturer": "samsung",
+    "model": "SM-A566B",
+    "device": "a56x",
+    "api": 36,
+    "androidRelease": "16",
+    "securityPatch": "2025-10-01",
+    "abiList": [
+      "arm64-v8a"
+    ],
+    "machine": "aarch64",
+    "kernel": "6.6.77-android15-8-abA566BXXU6BYIF",
+    "pageSizeBytes": 16384,
+    "applicationUidGetconfPageSizeBytes": 16384,
+    "pageSizeVerificationCommands": [
+      "adb -s <serial> shell getconf PAGE_SIZE",
+      "adb -s <serial> shell run-as io.github.supermonster003.autojs6.plugin.yolo.ncnn getconf PAGE_SIZE"
+    ],
+    "pageSizeCompatibility": {
+      "packageManagerPageSizeCompat": 0,
+      "bionicLinker16kbAppCompatEnabledProperty": "",
+      "pm16kbAppCompatDisabledProperty": "",
+      "globalOverridesChanged": false,
+      "forcedOffBackcompatRun": "NOT_RUN",
+      "interpretation": "Package dump reported pageSizeCompat=0. All packaged native LOAD segments are 16 KiB aligned and the native library is compressed. Empty system properties are recorded as unset, not as proof of globally disabled backcompat."
+    }
+  },
+  "fixtures": {
+    "manifest": {
+      "bytes": 1689,
+      "sha256": "ab729b5f63cccc22fe63d30b71973778e06db2a4a1354882c46bb35cc3c2d39a"
+    },
+    "ncnnParam": {
+      "bytes": 22713,
+      "sha256": "041f788d58e9831f33fdfe00296e4d815e6d2421146ac55b3056cc8813441998"
+    },
+    "ncnnBin": {
+      "bytes": 10566144,
+      "sha256": "2c75384fc331b576c1de59ae16524578831b1a50b5eed9f63878fa8f16464bbb"
+    },
+    "image": {
+      "name": "bus.jpg",
+      "bytes": 137419,
+      "sha256": "c02019c4979c191eb739ddd944445ef408dad5679acab6fd520ef9d434bfbc63"
+    },
+    "expectedDetections": {
+      "bytes": 1242,
+      "sha256": "b79f7f914fab82cf4a9c80e72e1453e7cf3dd6a986b5e3d45481927410268d5f"
+    },
+    "packagedTestAssetsMatchFixtureLock": true
+  },
+  "instrumentationRun": {
+    "command": "adb -s <serial> shell am instrument -w -r io.github.supermonster003.autojs6.plugin.yolo.ncnn.test/androidx.test.runner.AndroidJUnitRunner",
+    "result": "PASS",
+    "startedAtUtc": "2026-09-10T02:22:32.2010552Z",
+    "completedAtUtc": "2026-09-10T02:22:34.4028748Z",
+    "adbExitCode": 0,
+    "instrumentationCode": -1,
+    "runnerSummary": "OK (5 tests)",
+    "reportedDurationSeconds": 0.512,
+    "testCount": 5,
+    "tests": [
+      "NativeYoloSmokeTest.yolo11nBusFixtureProducesReferenceDetections",
+      "YoloModelManifestTest.decoderRegistryHasNoUnknownFallback",
+      "YoloModelManifestTest.modelRejectionsUseTheTypedProtocolCategory",
+      "YoloModelManifestTest.publishedProfileAcceptsOneThroughMaximumLabels",
+      "YoloModelManifestTest.outputShapeMustMatchLabelCount"
+    ],
+    "nativeLifecycleCovered": [
+      "materialize validated regular-file PFD model artifacts",
+      "load JNI/NCNN and open native engine",
+      "fixed-image CPU inference",
+      "close native engine and materialized model",
+      "verify no remaining model sessions, cache entries, or target process"
+    ],
+    "referenceAssertions": {
+      "exactDetectionCountClassIdsAndLabels": true,
+      "maximumAbsoluteConfidenceError": 0.02,
+      "minimumBoundingBoxIoU": 0.95
+    }
+  },
+  "nativeInference": {
+    "backendVersion": "ncnn/1.0.20260526",
+    "imageWidth": 810,
+    "imageHeight": 1080,
+    "elapsedMillis": 177,
+    "detections": [
+      {
+        "classId": 5,
+        "label": "bus",
+        "confidence": 0.9392049312591553,
+        "bounds": [
+          11.918380737304688,
+          228.39425659179688,
+          799.22509765625,
+          735.2150268554688
+        ]
+      },
+      {
+        "classId": 0,
+        "label": "person",
+        "confidence": 0.9019904732704163,
+        "bounds": [
+          48.592716217041016,
+          397.960693359375,
+          243.21273803710938,
+          904.5357055664062
+        ]
+      },
+      {
+        "classId": 0,
+        "label": "person",
+        "confidence": 0.8492761254310608,
+        "bounds": [
+          670.556396484375,
+          392.5901184082031,
+          810,
+          879.6233520507812
+        ]
+      },
+      {
+        "classId": 0,
+        "label": "person",
+        "confidence": 0.8327871561050415,
+        "bounds": [
+          223.11959838867188,
+          405.57794189453125,
+          345.2289733886719,
+          859.7220458984375
+        ]
+      },
+      {
+        "classId": 0,
+        "label": "person",
+        "confidence": 0.3993437588214874,
+        "bounds": [
+          0,
+          550.1927490234375,
+          66.00817108154297,
+          871.7786254882812
+        ]
+      }
+    ]
+  },
+  "cleanup": {
+    "bothPackagesAbsentBeforeInstall": true,
+    "targetProcessAbsentAfterInstrumentation": true,
+    "materializedModelSessionDirectoryCount": 0,
+    "materializedModelSessionFileCount": 0,
+    "cacheEntryCount": 0,
+    "applicationUninstalled": true,
+    "instrumentationUninstalled": true,
+    "bothPackagesAbsentAfterUninstall": true,
+    "targetProcessAbsentAfterUninstall": true
+  },
+  "claimBoundary": {
+    "nativeArm64LoadAndFixedImageInference": "PASS",
+    "modelManifestInstrumentation": "PASS",
+    "api36Arm64Runtime": "PASS_DEBUG_NATIVE_LIFECYCLE",
+    "nativeLoad16KiBDevice": "PASS_DEBUG_NATIVE_LOAD_AND_FIXED_IMAGE_INFERENCE",
+    "resolvedRoadmapLimitations": [
+      "NATIVE_LOAD_16K_DEVICE=NOT_RUN_NO_16K_DEVICE",
+      "API36_ARM64_RUNTIME=NOT_RUN_NO_AVAILABLE_ENVIRONMENT"
+    ],
+    "resolutionScope": "Only the recorded debug APK, source revision, fixed fixture, and Samsung API 36 / arm64 / 16 KiB environment. Historical R1-R6 and API 31/35 receipts are unchanged.",
+    "hostBinderPfdEndToEnd": "NOT_RUN_NO_HOST_IN_THIS_TEST",
+    "providerServiceBinderLifecycle": "NOT_RUN_DIRECT_NATIVE_ENGINE_TEST",
+    "productionSigning": "NOT_CLAIMED_DEBUG_BUILD",
+    "finalReleaseOrShrunkRcArtifactRuntime": "NOT_RUN_DEBUG_VARIANT_ONLY",
+    "publicReleaseOrIndexAdmission": "NOT_CLAIMED",
+    "nativeConstructionHardTimeout": "NOT_CLAIMED_NON_BLOCKING_PRODUCT_LIMITATION",
+    "performanceBenchmark": "NOT_CLAIMED_SINGLE_FIXED_IMAGE_RUN",
+    "upgradeRuntime": "NOT_RUN_VERSION_CODE_2_FIRST_RELEASE"
+  },
+  "references": [
+    "https://source.android.com/docs/core/architecture/16kb-page-size/getting-page-size",
+    "https://developer.android.com/guide/practices/page-sizes#16-kb-backcompat-mode"
+  ]
+}

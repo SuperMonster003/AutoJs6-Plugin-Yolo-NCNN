@@ -9,9 +9,10 @@
 > R7 本地文档线已完成 (2026-08-27): 十语言 README / CHANGELOG 生成流水线与发布前一致性门禁落地,
 > 根文档面向最终用户重写; 公开仓库后的链接与渲染核对仍待发布窗口执行.
 >
-> R9 补充基线已刷新 (2026-08-27): 两次干净提交构建分别在 API 31 与 API 35 / arm64 /
-> 4 KiB 页物理设备完成 5 项 instrumentation 与真实 YOLO11n 定点推理, 安装字节身份和测试后清理
-> 均已核验; API 36 arm64 与 16 KiB 页专项仍未执行, 不由这些结果替代.
+> R9 两项环境验证已补齐 (2026-09-10): 在既有 API 31 与 API 35 / arm64 / 4 KiB 基线之外,
+> 当前干净提交构建已在三星 SM-A566B / API 36 / arm64 / 16 KiB 页设备完成 5 项 instrumentation
+> 与真实 YOLO11n 定点推理, 安装字节身份和测试后清理均已核验. 本次解除对应 debug 原生链路的
+> 两项环境未验证限制; 不扩展为宿主 Binder/PFD 全链路、收缩 RC 或生产发布 APK 的运行证据.
 >
 > R10 首个本地能力项已完成 (2026-08-27): Ultralytics YOLO11 NCNN 导出目录到 `model.json` 的
 > 离线生成、固定档位校验、测试与转换指南落地; 其余能力候选仍未排期.
@@ -32,7 +33,7 @@
 
 1. **文档与维护 (R7)** — 多语言文档流水线与漂移门禁已落地, 剩余公开后核对及逐版同步;
 2. **公开发布工程 (R8)** — 生产签名, 转公开, GitHub Release 与官方索引, 节奏受宿主发布约束;
-3. **平台与运行时验证 (R9)** — 16 KiB 页设备与 API 36 真机等显式未验证项, 受硬件可得性约束;
+3. **平台与运行时验证 (R9)** — 16 KiB / API 36 debug 原生链路已验证, 后续补测升级链路并随发布构建复验;
 4. **能力扩展候选 (R10)** — 模型 manifest 工具链已落地; GPU / 更多任务 / 动态尺寸 / 有界队列等
    多数需宿主协议联动, 未排期不承诺.
 
@@ -102,26 +103,38 @@
 
 ## R9 — 平台与运行时验证 (前置: 获得对应硬件/系统环境)
 
-> 以下为 R6 显式声明的非阻塞未验证项, 逐项解除时更新对应限制码; 在解除前不得从
-> 静态打包证据 (如 ELF 对齐) 推断运行时结论.
+> 以下承接 R6 显式声明的非阻塞未验证项, 逐项解除时记录独立运行证据; 不从静态打包证据
+> (如 ELF 对齐) 推断运行时结论. 2026-09-10 的补充结果仅绑定其记录的源码、debug APK、
+> 固定模型与设备环境; 历史 R1–R6 和 4 KiB 证据保持原有边界, 发布 APK 仍需独立终验.
 
 - [x] 补充 arm64 / API 35 / 4 KiB 基线 (2026-08-27): 从干净提交 `69e4a62` 离线构建 debug 与
   instrumentation APK, 在 `23046RP50C` (`968e9f18`) 运行 5/5 测试; NCNN 20260526 对固定
   `bus.jpg` 推理得到 1 辆 bus 与 4 个人, 推理耗时 78 ms. 设备端 APK SHA-256 与本地一致,
   instrumentation 结束后进程退出、模型会话目录为 0, 最终两个包均已卸载; 完整边界与哈希见
   [`docs/evidence/r9-arm64-api35-4k-smoke-2026-08-27.json`](docs/evidence/r9-arm64-api35-4k-smoke-2026-08-27.json).
-  此项仅刷新普通 arm64 基线, 不解除以下 API 36 / 16 KiB 限制
+  此项仅刷新普通 arm64 基线; API 36 / 16 KiB 的独立验证见下
 - [x] 在优先测试设备复验 arm64 / API 31 / 4 KiB 基线 (2026-08-27): 从干净提交 `e747794`
   离线构建 debug 与 instrumentation APK, 在 `XQ-AT72` (`QV710AF65F`) 运行 5/5 测试;
   NCNN 20260526 对同一固定 `bus.jpg` 推理得到 1 辆 bus 与 4 个人, 推理耗时 92 ms. 设备端
   APK SHA-256 与本地一致, instrumentation 结束后进程退出、模型会话目录为 0, 最终两个包均已
   卸载; 完整边界与哈希见
   [`docs/evidence/r9-arm64-api31-4k-qv710-smoke-2026-08-27.json`](docs/evidence/r9-arm64-api31-4k-qv710-smoke-2026-08-27.json).
-  此项将历史 QV710AF65F 基线重新绑定到当前源码, 同样不解除以下 API 36 / 16 KiB 限制
-- [ ] 16 KiB 页大小设备真机原生加载与单次定点推理验证, 解除
-  `NATIVE_LOAD_16K_DEVICE=NOT_RUN_NO_16K_DEVICE`; 完成判据: 记录设备型号 / 页大小 / APK 哈希与推理输出
-- [ ] API 36 arm64 真机运行验证 (加载 + 打开会话 + 推理 + 关闭), 解除
-  `API36_ARM64_RUNTIME=NOT_RUN_NO_AVAILABLE_ENVIRONMENT`
+  此项将历史 QV710AF65F 基线重新绑定到当时源码; API 36 / 16 KiB 的独立验证见下
+- [x] 16 KiB 页大小设备真机原生加载与单次定点推理验证 (2026-09-10): 从干净提交 `dc43e15`
+  经 `:app:clean` 离线构建 debug 与 instrumentation APK, 在用户授权的远程三星 `SM-A566B`
+  (`a56x`, Android 16 / API 36 / `arm64-v8a`) 完成 5/5 测试. shell 与应用 UID 下
+  `getconf PAGE_SIZE` 均为 `16384`; APK 内原生库的全部 3 个 LOAD 段均按 16 KiB 对齐,
+  包管理器报告 `pageSizeCompat=0`, 未改动设备全局兼容模式设置. NCNN 20260526 对固定
+  `bus.jpg` 推理得到 1 辆 bus 与 4 个人, 单次推理耗时 177 ms. 两个安装 APK 的 SHA-256
+  与本地一致; 模型会话目录、模型文件和缓存项均为 0, 测试进程退出且两个包均已卸载.
+  `NATIVE_LOAD_16K_DEVICE` 更新为 `PASS_DEBUG_NATIVE_LOAD_AND_FIXED_IMAGE_INFERENCE`;
+  源码、APK / 原生库 / fixture 哈希、完整检测输出与边界见
+  [`docs/evidence/r9-arm64-api36-16k-samsung-smoke-2026-09-10.json`](docs/evidence/r9-arm64-api36-16k-samsung-smoke-2026-09-10.json)
+- [x] API 36 arm64 真机运行验证 (2026-09-10): 同次三星 16 KiB 设备测试覆盖模型 PFD
+  校验与物化、JNI/NCNN 加载、原生引擎打开、推理、关闭及清理核验;
+  `API36_ARM64_RUNTIME` 更新为 `PASS_DEBUG_NATIVE_LIFECYCLE`, 证据见上.
+  此为直接原生引擎 instrumentation, 未经过宿主或 Provider Service 的跨进程 Binder 会话;
+  未测试收缩 RC / 最终发布 APK, 177 ms 单次结果不作为性能基准
 - [ ] 首次前向修复 (版本号 3) 发布时补测 版本号 2 → 3 升级安装运行链路, 记录 `UPGRADE_RUNTIME` 证据
   (首发版本按产品决策无回滚路径, 恢复仅限验证过的同版本重装)
 
@@ -162,7 +175,8 @@
 ## 历史里程碑 (R1–R6, 已完成)
 
 > 以下为已完成里程碑的证据记录, 自原路线图原样保留 (英文措辞不作改写);
-> 其中的证据边界声明持续有效.
+> 其中的证据边界声明持续有效. 下文 16 KiB / API 36 的 `NOT_RUN` 为当时的历史状态,
+> 后续 debug 原生运行验证以 R9 的 2026-09-10 独立证据为准, 不改写历史产物的验证结论.
 
 ## R1-SOURCE
 
