@@ -4,13 +4,18 @@
 
 ******
 
-# v0.1.1
+# v0.1.2
 
 ###### 2026/09/13
 
 * `Correctif` Les dates de version utilisent un format anglais uniforme
-* `Amélioration` Vérification à la compilation de l'alignement des pages de 16 KB des bibliothèques natives 64 bits, avec contrôle du contrat manifest et rapports JSON
 * `Amélioration` Validation des versions, signatures et variantes complètes des APK avant la création des fichiers à télécharger
+
+# v0.1.1
+
+###### 2026/09/13
+
+* `Amélioration` Vérification à la compilation de l'alignement des pages de 16 KB des bibliothèques natives 64 bits, avec contrôle du contrat manifest et rapports JSON
 
 # v0.1.0
 
