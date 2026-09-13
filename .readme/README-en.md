@@ -252,6 +252,7 @@ Before any Gradle build, the same gate also runs the eight standard-library test
 ###### 2026/09/13
 
 * `Fix` Version dates use a consistent English format
+* `Fix` Add the standard Wake activation entry and report native ABIs from the installed APK, with complete localized descriptions
 * `Improvement` Validate release APK versions, signing and the complete variant set before creating download artifacts
 
 # v0.1.1

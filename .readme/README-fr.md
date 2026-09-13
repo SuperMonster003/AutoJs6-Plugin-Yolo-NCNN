@@ -252,6 +252,7 @@ Avant toute compilation Gradle, la même porte exécute aussi les huit tests lim
 ###### 2026/09/13
 
 * `Correctif` Les dates de version utilisent un format anglais uniforme
+* `Correctif` Ajouter l'activation Wake standard et publier les ABI natives de l'APK installé avec des descriptions localisées complètes
 * `Amélioration` Validation des versions, signatures et variantes complètes des APK avant la création des fichiers à télécharger
 
 # v0.1.1
