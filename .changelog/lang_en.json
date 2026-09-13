@@ -10,6 +10,9 @@
       "improvement": [
         "Build verification of 16 KB page alignment for 64-bit native libraries, including manifest contract checks and JSON reports",
         "Validate release APK versions, signing and the complete variant set before creating download artifacts"
+      ],
+      "fix": [
+        "Version dates use a consistent English format"
       ]
     },
     "v0.1.0": {

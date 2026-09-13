@@ -251,6 +251,7 @@ Before any Gradle build, the same gate also runs the eight standard-library test
 
 ###### 2026/09/13
 
+* `Fix` Version dates use a consistent English format
 * `Improvement` Build verification of 16 KB page alignment for 64-bit native libraries, including manifest contract checks and JSON reports
 * `Improvement` Validate release APK versions, signing and the complete variant set before creating download artifacts
 
