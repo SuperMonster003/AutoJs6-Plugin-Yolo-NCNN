@@ -98,6 +98,15 @@ android {
         }
     }
 
+    splits {
+        abi {
+            isEnable = true
+            reset()
+            include(*supportedAbis.toTypedArray())
+            isUniversalApk = supportedAbis.size > 1
+        }
+    }
+
     buildFeatures {
         aidl = true
         buildConfig = true
@@ -187,3 +196,5 @@ tasks.withType(JavaCompile::class.java).configureEach {
 extra {
     versions.handleIfNeeded(project, "", listOf(buildTypeDebug, buildTypeRelease))
 }
+
+apply(from = rootProject.file("gradle/release-archive.gradle"))

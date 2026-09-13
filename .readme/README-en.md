@@ -73,7 +73,7 @@ The identity above is what the host uses to discover and bind this plugin. Model
 - Manifest-driven model compatibility: `model.json` declares inputs, outputs, and labels, supporting 1 to 256 custom classes; official YOLO11 and self-trained models work alike.
 - Model safety validation: session open verifies the declared length and SHA-256 of all three model files, and the actual NCNN graph output shape is verified at runtime; mismatches are rejected, never guessed at.
 - Stable error categories: missing component, provider unavailable, model rejected, unsupported capability, and similar cases all surface decidable error codes that scripts can handle precisely.
-- Controlled timeouts and lifecycle: both model open and each detection have timeout ceilings; `detector.close()` and stopping the script release the session and native resources immediately.
+- Request timeouts and cleanup through `detector.close()`; native work uses cooperative cancellation and may finish its current call before releasing resources.
 - README and CHANGELOG are available in ten languages: Simplified Chinese, Traditional Chinese (HK/TW), English, French, Spanish, Japanese, Korean, Russian, and Arabic.
 
 ******
@@ -249,9 +249,10 @@ Before any Gradle build, the same gate also runs the eight standard-library test
 
 # v0.1.1
 
-###### 2026/09/11
+###### 2026/09/13
 
 * `Improvement` Build verification of 16 KB page alignment for 64-bit native libraries, including manifest contract checks and JSON reports
+* `Improvement` Validate release APK versions, signing and the complete variant set before creating download artifacts
 
 # v0.1.0
 
@@ -273,7 +274,7 @@ Before any Gradle build, the same gate also runs the eight standard-library test
 
 ##### For more release history, see
 
-* [CHANGELOG-en.md](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/.changelog/CHANGELOG-en.md)
+* [CHANGELOG-en.md](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/app/src/main/assets/doc/CHANGELOG-en.md)
 
 ******
 

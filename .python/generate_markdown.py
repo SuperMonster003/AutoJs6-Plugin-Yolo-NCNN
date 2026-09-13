@@ -11,7 +11,7 @@ Source of truth:
 Outputs (22 artifacts):
     .readme/README-<code>.md     -- one README per language
     README.md                    -- repository root, default language copy
-    .changelog/CHANGELOG-<code>.md
+    app/src/main/assets/doc/CHANGELOG-<code>.md
     CHANGELOG.md                 -- repository root, default language copy
 
 Edit the JSON sources, never the generated markdown.
@@ -20,10 +20,8 @@ This generator is fully offline by design (standard library only, zero network
 calls), matching the sibling-plugin convention of keeping maintainer tooling
 clear of Cloudflare 502/524/529 noise on restricted development networks.
 
-Unlike the Android-flavored sibling generators, this one intentionally writes
-nothing below app/: the R6 provider release gate pins an exact APK asset
-allowlist, so localized changelogs stay in .changelog/ instead of
-app/src/main/assets.
+Localized release history is bundled under app/src/main/assets/doc. The provider
+release gate pins those ten documents together with the license/provenance assets.
 
 Usage:
     python .python/generate_markdown.py            # (re)generate all outputs
@@ -336,7 +334,7 @@ def build_readme_values(
     ).rstrip()
     content["placeholder_read_more_in_changelog_md"] = markdown_link(
         f"CHANGELOG-{code}.md",
-        f"{repo_url}/blob/{default_branch}/.changelog/CHANGELOG-{code}.md",
+        f"{repo_url}/blob/{default_branch}/app/src/main/assets/doc/CHANGELOG-{code}.md",
     )
     return content
 
@@ -372,7 +370,7 @@ def build_artifacts(root: Path) -> dict[Path, str]:
             not TEMPLATE_PATTERN.search(changelog_output),
             f"Unresolved changelog placeholder for {code}",
         )
-        artifacts[Path(f".changelog/CHANGELOG-{code}.md")] = changelog_output
+        artifacts[Path(f"app/src/main/assets/doc/CHANGELOG-{code}.md")] = changelog_output
         if code == LANGUAGE_CODE_DEFAULT:
             artifacts[Path("CHANGELOG.md")] = changelog_output
 
@@ -388,7 +386,7 @@ def generated_inventory(root: Path) -> set[Path]:
     }
     inventory.update(
         path.relative_to(root)
-        for path in (root / ".changelog").glob("CHANGELOG-*.md")
+        for path in (root / "app/src/main/assets/doc").glob("CHANGELOG-*.md")
         if path.is_file()
     )
     for name in ("README.md", "CHANGELOG.md"):

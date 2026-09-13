@@ -73,7 +73,7 @@ minimum host build: 5275 (AutoJs6 6.8.0+)
 - manifest 驅動的模型相容: `model.json` 宣告輸入輸出與標籤, 支援 1 到 256 個自訂類別, 官方 YOLO11 與自行訓練的模型同樣適用.
 - 模型安全驗證: 開啟工作階段時核驗三個模型檔案的宣告長度與 SHA-256, 執行期核驗 NCNN 圖的實際輸出形狀, 不符即拒絕而非猜測.
 - 穩定錯誤類別: 元件缺失, Provider 不可用, 模型被拒, 能力不支援等情境均回傳可判定的錯誤碼, 便於指令碼針對性處理.
-- 逾時與生命週期可控: 模型開啟與單次偵測均有逾時上限; `detector.close()` 與指令碼停止可立即釋放工作階段與原生資源.
+- 請求支援逾時, 使用 `detector.close()` 清理工作階段; 原生任務採用協作取消, 資源可能需等待目前呼叫結束後釋放.
 - README 與 CHANGELOG 支援簡體中文/繁體中文 (香港/台灣)/英語/法語/西班牙語/日語/韓語/俄語/阿拉伯語十種語言.
 
 ******
@@ -249,9 +249,10 @@ manifest 是相容性契約而非重貼標籤的工具: 開啟工作階段時核
 
 # v0.1.1
 
-###### 2026/09/11
+###### 2026/09/13
 
 * `優化` 建置階段校驗 64 位原生函式庫的 16 KB 頁面大小對齊, 檢查 manifest 契約並輸出 JSON 報告
+* `優化` 發行下載檔案產生前驗證 APK 版本, 簽章與完整變體集合
 
 # v0.1.0
 
@@ -273,7 +274,7 @@ manifest 是相容性契約而非重貼標籤的工具: 開啟工作階段時核
 
 ##### 更多發行歷史可參閱
 
-* [CHANGELOG-zh-Hant-TW.md](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/.changelog/CHANGELOG-zh-Hant-TW.md)
+* [CHANGELOG-zh-Hant-TW.md](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/app/src/main/assets/doc/CHANGELOG-zh-Hant-TW.md)
 
 ******
 

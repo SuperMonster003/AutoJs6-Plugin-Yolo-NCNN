@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_description">在獨立程序中使用 NCNN 偵測目標</string>
+</resources>

@@ -73,7 +73,7 @@ minimum host build: 5275 (AutoJs6 6.8.0+)
 - マニフェスト駆動のモデル互換性: `model.json` が入出力とラベルを宣言し, 1 から 256 個のカスタムクラスに対応. 公式 YOLO11 も自前学習モデルも同様に利用可能.
 - モデル安全検証: セッションオープン時に 3 ファイルの宣言長と SHA-256 を検証し, 実行時には NCNN グラフの実際の出力形状も検証. 不一致は推測せず拒否.
 - 安定したエラー分類: コンポーネント未指定, Provider 利用不可, モデル拒否, 非対応機能などはすべて判定可能なエラーコードを返し, スクリプト側で的確に処理可能.
-- タイムアウトとライフサイクルの制御: モデルオープンと各検出にタイムアウト上限があり, `detector.close()` やスクリプト停止でセッションとネイティブリソースを即時解放.
+- 要求のタイムアウトと `detector.close()` による解放に対応. ネイティブ処理は協調的にキャンセルされ, 現在の呼び出しが完了してからリソースを解放する場合があります.
 - README と CHANGELOG は簡体字中国語/繁体字中国語 (香港/台湾)/英語/フランス語/スペイン語/日本語/韓国語/ロシア語/アラビア語の 10 言語に対応.
 
 ******
@@ -249,9 +249,10 @@ Gradle ビルド前に同じゲートが `tools/generate_yolo_ncnn_manifest.py` 
 
 # v0.1.1
 
-###### 2026/09/11
+###### 2026/09/13
 
 * `改善` 64 ビットのネイティブライブラリの 16 KB ページアラインメントをビルド時に検証, manifest 契約の検査と JSON レポートに対応
+* `改善` ダウンロード用ファイルの作成前に, リリース APK のバージョン, 署名, バリアントの完全性を検証
 
 # v0.1.0
 
@@ -273,7 +274,7 @@ Gradle ビルド前に同じゲートが `tools/generate_yolo_ncnn_manifest.py` 
 
 ##### さらに詳しい履歴はこちら
 
-* [CHANGELOG-ja.md](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/.changelog/CHANGELOG-ja.md)
+* [CHANGELOG-ja.md](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/app/src/main/assets/doc/CHANGELOG-ja.md)
 
 ******
 

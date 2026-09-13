@@ -86,7 +86,7 @@ internal object YoloPlugin {
             versionName = packageInfo.versionName.orEmpty(),
             versionCode = versionCode,
             backend = YoloBackend.NCNN,
-            supportedAbis = supportedAbis,
+            supportedAbis = org.autojs.plugin.runtime.InstalledPackageIdentity.supportedAbis(context).toList(),
             minHostVersionCode = REQUIRED_HOST_VERSION,
         )
     }
@@ -107,7 +107,7 @@ internal object YoloPlugin {
             id = PLUGIN_ID
             engine = ENGINE
             variant = VARIANT
-            supportedAbis = YoloPlugin.supportedAbis.toTypedArray()
+            supportedAbis = provider.supportedAbis.toTypedArray()
             capabilities = Bundle().apply {
                 putLong(PluginCapabilityKeys.REQUIRES_HOST_VERSION, REQUIRED_HOST_VERSION)
                 putBoolean("runtimeReady", NativeYoloRuntime.isReady)

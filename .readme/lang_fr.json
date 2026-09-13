@@ -16,7 +16,7 @@
     "Compatibilité de modèle pilotée par manifeste : `{{ model_manifest_file }}` déclare entrées, sorties et étiquettes, avec 1 à {{ max_labels }} classes personnalisées ; les modèles YOLO11 officiels et auto-entraînés fonctionnent de la même façon.",
     "Validation de sécurité des modèles : à l'ouverture de session, la longueur déclarée et le SHA-256 des trois fichiers sont vérifiés, puis la forme réelle de la sortie du graphe NCNN est contrôlée à l'exécution ; toute divergence est rejetée, jamais devinée.",
     "Catégories d'erreur stables : composant manquant, provider indisponible, modèle rejeté, capacité non prise en charge, etc. produisent des codes d'erreur décidables que les scripts peuvent traiter précisément.",
-    "Délais et cycle de vie maîtrisés : l'ouverture du modèle et chaque détection ont un plafond de délai ; `detector.close()` et l'arrêt du script libèrent immédiatement la session et les ressources natives.",
+    "Délais de requête et nettoyage via `detector.close()`; le travail natif utilise une annulation coopérative et peut terminer l'appel en cours avant de libérer les ressources.",
     "README et CHANGELOG disponibles en dix langues : chinois simplifié, chinois traditionnel (HK/TW), anglais, français, espagnol, japonais, coréen, russe et arabe."
   ],
   "h3_quick_start": "Démarrage rapide",

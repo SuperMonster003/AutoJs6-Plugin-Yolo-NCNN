@@ -6,9 +6,10 @@
   "changelog_label_dependency": "相依",
   "$data": {
     "v0.1.1": {
-      "released_date": "2026/09/11",
+      "released_date": "2026/09/13",
       "improvement": [
-        "建置階段校驗 64 位原生函式庫的 16 KB 頁面大小對齊, 檢查 manifest 契約並輸出 JSON 報告"
+        "建置階段校驗 64 位原生函式庫的 16 KB 頁面大小對齊, 檢查 manifest 契約並輸出 JSON 報告",
+        "發行下載檔案產生前驗證 APK 版本, 簽章與完整變體集合"
       ]
     },
     "v0.1.0": {
