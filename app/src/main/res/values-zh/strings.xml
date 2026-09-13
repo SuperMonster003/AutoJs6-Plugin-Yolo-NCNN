@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_description">在独立进程中使用 NCNN 检测目标</string>
+</resources>

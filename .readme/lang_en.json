@@ -16,7 +16,7 @@
     "Manifest-driven model compatibility: `{{ model_manifest_file }}` declares inputs, outputs, and labels, supporting 1 to {{ max_labels }} custom classes; official YOLO11 and self-trained models work alike.",
     "Model safety validation: session open verifies the declared length and SHA-256 of all three model files, and the actual NCNN graph output shape is verified at runtime; mismatches are rejected, never guessed at.",
     "Stable error categories: missing component, provider unavailable, model rejected, unsupported capability, and similar cases all surface decidable error codes that scripts can handle precisely.",
-    "Controlled timeouts and lifecycle: both model open and each detection have timeout ceilings; `detector.close()` and stopping the script release the session and native resources immediately.",
+    "Request timeouts and cleanup through `detector.close()`; native work uses cooperative cancellation and may finish its current call before releasing resources.",
     "README and CHANGELOG are available in ten languages: Simplified Chinese, Traditional Chinese (HK/TW), English, French, Spanish, Japanese, Korean, Russian, and Arabic."
   ],
   "h3_quick_start": "Quick Start",

@@ -1,4 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">AutoJs6 YOLO NCNN</string>
-    <string name="plugin_description">Process-isolated NCNN object detection provider for AutoJs6</string>
+    <string name="plugin_description">Process-isolated NCNN object detection</string>
 </resources>

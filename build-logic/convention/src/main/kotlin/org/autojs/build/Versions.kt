@@ -102,41 +102,8 @@ class Versions @JvmOverloads constructor(
         }
     }
 
-    private fun updateProperties() {
-        if (!isBuildNumberAutoIncrementEnabled && !isBuildTimeUpdateEnabled) {
-            return
-        }
-
-        val propsPath = bp.path
-        val props = Properties().apply {
-            FileInputStream(propsPath).use { load(it) }
-        }
-
-        var hasChanged = false
-
-        if (isBuildNumberAutoIncrementEnabled && isBuildGapEnough) {
-            val isBuildAppRelease = gradle.startParameter.taskNames.any {
-                it.contains(Regex("^(:?app:)?assemble(app|inrt)release", IGNORE_CASE))
-            }
-            if (!isBuildAppRelease) {
-                props["VERSION_BUILD"] = "${appVersionCode + 1}"
-                wasBuildNumberAutoIncremented = true
-                hasChanged = true
-            }
-        }
-        if (isBuildTimeUpdateEnabled) {
-            props["BUILD_TIME"] = "${Date().time}"
-            hasChanged = true
-        }
-
-        if (!hasChanged) {
-            return
-        }
-
-        FileOutputStream(propsPath).use { out ->
-            props.store(out, null)
-        }
-    }
+    // Git owns the build counter; verification must not rewrite version inputs.
+    private fun updateProperties() = Unit
 
     private fun booleanGradleProperty(propertyName: String, defaultValue: Boolean): Boolean {
         val value = project.findProperty(propertyName)?.toString()

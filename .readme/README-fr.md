@@ -73,7 +73,7 @@ L'identité ci-dessus est celle que l'hôte utilise pour découvrir et lier ce p
 - Compatibilité de modèle pilotée par manifeste : `model.json` déclare entrées, sorties et étiquettes, avec 1 à 256 classes personnalisées ; les modèles YOLO11 officiels et auto-entraînés fonctionnent de la même façon.
 - Validation de sécurité des modèles : à l'ouverture de session, la longueur déclarée et le SHA-256 des trois fichiers sont vérifiés, puis la forme réelle de la sortie du graphe NCNN est contrôlée à l'exécution ; toute divergence est rejetée, jamais devinée.
 - Catégories d'erreur stables : composant manquant, provider indisponible, modèle rejeté, capacité non prise en charge, etc. produisent des codes d'erreur décidables que les scripts peuvent traiter précisément.
-- Délais et cycle de vie maîtrisés : l'ouverture du modèle et chaque détection ont un plafond de délai ; `detector.close()` et l'arrêt du script libèrent immédiatement la session et les ressources natives.
+- Délais de requête et nettoyage via `detector.close()`; le travail natif utilise une annulation coopérative et peut terminer l'appel en cours avant de libérer les ressources.
 - README et CHANGELOG disponibles en dix langues : chinois simplifié, chinois traditionnel (HK/TW), anglais, français, espagnol, japonais, coréen, russe et arabe.
 
 ******
@@ -249,9 +249,10 @@ Avant toute compilation Gradle, la même porte exécute aussi les huit tests lim
 
 # v0.1.1
 
-###### 2026/09/11
+###### 2026/09/13
 
 * `Amélioration` Vérification à la compilation de l'alignement des pages de 16 KB des bibliothèques natives 64 bits, avec contrôle du contrat manifest et rapports JSON
+* `Amélioration` Validation des versions, signatures et variantes complètes des APK avant la création des fichiers à télécharger
 
 # v0.1.0
 
@@ -273,7 +274,7 @@ Avant toute compilation Gradle, la même porte exécute aussi les huit tests lim
 
 ##### Pour plus d'historique, voir
 
-* [CHANGELOG-fr.md](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/.changelog/CHANGELOG-fr.md)
+* [CHANGELOG-fr.md](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/app/src/main/assets/doc/CHANGELOG-fr.md)
 
 ******
 

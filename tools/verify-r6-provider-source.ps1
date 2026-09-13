@@ -74,6 +74,16 @@ $expectedProtocolHandoff = [ordered]@{
 }
 $requiredApkAssets = [ordered]@{
     "assets/THIRD_PARTY_NOTICES.md" = "app/src/main/assets/THIRD_PARTY_NOTICES.md"
+    "assets/doc/CHANGELOG-ar.md" = "app/src/main/assets/doc/CHANGELOG-ar.md"
+    "assets/doc/CHANGELOG-en.md" = "app/src/main/assets/doc/CHANGELOG-en.md"
+    "assets/doc/CHANGELOG-es.md" = "app/src/main/assets/doc/CHANGELOG-es.md"
+    "assets/doc/CHANGELOG-fr.md" = "app/src/main/assets/doc/CHANGELOG-fr.md"
+    "assets/doc/CHANGELOG-ja.md" = "app/src/main/assets/doc/CHANGELOG-ja.md"
+    "assets/doc/CHANGELOG-ko.md" = "app/src/main/assets/doc/CHANGELOG-ko.md"
+    "assets/doc/CHANGELOG-ru.md" = "app/src/main/assets/doc/CHANGELOG-ru.md"
+    "assets/doc/CHANGELOG-zh-Hans.md" = "app/src/main/assets/doc/CHANGELOG-zh-Hans.md"
+    "assets/doc/CHANGELOG-zh-Hant-HK.md" = "app/src/main/assets/doc/CHANGELOG-zh-Hant-HK.md"
+    "assets/doc/CHANGELOG-zh-Hant-TW.md" = "app/src/main/assets/doc/CHANGELOG-zh-Hant-TW.md"
     "assets/licenses/Apache-2.0.txt" = "app/src/main/assets/licenses/Apache-2.0.txt"
     "assets/licenses/MPL-2.0.txt" = "app/src/main/assets/licenses/MPL-2.0.txt"
     "assets/licenses/ncnn-20260526.txt" = "app/src/main/assets/licenses/ncnn-20260526.txt"
@@ -285,6 +295,11 @@ function Get-R6ProviderOnlyFile {
     )
     $matches = @(Get-ChildItem -LiteralPath $Directory -Filter $Filter -ErrorAction SilentlyContinue |
         Where-Object { -not $_.PSIsContainer })
+    # Package-content checks inspect the universal artifact when ABI splits exist.
+    # The signed release archive separately validates every configured ABI output.
+    if ($Filter -ceq "*.apk" -and $matches.Count -gt 1) {
+        $matches = @($matches | Where-Object { $_.Name -match '-universal\.apk$' })
+    }
     Assert-R6ProviderCondition ($matches.Count -eq 1) "$Label must resolve to exactly one file; found $($matches.Count)"
     return $matches[0].FullName
 }
@@ -900,7 +915,7 @@ try {
         $expectedAssetEntries = @($requiredApkAssets.Keys | Sort-Object)
         Assert-R6ProviderCondition (
             ($snapshot.assetEntries -join "`n") -ceq ($expectedAssetEntries -join "`n")
-        ) "Provider APK assets must exactly match the five-entry release allowlist; found: $($snapshot.assetEntries -join ', ')"
+        ) "Provider APK assets must exactly match the license/provenance and localized release-history allowlist; found: $($snapshot.assetEntries -join ', ')"
         Assert-R6ProviderCondition (
             $snapshot.rawMarkdownEntries.Count -eq 1 -and
                 $snapshot.rawMarkdownSha256 -ceq (Get-R6ProviderSha256 $pluginInstructionPath)
