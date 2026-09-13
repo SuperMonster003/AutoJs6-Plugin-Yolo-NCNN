@@ -103,7 +103,8 @@ android {
             isEnable = true
             reset()
             include(*android.defaultConfig.ndk.abiFilters.toTypedArray())
-            isUniversalApk = android.defaultConfig.ndk.abiFilters.size > 1
+            // AGP requires a universal output when NDK filters and ABI splits coexist.
+            isUniversalApk = true
         }
     }
 
@@ -157,7 +158,7 @@ androidComponents {
         variant.outputs.forEach { output ->
             val architecture = output.filters.find {
                 it.filterType == FilterConfiguration.FilterType.ABI
-            }?.identifier ?: supportedAbi
+            }?.identifier ?: "universal"
             val outputFileNameProperty = output.javaClass.methods.firstOrNull {
                 it.name == "getOutputFileName" && it.parameterTypes.isEmpty()
             }?.invoke(output) as? Property<*>
