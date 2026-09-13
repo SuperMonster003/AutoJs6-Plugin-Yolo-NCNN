@@ -11,7 +11,8 @@
         "Validación de las versiones, firmas y variantes completas de los APK antes de crear los archivos de descarga"
       ],
       "fix": [
-        "Las fechas de versión mantienen un formato uniforme en inglés"
+        "Las fechas de versión mantienen un formato uniforme en inglés",
+        "Añadir la activación Wake estándar e informar de las ABI nativas del APK instalado con descripciones localizadas completas"
       ]
     },
     "v0.1.1": {

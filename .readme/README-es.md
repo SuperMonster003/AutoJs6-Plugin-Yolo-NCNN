@@ -252,6 +252,7 @@ Antes de cualquier compilación Gradle, la misma puerta también ejecuta las och
 ###### 2026/09/13
 
 * `Corrección` Las fechas de versión mantienen un formato uniforme en inglés
+* `Corrección` Añadir la activación Wake estándar e informar de las ABI nativas del APK instalado con descripciones localizadas completas
 * `Mejora` Validación de las versiones, firmas y variantes completas de los APK antes de crear los archivos de descarga
 
 # v0.1.1

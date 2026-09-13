@@ -11,7 +11,8 @@
         "Validate release APK versions, signing and the complete variant set before creating download artifacts"
       ],
       "fix": [
-        "Version dates use a consistent English format"
+        "Version dates use a consistent English format",
+        "Add the standard Wake activation entry and report native ABIs from the installed APK, with complete localized descriptions"
       ]
     },
     "v0.1.1": {
