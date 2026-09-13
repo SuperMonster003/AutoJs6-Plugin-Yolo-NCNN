@@ -102,8 +102,8 @@ android {
         abi {
             isEnable = true
             reset()
-            include(*supportedAbis.toTypedArray())
-            isUniversalApk = supportedAbis.size > 1
+            include(*android.defaultConfig.ndk.abiFilters.toTypedArray())
+            isUniversalApk = android.defaultConfig.ndk.abiFilters.size > 1
         }
     }
 
