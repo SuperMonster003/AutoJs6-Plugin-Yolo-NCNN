@@ -8,6 +8,7 @@
 
 ###### 2026/09/13
 
+* `Corrección` Las fechas de versión mantienen un formato uniforme en inglés
 * `Mejora` Verificación de compilación de la alineación de páginas de 16 KB en bibliotecas nativas de 64 bits, con controles del contrato manifest e informes JSON
 * `Mejora` Validación de las versiones, firmas y variantes completas de los APK antes de crear los archivos de descarga
 

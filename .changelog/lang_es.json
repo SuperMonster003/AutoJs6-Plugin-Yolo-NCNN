@@ -10,6 +10,9 @@
       "improvement": [
         "Verificación de compilación de la alineación de páginas de 16 KB en bibliotecas nativas de 64 bits, con controles del contrato manifest e informes JSON",
         "Validación de las versiones, firmas y variantes completas de los APK antes de crear los archivos de descarga"
+      ],
+      "fix": [
+        "Las fechas de versión mantienen un formato uniforme en inglés"
       ]
     },
     "v0.1.0": {
