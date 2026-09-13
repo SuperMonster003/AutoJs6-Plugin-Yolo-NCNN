@@ -5,14 +5,19 @@
   "changelog_label_improvement": "優化",
   "changelog_label_dependency": "依賴",
   "$data": {
-    "v0.1.1": {
+    "v0.1.2": {
       "released_date": "2026/09/13",
       "improvement": [
-        "建置階段校驗 64 位原生程式庫的 16 KB 頁面大小對齊, 檢查 manifest 契約並輸出 JSON 報告",
         "發佈下載檔案產生前校驗 APK 版本, 簽署與完整變體集合"
       ],
       "fix": [
         "版本日期保持統一的英文格式"
+      ]
+    },
+    "v0.1.1": {
+      "released_date": "2026/09/13",
+      "improvement": [
+        "建置階段校驗 64 位原生程式庫的 16 KB 頁面大小對齊, 檢查 manifest 契約並輸出 JSON 報告"
       ]
     },
     "v0.1.0": {

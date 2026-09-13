@@ -4,13 +4,18 @@
 
 ******
 
-# v0.1.1
+# v0.1.2
 
 ###### 2026/09/13
 
 * `Fix` Version dates use a consistent English format
-* `Improvement` Build verification of 16 KB page alignment for 64-bit native libraries, including manifest contract checks and JSON reports
 * `Improvement` Validate release APK versions, signing and the complete variant set before creating download artifacts
+
+# v0.1.1
+
+###### 2026/09/13
+
+* `Improvement` Build verification of 16 KB page alignment for 64-bit native libraries, including manifest contract checks and JSON reports
 
 # v0.1.0
 

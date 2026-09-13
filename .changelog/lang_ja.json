@@ -5,14 +5,19 @@
   "changelog_label_improvement": "改善",
   "changelog_label_dependency": "依存関係",
   "$data": {
-    "v0.1.1": {
+    "v0.1.2": {
       "released_date": "2026/09/13",
       "improvement": [
-        "64 ビットのネイティブライブラリの 16 KB ページアラインメントをビルド時に検証, manifest 契約の検査と JSON レポートに対応",
         "ダウンロード用ファイルの作成前に, リリース APK のバージョン, 署名, バリアントの完全性を検証"
       ],
       "fix": [
         "バージョン日付は英語の統一形式で表示されます"
+      ]
+    },
+    "v0.1.1": {
+      "released_date": "2026/09/13",
+      "improvement": [
+        "64 ビットのネイティブライブラリの 16 KB ページアラインメントをビルド時に検証, manifest 契約の検査と JSON レポートに対応"
       ]
     },
     "v0.1.0": {
