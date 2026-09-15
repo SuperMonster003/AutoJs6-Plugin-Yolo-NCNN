@@ -55,7 +55,7 @@ discovery actions: org.autojs.plugin.INFO / org.autojs.plugin.YOLO
 runtime process: :provider
 protocol version: 1.0
 backend / task / decoder: ncnn / detect / ultralytics-detect
-supported ABI: arm64-v8a
+supported ABI: arm64-v8a, armeabi-v7a, x86, x86_64
 minimum host build: 5275 (AutoJs6 6.8.0+)
 ```
 
@@ -69,7 +69,7 @@ minimum host build: 5275 (AutoJs6 6.8.0+)
 
 - 오프라인 YOLO11 객체 탐지: AutoJs6 `images` 모듈의 이미지 객체를 입력하면 라벨 + 신뢰도 + 바운딩 박스를 출력하며, 전 과정이 기기 내에서 완결됩니다.
 - 프로세스 격리: 추론은 독립된 `:provider` 프로세스에서 실행되어 네이티브 계층 오류가 AutoJs6 메인 프로세스에 영향을 주지 않습니다. 서비스는 `org.autojs.permission.PLUGIN` 권한과 서명 검사로 보호됩니다.
-- NCNN 20260526 CPU 추론 백엔드: 스레드 수 조절 가능 (기본 4, 최대 64), `arm64-v8a` 기기 지원.
+- NCNN 20260526 CPU 추론 백엔드: 스레드 수 조절 가능 (기본 4, 최대 64), `arm64-v8a, armeabi-v7a, x86, x86_64` 기기 지원.
 - 매니페스트 기반 모델 호환성: `model.json`이 입출력과 라벨을 선언하며, 1개부터 256개까지의 커스텀 클래스를 지원합니다. 공식 YOLO11 모델과 직접 학습한 모델 모두 동일하게 사용할 수 있습니다.
 - 모델 안전 검증: 세션 오픈 시 세 모델 파일의 선언 길이와 SHA-256을 검증하고, 실행 시 NCNN 그래프의 실제 출력 형태도 검증합니다. 불일치는 추측 없이 거부됩니다.
 - 안정적인 오류 분류: 컴포넌트 누락, Provider 사용 불가, 모델 거부, 미지원 기능 등은 모두 판별 가능한 오류 코드를 반환하여 스크립트가 정확히 처리할 수 있습니다.
@@ -85,7 +85,7 @@ minimum host build: 5275 (AutoJs6 6.8.0+)
 - **설치** — 이 플러그인은 현재 비공개 스테이징 단계입니다 (아래 프로젝트 상태 절 참조): 호환 호스트 AutoJs6 6.8.0 (빌드 5275)가 정식 출시된 후에야 공개 다운로드와 공식 플러그인 인덱스 등재가 이루어집니다. 그 전에는 아래 빌드 절에 따라 TEST-SIGNED 후보를 직접 빌드하여 같은 디버그 인증서를 쓰는 AutoJs6 테스트 APK와 짝지어 설치할 수 있습니다. 호스트와 플러그인은 동일 인증서로 서명되어야 합니다.
 - **활성화** — 플러그인 설치만으로는 YOLO가 켜지지 않습니다: AutoJs6 호스트가 선택, 신뢰, 활성화 스위치를 명시적으로 보유하므로 (YOLO 경로는 기본 비활성), 호스트에서 이 Provider를 활성화하고 신뢰해야 합니다. 스크립트 쪽에서도 `yolo.load`의 `options.component`에 컴포넌트 문자열을 명시해야 하며, 암묵적 폴백은 없습니다.
 - **실행** — `model.json`, `model.ncnn.param`, `model.ncnn.bin` 세 파일이 들어 있는 모델 디렉터리를 준비하고 (아래 모델 준비 절 참조), `yolo.load(modelDir, options)`로 탐지기를 열고, `detector.detect(image, options)`로 탐지 배열을 얻은 뒤, 사용이 끝나면 `detector.close()`로 해제합니다.
-- **문제 해결** — `yolo.load`와 `detector.detect`가 던지는 예외는 안정적인 오류 분류를 갖습니다: `COMPONENT_REQUIRED` (컴포넌트 미지정), `PROVIDER_UNAVAILABLE` (호스트가 Provider를 찾지 못하거나 신뢰하지 않음), `MODEL_REJECTED` (모델이나 매니페스트가 검증 실패, 상세에 `MANIFEST_*` 등 접두사 포함), `UNSUPPORTED_CAPABILITY` (CPU/arm64/detect 밖의 기능 요청), `SESSION_CLOSED`, `DETECT_FAILED` 등. 아래 기능 경계 절과 [모델 매니페스트 명세](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/model-manifest-v1.md)를 대조하며 조사하세요.
+- **문제 해결** — `yolo.load`와 `detector.detect`가 던지는 예외는 안정적인 오류 분류를 갖습니다: `COMPONENT_REQUIRED` (컴포넌트 미지정), `PROVIDER_UNAVAILABLE` (호스트가 Provider를 찾지 못하거나 신뢰하지 않음), `MODEL_REJECTED` (모델이나 매니페스트가 검증 실패, 상세에 `MANIFEST_*` 등 접두사 포함), `UNSUPPORTED_CAPABILITY` (CPU/detect 밖의 기능 요청), `SESSION_CLOSED`, `DETECT_FAILED` 등. 아래 기능 경계 절과 [모델 매니페스트 명세](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/model-manifest-v1.md)를 대조하며 조사하세요.
 
 ******
 
@@ -182,7 +182,7 @@ models/yolo11n/
 예측 가능한 동작을 위해, 다음 범위를 벗어나는 요청은 조용한 폴백 없이 명시적으로 거부됩니다:
 
 - CPU 추론만 지원: Vulkan/GPU는 미지원이며 `options.device`는 `"cpu"`만 허용합니다.
-- `arm64-v8a` 전용: 다른 ABI 기기는 이 플러그인의 네이티브 라이브러리를 로드할 수 없습니다.
+- 지원 ABI: `arm64-v8a, armeabi-v7a, x86, x86_64`. universal APK에는 각 ABI의 네이티브 라이브러리가 포함됩니다.
 - 객체 탐지 (detect) 작업만 지원: 세그멘테이션, 포즈, OBB, 분류, 추적은 모두 미지원입니다.
 - 등록된 디코더는 `ultralytics-detect`뿐: 알 수 없는 `decoderId`는 다른 디코더로 폴백하지 않고 거부됩니다.
 - 입력은 640x640 letterbox로 전처리되며 (manifest v1 고정 프로파일), 픽셀 형식은 RGBA_8888입니다.
@@ -211,7 +211,7 @@ models/yolo11n/
 
 ******
 
-AutoJs6 버전 코드 5275 이상 (즉 6.8.0 이후)이어야 하며 플러그인과 동일 인증서로 서명되어야 합니다. Android 24+ (Android 7.0), targetSdk 36. 기기는 `arm64-v8a`여야 합니다. 플러그인 프로토콜 버전 1.0, 현재 Provider 버전 0.1.2 (버전 코드 2).
+AutoJs6 버전 코드 5275 이상 (즉 6.8.0 이후)이어야 하며 플러그인과 동일 인증서로 서명되어야 합니다. Android 24+ (Android 7.0), targetSdk 36. 기기는 `arm64-v8a, armeabi-v7a, x86, x86_64`여야 합니다. 플러그인 프로토콜 버전 1.0, 현재 Provider 버전 0.1.2 (버전 코드 2).
 
 ******
 
@@ -235,7 +235,7 @@ JDK 21+ 권장. Android SDK는 platforms 24과 36, 그리고 NDK 29.0.14206865�
 .\gradlew.bat :app:assembleRelease
 ```
 
-`assembleRc`는 설치 가능한 arm64 전용 TEST-SIGNED 후보를 생성합니다: release의 R8과 리소스 축소를 물려받고, 표준 디버그 서명을 사용하며, 버전 이름이 `-rc-test-signed`로 끝납니다. 같은 인증서의 AutoJs6 테스트 APK와 짝지어 실기기 검증에 사용합니다. `assembleRelease`는 릴리스 빌드이며 서명 자료가 없으면 서명되지 않은 채로 남습니다.
+`assembleRc`는 설치 가능한 universal TEST-SIGNED 후보를 생성합니다: release의 R8과 리소스 축소를 물려받고, 표준 디버그 서명을 사용하며, 버전 이름이 `-rc-test-signed`로 끝납니다. 같은 인증서의 AutoJs6 테스트 APK와 짝지어 실기기 검증에 사용합니다. `assembleRelease`는 릴리스 빌드이며 서명 자료가 없으면 서명되지 않은 채로 남습니다.
 
 메인테이너 게이트 `tools/verify-r6-provider-source.ps1`은 먼저 `--check`로 10개 언어의 README/CHANGELOG 생성물 22개를 모두 검사하며 드리프트가 있으면 즉시 실패합니다. 그런 다음 기본적으로 깨끗한 소스에서 시작합니다: `:app:clean` 후 집중 테스트와 두 가지 APK 조립을 실행하고, 테스트 XML과 산출물 해시를 기록하며, 다섯 파일 애셋 허용 목록으로 APK를 검증합니다. 로컬 검증과 문서 생성 모두 기본적으로 오프라인 (네트워크 호출 0회)으로 실행하여 개발 네트워크의 Cloudflare 502/524/529 노이즈를 피합니다.
 
@@ -254,6 +254,7 @@ Gradle 빌드 전에 같은 게이트가 `tools/generate_yolo_ncnn_manifest.py`�
 * `수정` 버전 날짜를 일관된 영어 형식으로 표시
 * `수정` 표준 Wake 활성화 진입점을 추가하고 설치된 APK의 네이티브 ABI와 모든 언어의 설명을 표시
 * `개선` 다운로드 파일 생성 전에 릴리스 APK의 버전, 서명 및 전체 변형 구성을 검증
+* `개선` 네이티브 ABI 패키징과 플러그인 메타데이터를 arm64-v8a, armeabi-v7a, x86, x86_64로 확장하고 범용 APK와 ABI별 APK를 일치시킴
 
 # v0.1.1
 

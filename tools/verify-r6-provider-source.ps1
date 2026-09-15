@@ -29,7 +29,7 @@ $expectedIdentity = [ordered]@{
     plugin_backend = "ncnn"
     plugin_task = "detect"
     plugin_decoder = "ultralytics-detect"
-    plugin_supported_abis = "arm64-v8a"
+    plugin_supported_abis = "arm64-v8a,armeabi-v7a,x86,x86_64"
 }
 $expectedManifestContract = [ordered]@{
     "requiresHostVersion" = $expectedIdentity.plugin_requires_host_version
@@ -49,9 +49,10 @@ $expectedRuntimeContractConstants = [ordered]@{
     RELEASE_BACKEND = $expectedIdentity.plugin_backend
     RELEASE_TASK = $expectedIdentity.plugin_task
     RELEASE_DECODER = $expectedIdentity.plugin_decoder
-    RELEASE_SUPPORTED_ABI = $expectedIdentity.plugin_supported_abis
+    RELEASE_SUPPORTED_ABIS = $expectedIdentity.plugin_supported_abis
 }
-$expectedNativeEntry = "lib/arm64-v8a/libautojs_yolo.so"
+$expectedAbis = @($expectedIdentity.plugin_supported_abis -split ',')
+$expectedNativeEntries = @($expectedAbis | ForEach-Object { "lib/$_/libautojs_yolo.so" } | Sort-Object)
 $expectedApache20Length = 11358L
 $expectedApache20Sha256 = "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
 $expectedProtocolHandoff = [ordered]@{
@@ -920,10 +921,10 @@ try {
             $snapshot.rawMarkdownEntries.Count -eq 1 -and
                 $snapshot.rawMarkdownSha256 -ceq (Get-R6ProviderSha256 $pluginInstructionPath)
         ) "Provider APK must contain exactly one dynamically named compiled raw Markdown entry matching plugin_instruction.md"
-        $nativeEntries = @($snapshot.entries | Where-Object { $_ -match '^lib/' })
+        $nativeEntries = @($snapshot.entries | Where-Object { $_ -match '^lib/' } | Sort-Object)
         Assert-R6ProviderCondition (
-            $nativeEntries.Count -eq 1 -and $nativeEntries[0] -ceq $expectedNativeEntry
-        ) "Provider APK must contain only $expectedNativeEntry"
+            ($nativeEntries -join "`n") -ceq ($expectedNativeEntries -join "`n")
+        ) "Provider APK native inventory must match: $($expectedNativeEntries -join ', ')"
         $forbiddenPayloads = @($snapshot.entries | Where-Object {
             $leaf = [System.IO.Path]::GetFileName($_).ToLowerInvariant()
             $knownModelLeaves -contains $leaf -or
@@ -1054,7 +1055,7 @@ try {
             backend = $expectedIdentity.plugin_backend
             task = $expectedIdentity.plugin_task
             decoder = $expectedIdentity.plugin_decoder
-            supportedAbis = @($expectedIdentity.plugin_supported_abis)
+            supportedAbis = $expectedAbis
         }
         release = [ordered]@{
             artifact = $releaseApkRecord
@@ -1065,7 +1066,7 @@ try {
             mapping = $releaseMappingRecord
             resourceShrinkerReport = $releaseResourcesRecord
             packageVerification = if ($buildIdentityProven) { "PASS" } else { "NOT_EVALUATED" }
-            abi = "arm64-v8a"
+            abis = $expectedAbis
             modelOrImagePayloads = $false
             assetEntries = @($releaseZip.assetEntries)
             pluginInstructionEntry = $releaseZip.rawMarkdownEntries[0]
@@ -1082,7 +1083,7 @@ try {
             mapping = $rcMappingRecord
             resourceShrinkerReport = $rcResourcesRecord
             packageVerification = if ($buildIdentityProven) { "PASS" } else { "NOT_EVALUATED" }
-            abi = "arm64-v8a"
+            abis = $expectedAbis
             modelOrImagePayloads = $false
             assetEntries = @($rcZip.assetEntries)
             pluginInstructionEntry = $rcZip.rawMarkdownEntries[0]

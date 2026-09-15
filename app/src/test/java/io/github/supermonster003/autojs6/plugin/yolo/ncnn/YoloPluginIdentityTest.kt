@@ -35,6 +35,7 @@ class YoloPluginIdentityTest {
         assertEquals(capabilities.tasks.single().name.lowercase(), YoloPlugin.RELEASE_TASK)
         assertEquals(listOf(YoloPlugin.RELEASE_DECODER), capabilities.decoderIds)
         assertEquals(YoloPlugin.RELEASE_DECODER, YoloPlugin.DECODER_ID)
-        assertEquals(listOf(YoloPlugin.RELEASE_SUPPORTED_ABI), YoloPlugin.supportedAbis)
+        assertEquals(listOf("arm64-v8a", "armeabi-v7a", "x86", "x86_64"), YoloPlugin.supportedAbis)
+        assertEquals(YoloPlugin.RELEASE_SUPPORTED_ABIS, YoloPlugin.supportedAbis.joinToString(","))
     }
 }

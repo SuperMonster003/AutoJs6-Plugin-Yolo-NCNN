@@ -55,7 +55,7 @@ discovery actions: org.autojs.plugin.INFO / org.autojs.plugin.YOLO
 runtime process: :provider
 protocol version: 1.0
 backend / task / decoder: ncnn / detect / ultralytics-detect
-supported ABI: arm64-v8a
+supported ABI: arm64-v8a, armeabi-v7a, x86, x86_64
 minimum host build: 5275 (AutoJs6 6.8.0+)
 ```
 
@@ -69,7 +69,7 @@ La identidad anterior es la que el host usa para descubrir y vincular este plugi
 
 - Detección de objetos YOLO11 sin conexión: entrega un objeto imagen del módulo `images` de AutoJs6 y recibe etiquetas + confianzas + cajas delimitadoras, todo calculado en el dispositivo.
 - Aislamiento de procesos: la inferencia corre en el proceso separado `:provider`, de modo que un fallo de la capa nativa nunca derriba el proceso principal de AutoJs6; los servicios están protegidos por el permiso `org.autojs.permission.PLUGIN` y por comprobaciones de firma.
-- Backend de inferencia CPU NCNN 20260526: número de hilos ajustable (por defecto 4, hasta 64), para dispositivos `arm64-v8a`.
+- Backend de inferencia CPU NCNN 20260526: número de hilos ajustable (por defecto 4, hasta 64), para dispositivos `arm64-v8a, armeabi-v7a, x86, x86_64`.
 - Compatibilidad de modelos dirigida por manifiesto: `model.json` declara entradas, salidas y etiquetas, con 1 a 256 clases personalizadas; los modelos YOLO11 oficiales y los auto-entrenados funcionan por igual.
 - Validación de seguridad del modelo: al abrir la sesión se verifican la longitud declarada y el SHA-256 de los tres archivos, y en ejecución se verifica la forma real de la salida del grafo NCNN; las discrepancias se rechazan, nunca se adivinan.
 - Categorías de error estables: componente ausente, provider no disponible, modelo rechazado, capacidad no soportada y casos similares devuelven códigos de error decidibles que los scripts pueden manejar con precisión.
@@ -85,7 +85,7 @@ La identidad anterior es la que el host usa para descubrir y vincular este plugi
 - **Instalar** — Este plugin está actualmente en fase de preparación privada (ver la sección Estado del proyecto más abajo): la descarga pública y la entrada en el índice oficial de plugins llegarán solo después de que se publique formalmente el host compatible AutoJs6 6.8.0 (build 5275). Hasta entonces puede compilar usted mismo un candidato TEST-SIGNED como describe la sección Compilación y emparejarlo con un APK de prueba de AutoJs6 que use el mismo certificado de depuración; host y plugin deben firmarse con el mismo certificado.
 - **Activar** — Instalar el plugin no activa YOLO por sí solo: el host AutoJs6 conserva interruptores explícitos de selección, confianza y activación (la ruta YOLO está desactivada por defecto), así que active y confíe en este provider dentro del host. En el lado del script, `yolo.load` también exige la cadena de componente explícita en `options.component`; no existe ningún respaldo implícito.
 - **Ejecutar** — Prepare un directorio de modelo con los tres archivos `model.json`, `model.ncnn.param` y `model.ncnn.bin` (ver la sección Preparación del modelo más abajo), abra un detector con `yolo.load(modelDir, options)`, obtenga el arreglo de detecciones con `detector.detect(image, options)` y libérelo con `detector.close()` al terminar.
-- **Depurar** — Las excepciones lanzadas por `yolo.load` y `detector.detect` llevan categorías de error estables: `COMPONENT_REQUIRED` (sin componente), `PROVIDER_UNAVAILABLE` (el host no encuentra el provider o no confía en él), `MODEL_REJECTED` (el modelo o el manifiesto no pasó la validación; los detalles llevan prefijos como `MANIFEST_*`), `UNSUPPORTED_CAPABILITY` (se pidió una capacidad fuera de CPU/arm64/detect), `SESSION_CLOSED`, `DETECT_FAILED`, etc. Consulte la sección Límites más abajo y la [especificación del manifiesto de modelo](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/model-manifest-v1.md) al depurar.
+- **Depurar** — Las excepciones lanzadas por `yolo.load` y `detector.detect` llevan categorías de error estables: `COMPONENT_REQUIRED` (sin componente), `PROVIDER_UNAVAILABLE` (el host no encuentra el provider o no confía en él), `MODEL_REJECTED` (el modelo o el manifiesto no pasó la validación; los detalles llevan prefijos como `MANIFEST_*`), `UNSUPPORTED_CAPABILITY` (se pidió una capacidad fuera de CPU/detect), `SESSION_CLOSED`, `DETECT_FAILED`, etc. Consulte la sección Límites más abajo y la [especificación del manifiesto de modelo](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/model-manifest-v1.md) al depurar.
 
 ******
 
@@ -182,7 +182,7 @@ El manifiesto es un contrato de compatibilidad, no una herramienta de re-etiquet
 Para mantener un comportamiento predecible, las peticiones fuera del siguiente alcance se rechazan explícitamente, sin degradación silenciosa:
 
 - Solo inferencia en CPU: Vulkan/GPU no está soportado y `options.device` solo acepta `"cpu"`.
-- Solo `arm64-v8a`: los dispositivos con otras ABI no pueden cargar la biblioteca nativa del plugin.
+- ABI compatibles: `arm64-v8a, armeabi-v7a, x86, x86_64`; el APK universal incluye la biblioteca nativa de cada ABI.
 - Solo detección de objetos (detect): segmentación, pose, OBB, clasificación y seguimiento no están soportados.
 - Solo está registrado el decodificador `ultralytics-detect`: un `decoderId` desconocido se rechaza en lugar de recurrir a otro decodificador.
 - La entrada se preprocesa como letterbox 640x640 (perfil fijo del manifest v1), con píxeles RGBA_8888.
@@ -211,7 +211,7 @@ El plugin está diseñado fail-closed; los siguientes mecanismos están siempre 
 
 ******
 
-Requiere AutoJs6 con código de versión no inferior a 5275 (es decir, 6.8.0 o posterior) firmado con el mismo certificado que el plugin; Android 24+ (Android 7.0), targetSdk 36; el dispositivo debe ser `arm64-v8a`. Versión de protocolo del plugin 1.0; versión actual del provider 0.1.2 (código de versión 2).
+Requiere AutoJs6 con código de versión no inferior a 5275 (es decir, 6.8.0 o posterior) firmado con el mismo certificado que el plugin; Android 24+ (Android 7.0), targetSdk 36; el dispositivo debe ser `arm64-v8a, armeabi-v7a, x86, x86_64`. Versión de protocolo del plugin 1.0; versión actual del provider 0.1.2 (código de versión 2).
 
 ******
 
@@ -235,7 +235,7 @@ Se recomienda JDK 21+; el SDK de Android debe proporcionar las platforms 24 y 36
 .\gradlew.bat :app:assembleRelease
 ```
 
-`assembleRc` produce un candidato instalable arm64-only TEST-SIGNED: hereda el R8 y la reducción de recursos de release, usa la firma de depuración estándar y su nombre de versión termina en `-rc-test-signed`; está pensado para emparejarse con un APK de prueba de AutoJs6 del mismo certificado en la verificación sobre dispositivo. `assembleRelease` es la compilación de release y permanece sin firmar cuando falta el material de firma.
+`assembleRc` produce un candidato instalable universal TEST-SIGNED: hereda el R8 y la reducción de recursos de release, usa la firma de depuración estándar y su nombre de versión termina en `-rc-test-signed`; está pensado para emparejarse con un APK de prueba de AutoJs6 del mismo certificado en la verificación sobre dispositivo. `assembleRelease` es la compilación de release y permanece sin firmar cuando falta el material de firma.
 
 La puerta de mantenimiento `tools/verify-r6-provider-source.ps1` primero ejecuta `--check` sobre los 22 artefactos README/CHANGELOG generados para 10 idiomas y falla de inmediato ante cualquier deriva. Después parte por defecto de fuentes limpias: tras `:app:clean` ejecuta las pruebas enfocadas y los dos ensamblados de APK, registra los XML de pruebas y los hashes de los artefactos, y verifica el APK contra una lista blanca de cinco archivos de assets. La verificación local y la generación de documentación se ejecutan sin conexión por defecto (cero llamadas de red) para evitar el ruido Cloudflare 502/524/529 de la red de desarrollo.
 
@@ -254,6 +254,7 @@ Antes de cualquier compilación Gradle, la misma puerta también ejecuta las och
 * `Corrección` Las fechas de versión mantienen un formato uniforme en inglés
 * `Corrección` Añadir la activación Wake estándar e informar de las ABI nativas del APK instalado con descripciones localizadas completas
 * `Mejora` Validación de las versiones, firmas y variantes completas de los APK antes de crear los archivos de descarga
+* `Mejora` Ampliar el empaquetado de ABI nativas y los metadatos del complemento a arm64-v8a, armeabi-v7a, x86 y x86_64, con APK universales e individuales coherentes
 
 # v0.1.1
 

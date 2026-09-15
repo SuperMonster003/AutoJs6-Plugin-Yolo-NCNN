@@ -36,10 +36,10 @@ internal object YoloPlugin {
     const val RELEASE_BACKEND = "ncnn"
     const val RELEASE_TASK = "detect"
     const val RELEASE_DECODER = "ultralytics-detect"
-    const val RELEASE_SUPPORTED_ABI = "arm64-v8a"
+    const val RELEASE_SUPPORTED_ABIS = "arm64-v8a,armeabi-v7a,x86,x86_64"
     const val DECODER_ID = YoloDecoderRegistry.ULTRALYTICS_DETECT
 
-    val supportedAbis = listOf(RELEASE_SUPPORTED_ABI)
+    val supportedAbis = RELEASE_SUPPORTED_ABIS.split(',')
 
     val capabilities: YoloCapabilities
         get() = YoloCapabilities(

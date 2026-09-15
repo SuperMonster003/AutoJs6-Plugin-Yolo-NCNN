@@ -11,6 +11,7 @@
 * `Fix` Version dates use a consistent English format
 * `Fix` Add the standard Wake activation entry and report native ABIs from the installed APK, with complete localized descriptions
 * `Improvement` Validate release APK versions, signing and the complete variant set before creating download artifacts
+* `Improvement` Extend native ABI packaging and plugin metadata to arm64-v8a, armeabi-v7a, x86 and x86_64, with matching universal and per-ABI APKs
 
 # v0.1.1
 
