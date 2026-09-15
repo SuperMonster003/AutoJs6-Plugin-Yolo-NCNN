@@ -18,6 +18,33 @@
   "ndkVersion": "29.0.14206865",
   "cmakeVersion": "3.22.1",
   "stl": "c++_static",
-  "abis": ["arm64-v8a"],
-  "vulkan": false
+  "abis": [
+    "arm64-v8a",
+    "armeabi-v7a",
+    "x86",
+    "x86_64"
+  ],
+  "vulkan": false,
+  "staticLibraries": {
+    "arm64-v8a": {
+      "path": "20260526/arm64-v8a/lib/libncnn.a",
+      "length": 7275272,
+      "sha256": "505e484ae18b59e51cb35343506146ab101e608a86f8c1d0834e761b99b2a490"
+    },
+    "armeabi-v7a": {
+      "path": "20260526/armeabi-v7a/lib/libncnn.a",
+      "length": 4509400,
+      "sha256": "e398710bd1586ece5d8ed63904ee9436df8cebb4efe9a5fe81e47e5fc77b8d5e"
+    },
+    "x86": {
+      "path": "20260526/x86/lib/libncnn.a",
+      "length": 19754962,
+      "sha256": "99239f1e9b67855f105e10964e1640322bd26e818d8a21c33ee93062f273de89"
+    },
+    "x86_64": {
+      "path": "20260526/x86_64/lib/libncnn.a",
+      "length": 23032404,
+      "sha256": "7972066b2c54fc3d38c6318a111c5709265b4213b232f1f0dec7d9394c937ac5"
+    }
+  }
 }

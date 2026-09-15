@@ -34,7 +34,7 @@
   "android_target_sdk": "36",
   "ndk_version": "29.0.14206865",
   "cmake_version": "3.22.1",
-  "supported_abi": "arm64-v8a",
+  "supported_abi": "arm64-v8a, armeabi-v7a, x86, x86_64",
   "decoder_id": "ultralytics-detect",
   "model_manifest_file": "model.json",
   "model_param_file": "model.ncnn.param",

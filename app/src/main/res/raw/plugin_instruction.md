@@ -3,7 +3,7 @@
 - Runtime action: `org.autojs.plugin.YOLO`
 - Engine: `yolo`
 - Variant: `ncnn`
-- Supported runtime: CPU-only `arm64-v8a` detection
+- Supported runtime: CPU-only detection on `arm64-v8a`, `armeabi-v7a`, `x86`, and `x86_64`
 - Supported model profile: NCNN YOLO11 detect with the manifest-declared
   `ultralytics-detect` decoder
 

@@ -55,7 +55,7 @@ discovery actions: org.autojs.plugin.INFO / org.autojs.plugin.YOLO
 runtime process: :provider
 protocol version: 1.0
 backend / task / decoder: ncnn / detect / ultralytics-detect
-supported ABI: arm64-v8a
+supported ABI: arm64-v8a, armeabi-v7a, x86, x86_64
 minimum host build: 5275 (AutoJs6 6.8.0+)
 ```
 
@@ -69,7 +69,7 @@ minimum host build: 5275 (AutoJs6 6.8.0+)
 
 - 離線 YOLO11 物件偵測: 輸入 AutoJs6 `images` 模組的影像物件, 輸出標籤 + 置信度 + 邊界框, 全程本機完成.
 - 程序隔離: 推論執行在獨立 `:provider` 程序, 原生層異常不影響 AutoJs6 主程序; 服務受 `org.autojs.permission.PLUGIN` 權限與簽章保護.
-- NCNN 20260526 CPU 推論後端: 執行緒數可調 (預設 4, 上限 64), 支援 `arm64-v8a` 裝置.
+- NCNN 20260526 CPU 推論後端: 執行緒數可調 (預設 4, 上限 64), 支援 `arm64-v8a, armeabi-v7a, x86, x86_64` 裝置.
 - manifest 驅動的模型相容: `model.json` 宣告輸入輸出與標籤, 支援 1 到 256 個自訂類別, 官方 YOLO11 與自行訓練的模型同樣適用.
 - 模型安全驗證: 開啟工作階段時核驗三個模型檔案的宣告長度與 SHA-256, 執行期核驗 NCNN 圖的實際輸出形狀, 不符即拒絕而非猜測.
 - 穩定錯誤類別: 元件缺失, Provider 不可用, 模型被拒, 能力不支援等情境均回傳可判定的錯誤碼, 便於指令碼針對性處理.
@@ -85,7 +85,7 @@ minimum host build: 5275 (AutoJs6 6.8.0+)
 - **怎麼裝** — 本插件目前處於私有暫存階段 (見下方專案狀態小節): 相容宿主 AutoJs6 6.8.0 (版本號 5275) 正式發布後, 才會提供公開下載並提交官方插件索引. 在此之前可按下方建置小節自行建置 TEST-SIGNED 測試包, 並與使用相同偵錯憑證的 AutoJs6 測試包配對安裝; 宿主與插件必須以同一憑證簽章.
 - **怎麼啟用** — 安裝插件不會自動開啟 YOLO 能力: AutoJs6 宿主保留顯式的選擇, 信任與啟用開關 (YOLO 路由預設關閉), 需在宿主中啟用並信任本 Provider. 指令碼側還需在 `yolo.load` 的 `options.component` 中顯式指定元件字串, 不存在隱式回退.
 - **怎麼跑** — 準備一個包含 `model.json`, `model.ncnn.param`, `model.ncnn.bin` 三個檔案的模型目錄 (見下方模型準備小節), 用 `yolo.load(modelDir, options)` 開啟偵測器, 用 `detector.detect(image, options)` 取得偵測陣列, 用完呼叫 `detector.close()` 釋放.
-- **出錯了看哪裡** — `yolo.load` 與 `detector.detect` 擲出的例外帶穩定錯誤類別: `COMPONENT_REQUIRED` (未指定元件), `PROVIDER_UNAVAILABLE` (宿主未找到或未信任 Provider), `MODEL_REJECTED` (模型或 manifest 未通過驗證, 詳情帶 `MANIFEST_*` 等前綴), `UNSUPPORTED_CAPABILITY` (請求了 CPU/arm64/detect 之外的能力), `SESSION_CLOSED`, `DETECT_FAILED` 等; 對照下方能力邊界小節與 [模型 manifest 規範](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/model-manifest-v1.md) 排查.
+- **出錯了看哪裡** — `yolo.load` 與 `detector.detect` 擲出的例外帶穩定錯誤類別: `COMPONENT_REQUIRED` (未指定元件), `PROVIDER_UNAVAILABLE` (宿主未找到或未信任 Provider), `MODEL_REJECTED` (模型或 manifest 未通過驗證, 詳情帶 `MANIFEST_*` 等前綴), `UNSUPPORTED_CAPABILITY` (請求了 CPU/detect 之外的能力), `SESSION_CLOSED`, `DETECT_FAILED` 等; 對照下方能力邊界小節與 [模型 manifest 規範](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/model-manifest-v1.md) 排查.
 
 ******
 
@@ -182,7 +182,7 @@ manifest 是相容性契約而非重貼標籤的工具: 開啟工作階段時核
 為保證行為可預期, 超出以下範圍的請求會被明確拒絕, 不做靜默回退:
 
 - 僅 CPU 推論: Vulkan/GPU 不支援, `options.device` 僅接受 `"cpu"`.
-- 僅 `arm64-v8a` ABI: 其他 ABI 裝置無法載入本插件的原生程式庫.
+- 支援的 ABI: `arm64-v8a, armeabi-v7a, x86, x86_64`; universal APK 包含各架構對應的原生程式庫.
 - 僅物件偵測 (detect) 任務: 分割, 姿態, OBB, 分類與物件追蹤均不支援.
 - 僅註冊 `ultralytics-detect` 解碼器: 未知 `decoderId` 直接拒絕而非回退到其他解碼器.
 - 輸入按 640x640 letterbox 前處理 (manifest v1 固定規格), 像素格式 RGBA_8888.
@@ -211,7 +211,7 @@ manifest 是相容性契約而非重貼標籤的工具: 開啟工作階段時核
 
 ******
 
-需要 AutoJs6 版本號不低於 5275 (即 6.8.0 及以上) 且與插件以同一憑證簽章; Android 24+ (Android 7.0), targetSdk 36; 裝置須為 `arm64-v8a`. 插件協定版本 1.0; 目前 Provider 版本 0.1.2 (版本號 2).
+需要 AutoJs6 版本號不低於 5275 (即 6.8.0 及以上) 且與插件以同一憑證簽章; Android 24+ (Android 7.0), targetSdk 36; 裝置須為 `arm64-v8a, armeabi-v7a, x86, x86_64`. 插件協定版本 1.0; 目前 Provider 版本 0.1.2 (版本號 2).
 
 ******
 
@@ -235,7 +235,7 @@ manifest 是相容性契約而非重貼標籤的工具: 開啟工作階段時核
 .\gradlew.bat :app:assembleRelease
 ```
 
-`assembleRc` 產出可安裝的 arm64-only TEST-SIGNED 候選包: 繼承 release 的 R8 與資源縮減, 使用標準偵錯簽章, 版本名以 `-rc-test-signed` 結尾, 用於與同憑證 AutoJs6 測試包配對真機驗證. `assembleRelease` 為發布建置, 無簽章材料時保持未簽章.
+`assembleRc` 產出可安裝的 universal TEST-SIGNED 候選包: 繼承 release 的 R8 與資源縮減, 使用標準偵錯簽章, 版本名以 `-rc-test-signed` 結尾, 用於與同憑證 AutoJs6 測試包配對真機驗證. `assembleRelease` 為發布建置, 無簽章材料時保持未簽章.
 
 維護者門禁 `tools/verify-r6-provider-source.ps1` 首先用 `--check` 核驗十語言 README/CHANGELOG 的全部 22 個生成物, 任一漂移立即失敗. 隨後預設從乾淨原始碼起跑: 執行 `:app:clean` 後執行聚焦測試與兩種 APK 組裝, 記錄測試 XML 與產物雜湊, 並按五檔案資產白名單核驗 APK 內容. 本地驗證與文件生成均預設離線執行 (零連網), 以避開開發網路中的 Cloudflare 502/524/529 波動.
 
@@ -254,6 +254,7 @@ manifest 是相容性契約而非重貼標籤的工具: 開啟工作階段時核
 * `修復` 版本日期保持統一的英文格式
 * `修復` 增加標準 Wake 啟用入口, 根據已安裝 APK 回報原生 ABI, 並補齊所有語言的描述
 * `優化` 發行下載檔案產生前驗證 APK 版本, 簽章與完整變體集合
+* `優化` 擴充原生 ABI 封裝與外掛中繼資料至 arm64-v8a, armeabi-v7a, x86 和 x86_64, 同步通用 APK 與各 ABI 獨立 APK
 
 # v0.1.1
 

@@ -2,12 +2,13 @@ cmake_minimum_required(VERSION 3.22.1)
 
 project(autojs_yolo LANGUAGES CXX)
 
-if(NOT ANDROID_ABI STREQUAL "arm64-v8a")
-    message(FATAL_ERROR "R1 supports arm64-v8a only (requested ${ANDROID_ABI})")
+set(supported_abis arm64-v8a armeabi-v7a x86 x86_64)
+if(NOT ANDROID_ABI IN_LIST supported_abis)
+    message(FATAL_ERROR "Unsupported Android ABI: ${ANDROID_ABI}")
 endif()
 
 set(ncnn_DIR
-    "${CMAKE_CURRENT_LIST_DIR}/../../../../third_party/ncnn/20260526/arm64-v8a/lib/cmake/ncnn"
+    "${CMAKE_CURRENT_LIST_DIR}/../../../../third_party/ncnn/20260526/${ANDROID_ABI}/lib/cmake/ncnn"
 )
 find_package(ncnn 20260526 EXACT REQUIRED CONFIG)
 

@@ -55,7 +55,7 @@ discovery actions: org.autojs.plugin.INFO / org.autojs.plugin.YOLO
 runtime process: :provider
 protocol version: 1.0
 backend / task / decoder: ncnn / detect / ultralytics-detect
-supported ABI: arm64-v8a
+supported ABI: arm64-v8a, armeabi-v7a, x86, x86_64
 minimum host build: 5275 (AutoJs6 6.8.0+)
 ```
 
@@ -69,7 +69,7 @@ The identity above is what the host uses to discover and bind this plugin. Model
 
 - Offline YOLO11 object detection: feed an AutoJs6 `images` module image object, get labels + confidences + bounding boxes, computed entirely on-device.
 - Process isolation: inference runs in the separate `:provider` process, so native-layer failures never take down the AutoJs6 main process; services are protected by the `org.autojs.permission.PLUGIN` permission and signature checks.
-- NCNN 20260526 CPU inference backend: adjustable thread count (default 4, up to 64), for `arm64-v8a` devices.
+- NCNN 20260526 CPU inference backend: adjustable thread count (default 4, up to 64), for `arm64-v8a, armeabi-v7a, x86, x86_64` devices.
 - Manifest-driven model compatibility: `model.json` declares inputs, outputs, and labels, supporting 1 to 256 custom classes; official YOLO11 and self-trained models work alike.
 - Model safety validation: session open verifies the declared length and SHA-256 of all three model files, and the actual NCNN graph output shape is verified at runtime; mismatches are rejected, never guessed at.
 - Stable error categories: missing component, provider unavailable, model rejected, unsupported capability, and similar cases all surface decidable error codes that scripts can handle precisely.
@@ -85,7 +85,7 @@ The identity above is what the host uses to discover and bind this plugin. Model
 - **Install** — This plugin is currently in a private staging phase (see the Project Status section below): public downloads and the official plugin index entry arrive only after the compatible host AutoJs6 6.8.0 (build 5275) is formally released. Until then you can build a TEST-SIGNED candidate yourself as described in the Build section and pair it with an AutoJs6 test APK using the same debug certificate; host and plugin must be signed with the same certificate.
 - **Enable** — Installing the plugin does not switch YOLO on by itself: the AutoJs6 host keeps explicit selection, trust, and enable switches (the YOLO route is off by default), so enable and trust this provider in the host. On the script side, `yolo.load` also requires the explicit component string in `options.component`; there is no implicit fallback.
 - **Run** — Prepare a model directory containing the three files `model.json`, `model.ncnn.param`, and `model.ncnn.bin` (see the Model Preparation section below), open a detector with `yolo.load(modelDir, options)`, get the detection array with `detector.detect(image, options)`, and release it with `detector.close()` when done.
-- **Troubleshoot** — Exceptions thrown by `yolo.load` and `detector.detect` carry stable error categories: `COMPONENT_REQUIRED` (no component given), `PROVIDER_UNAVAILABLE` (host cannot find or does not trust the provider), `MODEL_REJECTED` (model or manifest failed validation; details carry prefixes such as `MANIFEST_*`), `UNSUPPORTED_CAPABILITY` (a capability outside CPU/arm64/detect was requested), `SESSION_CLOSED`, `DETECT_FAILED`, and so on. Check the Boundaries section below and the [model manifest specification](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/model-manifest-v1.md) when debugging.
+- **Troubleshoot** — Exceptions thrown by `yolo.load` and `detector.detect` carry stable error categories: `COMPONENT_REQUIRED` (no component given), `PROVIDER_UNAVAILABLE` (host cannot find or does not trust the provider), `MODEL_REJECTED` (model or manifest failed validation; details carry prefixes such as `MANIFEST_*`), `UNSUPPORTED_CAPABILITY` (a capability outside CPU/detect was requested), `SESSION_CLOSED`, `DETECT_FAILED`, and so on. Check the Boundaries section below and the [model manifest specification](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/model-manifest-v1.md) when debugging.
 
 ******
 
@@ -182,7 +182,7 @@ The manifest is a compatibility contract, not a relabeling tool: session open ve
 To keep behavior predictable, requests outside the following scope are rejected explicitly rather than silently falling back:
 
 - CPU inference only: Vulkan/GPU is unsupported and `options.device` accepts only `"cpu"`.
-- `arm64-v8a` only: devices with other ABIs cannot load this plugin's native library.
+- Supported ABIs: `arm64-v8a, armeabi-v7a, x86, x86_64`; the universal APK includes the native library for each ABI.
 - Object detection (detect) only: segmentation, pose, OBB, classification, and tracking are all unsupported.
 - Only the `ultralytics-detect` decoder is registered: an unknown `decoderId` is rejected instead of falling back to another decoder.
 - Input is preprocessed as a 640x640 letterbox (the fixed manifest v1 profile) with RGBA_8888 pixels.
@@ -211,7 +211,7 @@ The plugin is designed fail-closed; the following mechanisms are always in effec
 
 ******
 
-Requires AutoJs6 with a version code of at least 5275 (that is, 6.8.0 or later) signed with the same certificate as the plugin; Android 24+ (Android 7.0), targetSdk 36; the device must be `arm64-v8a`. Plugin protocol version 1.0; current provider version 0.1.2 (version code 2).
+Requires AutoJs6 with a version code of at least 5275 (that is, 6.8.0 or later) signed with the same certificate as the plugin; Android 24+ (Android 7.0), targetSdk 36; the device must be `arm64-v8a, armeabi-v7a, x86, x86_64`. Plugin protocol version 1.0; current provider version 0.1.2 (version code 2).
 
 ******
 
@@ -235,7 +235,7 @@ JDK 21+ is recommended; the Android SDK must provide platforms 24 and 36, plus N
 .\gradlew.bat :app:assembleRelease
 ```
 
-`assembleRc` produces an installable arm64-only TEST-SIGNED candidate: it inherits the release R8 and resource shrinking, uses the standard debug signing, and its version name ends in `-rc-test-signed`; it is meant to pair with an AutoJs6 test APK using the same certificate for on-device verification. `assembleRelease` is the release build and stays unsigned when signing material is absent.
+`assembleRc` produces an installable universal TEST-SIGNED candidate: it inherits the release R8 and resource shrinking, uses the standard debug signing, and its version name ends in `-rc-test-signed`; it is meant to pair with an AutoJs6 test APK using the same certificate for on-device verification. `assembleRelease` is the release build and stays unsigned when signing material is absent.
 
 The maintainer gate `tools/verify-r6-provider-source.ps1` first runs `--check` over all 22 generated README/CHANGELOG artifacts for 10 languages and fails immediately on drift. It then starts from clean sources by default: after `:app:clean` it runs the focused tests and both APK assemblies, records test XML and artifact hashes, and verifies the APK against a five-file asset allowlist. Local verification and doc generation both run offline by default (zero network calls) to stay clear of Cloudflare 502/524/529 noise on the development network.
 
@@ -254,6 +254,7 @@ Before any Gradle build, the same gate also runs the eight standard-library test
 * `Fix` Version dates use a consistent English format
 * `Fix` Add the standard Wake activation entry and report native ABIs from the installed APK, with complete localized descriptions
 * `Improvement` Validate release APK versions, signing and the complete variant set before creating download artifacts
+* `Improvement` Extend native ABI packaging and plugin metadata to arm64-v8a, armeabi-v7a, x86 and x86_64, with matching universal and per-ABI APKs
 
 # v0.1.1
 

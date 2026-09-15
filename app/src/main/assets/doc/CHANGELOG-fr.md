@@ -11,6 +11,7 @@
 * `Correctif` Les dates de version utilisent un format anglais uniforme
 * `Correctif` Ajouter l'activation Wake standard et publier les ABI natives de l'APK installé avec des descriptions localisées complètes
 * `Amélioration` Validation des versions, signatures et variantes complètes des APK avant la création des fichiers à télécharger
+* `Amélioration` Étendre les ABI natives et les métadonnées du plugin à arm64-v8a, armeabi-v7a, x86 et x86_64, avec des APK universels et par ABI cohérents
 
 # v0.1.1
 

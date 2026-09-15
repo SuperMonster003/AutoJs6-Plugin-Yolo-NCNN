@@ -8,7 +8,8 @@
     "v0.1.2": {
       "released_date": "2026/09/13",
       "improvement": [
-        "Validación de las versiones, firmas y variantes completas de los APK antes de crear los archivos de descarga"
+        "Validación de las versiones, firmas y variantes completas de los APK antes de crear los archivos de descarga",
+        "Ampliar el empaquetado de ABI nativas y los metadatos del complemento a arm64-v8a, armeabi-v7a, x86 y x86_64, con APK universales e individuales coherentes"
       ],
       "fix": [
         "Las fechas de versión mantienen un formato uniforme en inglés",

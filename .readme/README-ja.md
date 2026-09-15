@@ -55,7 +55,7 @@ discovery actions: org.autojs.plugin.INFO / org.autojs.plugin.YOLO
 runtime process: :provider
 protocol version: 1.0
 backend / task / decoder: ncnn / detect / ultralytics-detect
-supported ABI: arm64-v8a
+supported ABI: arm64-v8a, armeabi-v7a, x86, x86_64
 minimum host build: 5275 (AutoJs6 6.8.0+)
 ```
 
@@ -69,7 +69,7 @@ minimum host build: 5275 (AutoJs6 6.8.0+)
 
 - オフライン YOLO11 物体検出: AutoJs6 `images` モジュールの画像オブジェクトを入力すると, ラベル + 信頼度 + バウンディングボックスを出力. 全処理が端末内で完結.
 - プロセス分離: 推論は独立した `:provider` プロセスで実行され, ネイティブ層の異常が AutoJs6 メインプロセスに波及しません. サービスは `org.autojs.permission.PLUGIN` 権限と署名検査で保護.
-- NCNN 20260526 CPU 推論バックエンド: スレッド数は調整可能 (既定 4, 上限 64), `arm64-v8a` 端末向け.
+- NCNN 20260526 CPU 推論バックエンド: スレッド数は調整可能 (既定 4, 上限 64), `arm64-v8a, armeabi-v7a, x86, x86_64` 端末向け.
 - マニフェスト駆動のモデル互換性: `model.json` が入出力とラベルを宣言し, 1 から 256 個のカスタムクラスに対応. 公式 YOLO11 も自前学習モデルも同様に利用可能.
 - モデル安全検証: セッションオープン時に 3 ファイルの宣言長と SHA-256 を検証し, 実行時には NCNN グラフの実際の出力形状も検証. 不一致は推測せず拒否.
 - 安定したエラー分類: コンポーネント未指定, Provider 利用不可, モデル拒否, 非対応機能などはすべて判定可能なエラーコードを返し, スクリプト側で的確に処理可能.
@@ -85,7 +85,7 @@ minimum host build: 5275 (AutoJs6 6.8.0+)
 - **インストール** — 本プラグインは現在プライベートなステージング段階にあります (下記のプロジェクト状況節を参照): 互換ホスト AutoJs6 6.8.0 (ビルド 5275) の正式リリース後に, 公開ダウンロードと公式プラグインインデックスへの登録が行われます. それまでは下記のビルド節に従って TEST-SIGNED 候補を自分でビルドし, 同じデバッグ証明書を使う AutoJs6 テスト APK とペアで導入できます. ホストとプラグインは同一証明書での署名が必須です.
 - **有効化** — プラグインを入れただけでは YOLO は有効になりません: AutoJs6 ホストが選択, 信頼, 有効化のスイッチを明示的に保持しており (YOLO ルートは既定で無効), ホスト側で本 Provider を有効化して信頼する必要があります. スクリプト側でも `yolo.load` の `options.component` にコンポーネント文字列を明示する必要があり, 暗黙のフォールバックはありません.
 - **実行** — `model.json`, `model.ncnn.param`, `model.ncnn.bin` の 3 ファイルを含むモデルディレクトリを用意し (下記のモデル準備節を参照), `yolo.load(modelDir, options)` で検出器を開き, `detector.detect(image, options)` で検出配列を取得, 使い終わったら `detector.close()` で解放します.
-- **トラブルシューティング** — `yolo.load` と `detector.detect` が投げる例外は安定したエラー分類を持ちます: `COMPONENT_REQUIRED` (コンポーネント未指定), `PROVIDER_UNAVAILABLE` (ホストが Provider を発見できない, または未信頼), `MODEL_REJECTED` (モデルかマニフェストが検証不合格, 詳細は `MANIFEST_*` などの接頭辞付き), `UNSUPPORTED_CAPABILITY` (CPU/arm64/detect 以外の機能を要求), `SESSION_CLOSED`, `DETECT_FAILED` など. 下記の機能境界節と [モデルマニフェスト仕様](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/model-manifest-v1.md) を照合して調査してください.
+- **トラブルシューティング** — `yolo.load` と `detector.detect` が投げる例外は安定したエラー分類を持ちます: `COMPONENT_REQUIRED` (コンポーネント未指定), `PROVIDER_UNAVAILABLE` (ホストが Provider を発見できない, または未信頼), `MODEL_REJECTED` (モデルかマニフェストが検証不合格, 詳細は `MANIFEST_*` などの接頭辞付き), `UNSUPPORTED_CAPABILITY` (CPU/detect 以外の機能を要求), `SESSION_CLOSED`, `DETECT_FAILED` など. 下記の機能境界節と [モデルマニフェスト仕様](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/model-manifest-v1.md) を照合して調査してください.
 
 ******
 
@@ -182,7 +182,7 @@ models/yolo11n/
 予測可能な動作を保つため, 以下の範囲外のリクエストは静かなフォールバックではなく明示的に拒否されます:
 
 - CPU 推論のみ: Vulkan/GPU は非対応で, `options.device` は `"cpu"` のみ受け付けます.
-- `arm64-v8a` のみ: 他の ABI の端末では本プラグインのネイティブライブラリを読み込めません.
+- 対応 ABI: `arm64-v8a, armeabi-v7a, x86, x86_64`. universal APK に各 ABI のネイティブライブラリを含みます.
 - 物体検出 (detect) タスクのみ: セグメンテーション, ポーズ, OBB, 分類, トラッキングはいずれも非対応.
 - 登録済みデコーダは `ultralytics-detect` のみ: 未知の `decoderId` は他のデコーダに切り替えず拒否します.
 - 入力は 640x640 letterbox で前処理され (manifest v1 の固定プロファイル), ピクセル形式は RGBA_8888.
@@ -211,7 +211,7 @@ models/yolo11n/
 
 ******
 
-AutoJs6 のバージョンコード 5275 以上 (つまり 6.8.0 以降) で, プラグインと同一証明書で署名されている必要があります. Android 24+ (Android 7.0), targetSdk 36. 端末は `arm64-v8a` 必須. プラグインプロトコルバージョン 1.0, 現在の Provider バージョン 0.1.2 (バージョンコード 2).
+AutoJs6 のバージョンコード 5275 以上 (つまり 6.8.0 以降) で, プラグインと同一証明書で署名されている必要があります. Android 24+ (Android 7.0), targetSdk 36. 端末は `arm64-v8a, armeabi-v7a, x86, x86_64` 必須. プラグインプロトコルバージョン 1.0, 現在の Provider バージョン 0.1.2 (バージョンコード 2).
 
 ******
 
@@ -235,7 +235,7 @@ JDK 21+ 推奨. Android SDK には platforms 24 と 36, さらに NDK 29.0.14206
 .\gradlew.bat :app:assembleRelease
 ```
 
-`assembleRc` はインストール可能な arm64-only の TEST-SIGNED 候補を生成します: release の R8 とリソース縮小を継承し, 標準デバッグ署名を使い, バージョン名は `-rc-test-signed` で終わります. 同一証明書の AutoJs6 テスト APK とペアにして実機検証する用途です. `assembleRelease` はリリースビルドで, 署名素材がなければ未署名のままです.
+`assembleRc` はインストール可能な universal の TEST-SIGNED 候補を生成します: release の R8 とリソース縮小を継承し, 標準デバッグ署名を使い, バージョン名は `-rc-test-signed` で終わります. 同一証明書の AutoJs6 テスト APK とペアにして実機検証する用途です. `assembleRelease` はリリースビルドで, 署名素材がなければ未署名のままです.
 
 メンテナゲート `tools/verify-r6-provider-source.ps1` はまず `--check` で 10 言語の README/CHANGELOG 生成物 22 件をすべて検証し, ドリフトがあれば直ちに失敗します. その後は既定でクリーンなソースから開始します: `:app:clean` の後に焦点テストと 2 種類の APK 組み立てを実行し, テスト XML と成果物ハッシュを記録し, 5 ファイルのアセット許可リストで APK を検証します. ローカル検証もドキュメント生成も既定でオフライン実行 (ネットワーク呼び出しゼロ) とし, 開発ネットワークの Cloudflare 502/524/529 ノイズを避けます.
 
@@ -254,6 +254,7 @@ Gradle ビルド前に同じゲートが `tools/generate_yolo_ncnn_manifest.py` 
 * `修正` バージョン日付は英語の統一形式で表示されます
 * `修正` 標準 Wake 有効化エントリを追加し, インストール済み APK のネイティブ ABI と完全な翻訳済み説明を表示
 * `改善` ダウンロード用ファイルの作成前に, リリース APK のバージョン, 署名, バリアントの完全性を検証
+* `改善` ネイティブ ABI のパッケージ化とプラグインメタデータを arm64-v8a, armeabi-v7a, x86, x86_64 に拡張し, ユニバーサル APK と ABI 別 APK を同期
 
 # v0.1.1
 

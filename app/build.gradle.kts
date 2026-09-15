@@ -11,7 +11,7 @@ plugins {
 }
 
 val globalApplicationId = "io.github.supermonster003.autojs6.plugin.yolo.ncnn"
-val supportedAbi = "arm64-v8a"
+val supportedAbis = listOf("arm64-v8a", "armeabi-v7a", "x86", "x86_64")
 val buildTypeDebug = "debug"
 val buildTypeRc = "rc"
 val buildTypeRelease = "release"
@@ -29,7 +29,7 @@ android {
         versionName = versions.appVersionName
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        ndk.abiFilters += supportedAbi
+        ndk.abiFilters += supportedAbis
 
         externalNativeBuild {
             cmake {
@@ -50,7 +50,7 @@ android {
         resValue("string", "plugin_backend", "ncnn")
         resValue("string", "plugin_task", "detect")
         resValue("string", "plugin_decoder", "ultralytics-detect")
-        resValue("string", "plugin_supported_abis", "arm64-v8a")
+        resValue("string", "plugin_supported_abis", "arm64-v8a,armeabi-v7a,x86,x86_64")
         resValue("string", "plugin_version_date", utils.getDateString("MMM d, yyyy", "GMT+08:00"))
     }
 
