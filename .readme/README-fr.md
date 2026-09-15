@@ -211,7 +211,7 @@ Le plugin est conçu fail-closed ; les mécanismes suivants sont toujours en vig
 
 ******
 
-Nécessite AutoJs6 avec un code de version d'au moins 5275 (c'est-à-dire 6.8.0 ou ultérieur) signé avec le même certificat que le plugin ; Android 24+ (Android 7.0), targetSdk 36 ; l'appareil doit être `arm64-v8a, armeabi-v7a, x86, x86_64`. Version de protocole du plugin 1.0 ; version actuelle du provider 0.1.2 (code de version 2).
+Nécessite AutoJs6 avec un code de version d'au moins 5275 (c'est-à-dire 6.8.0 ou ultérieur) signé avec le même certificat que le plugin ; Android 24+ (Android 7.0), targetSdk 37 ; l'appareil doit être `arm64-v8a, armeabi-v7a, x86, x86_64`. Version de protocole du plugin 1.0 ; version actuelle du provider 0.1.3 (code de version 36).
 
 ******
 
@@ -219,7 +219,7 @@ Nécessite AutoJs6 avec un code de version d'au moins 5275 (c'est-à-dire 6.8.0 
 
 ******
 
-Ce dépôt est actuellement une archive de préparation privée : l'hôte compatible AutoJs6 6.8.0 (5275) n'est pas encore publié officiellement, et ce plugin n'est ni publié publiquement ni référencé dans l'index officiel des plugins ; les badges GitHub ci-dessus peuvent ne pas s'afficher tant que le dépôt n'est pas public. Sans `sign.properties`, `assembleRelease` produit un APK non signé qui n'est qu'une preuve de source/compilation, pas un artefact publiable. La première version est 0.1.2 (code de version 2, sans prédécesseur de code 1) ; les défauts sont corrigés en avant via le code de version 3, jamais par retour arrière. La signature de production, la validation finale sur appareil et le statut de publication sont fixés par l'archive de preuves R6 externe ; voir les [notes d'ingénierie](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/engineering-notes.md).
+Ce dépôt est actuellement une archive de préparation privée : l'hôte compatible AutoJs6 6.8.0 (5275) n'est pas encore publié officiellement, et ce plugin n'est ni publié publiquement ni référencé dans l'index officiel des plugins ; les badges GitHub ci-dessus peuvent ne pas s'afficher tant que le dépôt n'est pas public. Sans `sign.properties`, `assembleRelease` produit un APK non signé qui n'est qu'une preuve de source/compilation, pas un artefact publiable. La première version est 0.1.3 (code de version 36, sans prédécesseur de code 1) ; les défauts sont corrigés en avant via le code de version 3, jamais par retour arrière. La signature de production, la validation finale sur appareil et le statut de publication sont fixés par l'archive de preuves R6 externe ; voir les [notes d'ingénierie](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/engineering-notes.md).
 
 ******
 
@@ -227,7 +227,7 @@ Ce dépôt est actuellement une archive de préparation privée : l'hôte compat
 
 ******
 
-JDK 21+ recommandé ; le SDK Android doit fournir les platforms 24 et 36, plus le NDK 29.0.14206865 et CMake 3.22.1 (nécessaires au JNI NCNN). Commandes usuelles:
+JDK 21+ recommandé ; le SDK Android doit fournir les platforms 24 et 37, plus le NDK 29.0.14206865 et CMake 3.22.1 (nécessaires au JNI NCNN). Commandes usuelles:
 
 ```powershell
 .\gradlew.bat :app:assembleDebug
@@ -247,6 +247,12 @@ Avant toute compilation Gradle, la même porte exécute aussi les huit tests lim
 
 ******
 
+# v0.1.3
+
+###### 2026/09/15
+
+* `Amélioration` compileSdk et targetSdk passent à 37 (Android 17) ; le comportement du plugin ne dépend pas de la nouvelle cible
+
 # v0.1.2
 
 ###### 2026/09/13
@@ -261,24 +267,6 @@ Avant toute compilation Gradle, la même porte exécute aussi les huit tests lim
 ###### 2026/09/13
 
 * `Amélioration` Vérification à la compilation de l'alignement des pages de 16 KB des bibliothèques natives 64 bits, avec contrôle du contrat manifest et rapports JSON
-
-# v0.1.0
-
-###### 2026/08/13
-
-* `Note` Première version (code de version 2, sans prédécesseur de code 1) ; nécessite AutoJs6 avec un code de version d'au moins 5275 (6.8.0+) signé avec le même certificat que le plugin
-* `Note` Actuellement en phase de préparation privée : la publication publique et la soumission à l'index officiel des plugins suivront la sortie officielle de l'hôte compatible ; le périmètre des capacités est CPU / arm64-v8a / détection d'objets
-* `Nouveauté` L'outil hors ligne `tools/generate_yolo_ncnn_manifest.py` convertit les métadonnées NCNN Ultralytics YOLO11 en `model.json`, valide le profil fixe métadonnées/labels/graphe et émet les empreintes des artefacts
-* `Nouveauté` Provider de détection d'objets YOLO isolé en processus : le processus séparé `:provider` sert l'inférence `org.autojs.plugin.YOLO` et la découverte `org.autojs.plugin.INFO`, tous deux protégés par la permission `org.autojs.permission.PLUGIN`
-* `Nouveauté` Backend d'inférence CPU NCNN 20260526 intégré avec le décodeur `ultralytics-detect`, prenant en charge les modèles YOLO11 detect et les nombres de classes personnalisés déclarés par manifeste (1 à 256)
-* `Nouveauté` Contrat Model Manifest v1 en place : l'ouverture de session vérifie longueurs déclarées et SHA-256, l'exécution vérifie la forme de sortie, et les divergences sont rejetées avec des codes d'erreur stables
-* `Nouveauté` Les modèles arrivent de l'hôte via des descripteurs en lecture seule et toute l'ouverture partage une échéance monotone unique ; l'APK du plugin n'embarque aucun modèle et n'émet aucun appel réseau
-* `Nouveauté` Protection du cycle de vie des sessions : inférence sérielle à requête unique par session (file nulle), détection de la mort du rappel, fermeture idempotente et libération différée des ressources natives
-* `Correctif` Les sessions de modèle périmées sont nettoyées au démarrage, évitant des ressources natives résiduelles après une sortie anormale de l'hôte
-* `Amélioration` Les builds release et RC TEST-SIGNED passent par R8 et la réduction de ressources, avec un empaquetage aligné ELF 16 KiB
-* `Amélioration` L'APK embarque intégralement les licences MPL-2.0, Apache-2.0 de Kotlin et NCNN avec leurs verrous de provenance, plus un index des mentions tierces
-* `Amélioration` Nouvelle porte hors ligne source/compilation/empaquetage `tools/verify-r6-provider-source.ps1` : rejet de toute dérive parmi 22 artefacts README/CHANGELOG générés, départ de sources propres, enregistrement des empreintes de tests et d'artefacts, vérification de l'APK contre une liste blanche de cinq fichiers d'assets
-* `Dépendance` NCNN 20260526 épinglé (BSD-3-Clause, avec verrous de provenance et d'empreintes), Kotlin 2.2.21 et AAR du protocole YOLO 1.0 (transmis depuis une révision source AutoJs6 gelée)
 
 ##### Pour plus d'historique, voir
 

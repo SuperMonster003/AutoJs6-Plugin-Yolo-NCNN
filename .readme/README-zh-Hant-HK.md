@@ -211,7 +211,7 @@ manifest 是兼容性契約而非重標籤工具: 打開會話時核驗三個檔
 
 ******
 
-需要 AutoJs6 版本號不低於 5275 (即 6.8.0 及以上) 且與插件同證書簽名; Android 24+ (Android 7.0), targetSdk 36; 裝置須為 `arm64-v8a, armeabi-v7a, x86, x86_64`. 插件協議版本 1.0; 目前 Provider 版本 0.1.2 (版本號 2).
+需要 AutoJs6 版本號不低於 5275 (即 6.8.0 及以上) 且與插件同證書簽名; Android 24+ (Android 7.0), targetSdk 37; 裝置須為 `arm64-v8a, armeabi-v7a, x86, x86_64`. 插件協議版本 1.0; 目前 Provider 版本 0.1.3 (版本號 36).
 
 ******
 
@@ -219,7 +219,7 @@ manifest 是兼容性契約而非重標籤工具: 打開會話時核驗三個檔
 
 ******
 
-本倉庫目前為私有證據暫存庫: 兼容宿主 AutoJs6 6.8.0 (5275) 尚未正式發佈, 本插件也尚未公開發佈或收錄進官方插件索引; 倉庫公開前, 上方 GitHub 徽章可能無法顯示. `assembleRelease` 在缺少 `sign.properties` 時產出未簽名 APK, 僅作為源碼/構建證據, 不可視為可發佈產物. 首個發佈版本為 0.1.2 (版本號 2, 無版本號 1 前身); 缺陷通過前向修復版本號 3 解決, 不做版本回滾. 生產簽名, 真機終驗與發佈狀態以外部 R6 證據檔案為準, 詳見 [工程記錄](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/engineering-notes.md).
+本倉庫目前為私有證據暫存庫: 兼容宿主 AutoJs6 6.8.0 (5275) 尚未正式發佈, 本插件也尚未公開發佈或收錄進官方插件索引; 倉庫公開前, 上方 GitHub 徽章可能無法顯示. `assembleRelease` 在缺少 `sign.properties` 時產出未簽名 APK, 僅作為源碼/構建證據, 不可視為可發佈產物. 首個發佈版本為 0.1.3 (版本號 36, 無版本號 1 前身); 缺陷通過前向修復版本號 3 解決, 不做版本回滾. 生產簽名, 真機終驗與發佈狀態以外部 R6 證據檔案為準, 詳見 [工程記錄](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/engineering-notes.md).
 
 ******
 
@@ -227,7 +227,7 @@ manifest 是兼容性契約而非重標籤工具: 打開會話時核驗三個檔
 
 ******
 
-推薦 JDK 21+; Android SDK 需提供 platforms 24 與 36, 以及 NDK 29.0.14206865 與 CMake 3.22.1 (編譯 NCNN JNI 需要). 常用命令:
+推薦 JDK 21+; Android SDK 需提供 platforms 24 與 37, 以及 NDK 29.0.14206865 與 CMake 3.22.1 (編譯 NCNN JNI 需要). 常用命令:
 
 ```powershell
 .\gradlew.bat :app:assembleDebug
@@ -247,6 +247,12 @@ manifest 是兼容性契約而非重標籤工具: 打開會話時核驗三個檔
 
 ******
 
+# v0.1.3
+
+###### 2026/09/15
+
+* `優化` 將 compileSdk 與 targetSdk 提升到 37 (Android 17), 插件行為不受新目標版本影響
+
 # v0.1.2
 
 ###### 2026/09/13
@@ -261,24 +267,6 @@ manifest 是兼容性契約而非重標籤工具: 打開會話時核驗三個檔
 ###### 2026/09/13
 
 * `優化` 建置階段校驗 64 位原生程式庫的 16 KB 頁面大小對齊, 檢查 manifest 契約並輸出 JSON 報告
-
-# v0.1.0
-
-###### 2026/08/13
-
-* `提示` 首個版本 (版本號 2, 無版本號 1 前身); 需 AutoJs6 版本號不低於 5275 (6.8.0+) 且與插件同證書簽名
-* `提示` 目前處於私有暫存階段: 待兼容宿主正式發佈後再公開發佈並提交官方插件索引; 能力範圍為 CPU / arm64-v8a / 目標檢測
-* `新增` 新增離線 `tools/generate_yolo_ncnn_manifest.py`: 從 Ultralytics YOLO11 NCNN 元數據生成 `model.json`, 核驗固定元數據/標籤/圖檔位並輸出產物哈希
-* `新增` 進程隔離的 YOLO 目標檢測 Provider 成型: 獨立 `:provider` 進程提供 `org.autojs.plugin.YOLO` 推理服務與 `org.autojs.plugin.INFO` 發現服務, 均受 `org.autojs.permission.PLUGIN` 權限保護
-* `新增` 內置 NCNN 20260526 CPU 推理後端與 `ultralytics-detect` 解碼器, 支援 YOLO11 detect 模型與 manifest 聲明的自訂類別數 (1 到 256)
-* `新增` 落地 Model Manifest v1 模型契約: 打開會話時核驗聲明長度與 SHA-256, 運行時核驗輸出形狀, 不符即以穩定錯誤碼拒絕
-* `新增` 模型由宿主以只讀檔案描述符傳入, 整個打開過程共用單調截止時間; 插件 APK 不內置任何模型, 不聯網
-* `新增` 會話生命週期防護: 單會話串行推理 (零排隊), 回調方死亡檢測, 冪等關閉與原生資源延遲釋放
-* `修復` 啟動時清理陳舊模型會話, 避免宿主異常退出後殘留的原生資源佔用
-* `優化` release 與 TEST-SIGNED RC 構建接入 R8 與資源收縮, 並完成 ELF 16 KiB 對齊打包
-* `優化` APK 完整打包 MPL-2.0, Kotlin Apache-2.0 與 NCNN 許可及來源鎖定檔案, 附第三方聲明索引
-* `優化` 新增離線源碼/構建/打包門禁 `tools/verify-r6-provider-source.ps1`: 阻斷 22 個 README/CHANGELOG 生成物漂移, 乾淨源碼起跑, 記錄測試與產物哈希, 按五檔案資產白名單核驗 APK
-* `依賴` 固定 NCNN 20260526 (BSD-3-Clause, 附來源與哈希鎖定), Kotlin 2.2.21 與 YOLO 協議 AAR 1.0 (從凍結的 AutoJs6 源碼修訂交接)
 
 ##### 更多發行歷史可參閱
 

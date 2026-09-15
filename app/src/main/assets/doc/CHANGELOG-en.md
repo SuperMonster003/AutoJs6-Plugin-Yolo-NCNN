@@ -4,6 +4,12 @@
 
 ******
 
+# v0.1.3
+
+###### 2026/09/15
+
+* `Improvement` Raise compileSdk and targetSdk to 37 (Android 17); the plugin's behavior does not depend on the new target
+
 # v0.1.2
 
 ###### 2026/09/13
@@ -23,7 +29,7 @@
 
 ###### 2026/08/13
 
-* `Hint` First release (version code 2, no version code 1 predecessor); requires AutoJs6 with a version code of at least 5275 (6.8.0+) signed with the same certificate as the plugin
+* `Hint` First release (version code 36, no version code 1 predecessor); requires AutoJs6 with a version code of at least 5275 (6.8.0+) signed with the same certificate as the plugin
 * `Hint` Currently in a private staging phase: public release and the official plugin index submission follow the formal release of the compatible host; the capability scope is CPU / arm64-v8a / object detection
 * `Feature` Offline `tools/generate_yolo_ncnn_manifest.py` converts Ultralytics YOLO11 NCNN metadata into `model.json`, validates the fixed metadata/label/graph profile, and emits artifact hashes
 * `Feature` Process-isolated YOLO object detection provider: the separate `:provider` process serves `org.autojs.plugin.YOLO` inference and `org.autojs.plugin.INFO` discovery, both protected by the `org.autojs.permission.PLUGIN` permission

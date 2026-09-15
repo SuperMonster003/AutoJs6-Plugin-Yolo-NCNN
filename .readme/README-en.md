@@ -211,7 +211,7 @@ The plugin is designed fail-closed; the following mechanisms are always in effec
 
 ******
 
-Requires AutoJs6 with a version code of at least 5275 (that is, 6.8.0 or later) signed with the same certificate as the plugin; Android 24+ (Android 7.0), targetSdk 36; the device must be `arm64-v8a, armeabi-v7a, x86, x86_64`. Plugin protocol version 1.0; current provider version 0.1.2 (version code 2).
+Requires AutoJs6 with a version code of at least 5275 (that is, 6.8.0 or later) signed with the same certificate as the plugin; Android 24+ (Android 7.0), targetSdk 37; the device must be `arm64-v8a, armeabi-v7a, x86, x86_64`. Plugin protocol version 1.0; current provider version 0.1.3 (version code 36).
 
 ******
 
@@ -219,7 +219,7 @@ Requires AutoJs6 with a version code of at least 5275 (that is, 6.8.0 or later) 
 
 ******
 
-This repository is currently a private staging archive: the compatible host AutoJs6 6.8.0 (5275) has not been formally released, and this plugin is neither publicly released nor listed in the official plugin index; the GitHub badges above may not render until the repository goes public. Without `sign.properties`, `assembleRelease` produces an unsigned APK that is source/build evidence only, not a publishable artifact. The first release is 0.1.2 (version code 2, with no version code 1 predecessor); defects are fixed forward as version code 3, never by rollback. Production signing, final on-device verification, and publication status are bound by the external R6 evidence archive; see the [engineering notes](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/engineering-notes.md).
+This repository is currently a private staging archive: the compatible host AutoJs6 6.8.0 (5275) has not been formally released, and this plugin is neither publicly released nor listed in the official plugin index; the GitHub badges above may not render until the repository goes public. Without `sign.properties`, `assembleRelease` produces an unsigned APK that is source/build evidence only, not a publishable artifact. The first release is 0.1.3 (version code 36, with no version code 1 predecessor); defects are fixed forward as version code 3, never by rollback. Production signing, final on-device verification, and publication status are bound by the external R6 evidence archive; see the [engineering notes](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/engineering-notes.md).
 
 ******
 
@@ -227,7 +227,7 @@ This repository is currently a private staging archive: the compatible host Auto
 
 ******
 
-JDK 21+ is recommended; the Android SDK must provide platforms 24 and 36, plus NDK 29.0.14206865 and CMake 3.22.1 (needed to compile the NCNN JNI). Common commands:
+JDK 21+ is recommended; the Android SDK must provide platforms 24 and 37, plus NDK 29.0.14206865 and CMake 3.22.1 (needed to compile the NCNN JNI). Common commands:
 
 ```powershell
 .\gradlew.bat :app:assembleDebug
@@ -247,6 +247,12 @@ Before any Gradle build, the same gate also runs the eight standard-library test
 
 ******
 
+# v0.1.3
+
+###### 2026/09/15
+
+* `Improvement` Raise compileSdk and targetSdk to 37 (Android 17); the plugin's behavior does not depend on the new target
+
 # v0.1.2
 
 ###### 2026/09/13
@@ -261,24 +267,6 @@ Before any Gradle build, the same gate also runs the eight standard-library test
 ###### 2026/09/13
 
 * `Improvement` Build verification of 16 KB page alignment for 64-bit native libraries, including manifest contract checks and JSON reports
-
-# v0.1.0
-
-###### 2026/08/13
-
-* `Hint` First release (version code 2, no version code 1 predecessor); requires AutoJs6 with a version code of at least 5275 (6.8.0+) signed with the same certificate as the plugin
-* `Hint` Currently in a private staging phase: public release and the official plugin index submission follow the formal release of the compatible host; the capability scope is CPU / arm64-v8a / object detection
-* `Feature` Offline `tools/generate_yolo_ncnn_manifest.py` converts Ultralytics YOLO11 NCNN metadata into `model.json`, validates the fixed metadata/label/graph profile, and emits artifact hashes
-* `Feature` Process-isolated YOLO object detection provider: the separate `:provider` process serves `org.autojs.plugin.YOLO` inference and `org.autojs.plugin.INFO` discovery, both protected by the `org.autojs.permission.PLUGIN` permission
-* `Feature` Built-in NCNN 20260526 CPU inference backend with the `ultralytics-detect` decoder, supporting YOLO11 detect models and manifest-declared custom class counts (1 to 256)
-* `Feature` Model Manifest v1 contract in place: session open verifies declared lengths and SHA-256, runtime verifies the output shape, and mismatches are rejected with stable error codes
-* `Feature` Models arrive from the host as read-only file descriptors and the whole open shares one monotonic deadline; the plugin APK ships no models and makes no network calls
-* `Feature` Session lifecycle protection: single-request serial inference per session (zero queue), callback-death detection, idempotent close, and deferred native resource release
-* `Fix` Stale model sessions are cleaned up on startup, avoiding leftover native resource usage after an abnormal host exit
-* `Improvement` Release and TEST-SIGNED RC builds are admitted through R8 and resource shrinking, with ELF 16 KiB alignment packaging
-* `Improvement` The APK fully bundles the MPL-2.0, Kotlin Apache-2.0, and NCNN licenses plus provenance locks, with a third-party notice index
-* `Improvement` New offline source/build/package gate `tools/verify-r6-provider-source.ps1`: rejects drift across 22 generated README/CHANGELOG artifacts, starts from clean sources, records test and artifact hashes, and verifies the APK against a five-file asset allowlist
-* `Dependency` Pinned NCNN 20260526 (BSD-3-Clause, with provenance and hash locks), Kotlin 2.2.21, and YOLO protocol AARs 1.0 (handed off from a frozen AutoJs6 source revision)
 
 ##### For more release history, see
 

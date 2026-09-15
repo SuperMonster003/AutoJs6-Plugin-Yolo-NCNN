@@ -211,7 +211,7 @@ models/yolo11n/
 
 ******
 
-AutoJs6 버전 코드 5275 이상 (즉 6.8.0 이후)이어야 하며 플러그인과 동일 인증서로 서명되어야 합니다. Android 24+ (Android 7.0), targetSdk 36. 기기는 `arm64-v8a, armeabi-v7a, x86, x86_64`여야 합니다. 플러그인 프로토콜 버전 1.0, 현재 Provider 버전 0.1.2 (버전 코드 2).
+AutoJs6 버전 코드 5275 이상 (즉 6.8.0 이후)이어야 하며 플러그인과 동일 인증서로 서명되어야 합니다. Android 24+ (Android 7.0), targetSdk 37. 기기는 `arm64-v8a, armeabi-v7a, x86, x86_64`여야 합니다. 플러그인 프로토콜 버전 1.0, 현재 Provider 버전 0.1.3 (버전 코드 36).
 
 ******
 
@@ -219,7 +219,7 @@ AutoJs6 버전 코드 5275 이상 (즉 6.8.0 이후)이어야 하며 플러그�
 
 ******
 
-이 저장소는 현재 비공개 스테이징 아카이브입니다: 호환 호스트 AutoJs6 6.8.0 (5275)는 아직 정식 출시되지 않았고, 이 플러그인도 공개 배포되거나 공식 플러그인 인덱스에 등재되지 않았습니다. 저장소가 공개되기 전에는 위의 GitHub 배지가 표시되지 않을 수 있습니다. `sign.properties`가 없으면 `assembleRelease`는 서명되지 않은 APK를 생성하며, 이는 소스/빌드 증거일 뿐 배포 가능한 산출물이 아닙니다. 첫 릴리스는 0.1.2 (버전 코드 2, 버전 코드 1의 전신 없음)이며, 결함은 롤백이 아니라 버전 코드 3의 전방 수정으로 해결합니다. 프로덕션 서명, 실기기 최종 검증, 공개 상태는 외부 R6 증거 아카이브가 확정합니다. 자세한 내용은 [엔지니어링 노트](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/engineering-notes.md)를 참조하세요.
+이 저장소는 현재 비공개 스테이징 아카이브입니다: 호환 호스트 AutoJs6 6.8.0 (5275)는 아직 정식 출시되지 않았고, 이 플러그인도 공개 배포되거나 공식 플러그인 인덱스에 등재되지 않았습니다. 저장소가 공개되기 전에는 위의 GitHub 배지가 표시되지 않을 수 있습니다. `sign.properties`가 없으면 `assembleRelease`는 서명되지 않은 APK를 생성하며, 이는 소스/빌드 증거일 뿐 배포 가능한 산출물이 아닙니다. 첫 릴리스는 0.1.3 (버전 코드 36, 버전 코드 1의 전신 없음)이며, 결함은 롤백이 아니라 버전 코드 3의 전방 수정으로 해결합니다. 프로덕션 서명, 실기기 최종 검증, 공개 상태는 외부 R6 증거 아카이브가 확정합니다. 자세한 내용은 [엔지니어링 노트](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/engineering-notes.md)를 참조하세요.
 
 ******
 
@@ -227,7 +227,7 @@ AutoJs6 버전 코드 5275 이상 (즉 6.8.0 이후)이어야 하며 플러그�
 
 ******
 
-JDK 21+ 권장. Android SDK는 platforms 24과 36, 그리고 NDK 29.0.14206865와 CMake 3.22.1를 제공해야 합니다 (NCNN JNI 컴파일에 필요). 주요 명령:
+JDK 21+ 권장. Android SDK는 platforms 24과 37, 그리고 NDK 29.0.14206865와 CMake 3.22.1를 제공해야 합니다 (NCNN JNI 컴파일에 필요). 주요 명령:
 
 ```powershell
 .\gradlew.bat :app:assembleDebug
@@ -247,6 +247,12 @@ Gradle 빌드 전에 같은 게이트가 `tools/generate_yolo_ncnn_manifest.py`�
 
 ******
 
+# v0.1.3
+
+###### 2026/09/15
+
+* `개선` compileSdk 와 targetSdk 를 37 (Android 17) 로 올리며, 플러그인 동작은 새 대상 버전의 영향을 받지 않음
+
 # v0.1.2
 
 ###### 2026/09/13
@@ -261,24 +267,6 @@ Gradle 빌드 전에 같은 게이트가 `tools/generate_yolo_ncnn_manifest.py`�
 ###### 2026/09/13
 
 * `개선` 64비트 네이티브 라이브러리의 16 KB 페이지 정렬을 빌드 시 검증, manifest 계약 검사 및 JSON 보고서 지원
-
-# v0.1.0
-
-###### 2026/08/13
-
-* `안내` 첫 릴리스 (버전 코드 2, 버전 코드 1의 전신 없음); AutoJs6 버전 코드 5275 이상 (6.8.0+)이며 플러그인과 동일 인증서 서명이 필요
-* `안내` 현재 비공개 스테이징 단계: 호환 호스트의 정식 출시 후 공개 릴리스와 공식 플러그인 인덱스 제출을 진행; 기능 범위는 CPU / arm64-v8a / 객체 탐지
-* `신규` 오프라인 `tools/generate_yolo_ncnn_manifest.py`가 Ultralytics YOLO11 NCNN 메타데이터를 `model.json`로 변환하고 고정 메타데이터/레이블/그래프 프로필을 검증하며 산출물 해시를 출력
-* `신규` 프로세스 격리형 YOLO 객체 탐지 Provider 완성: 독립된 `:provider` 프로세스가 `org.autojs.plugin.YOLO` 추론 서비스와 `org.autojs.plugin.INFO` 발견 서비스를 제공하며, 모두 `org.autojs.permission.PLUGIN` 권한으로 보호
-* `신규` NCNN 20260526 CPU 추론 백엔드와 `ultralytics-detect` 디코더 내장, YOLO11 detect 모델과 매니페스트로 선언한 커스텀 클래스 수 (1부터 256까지) 지원
-* `신규` Model Manifest v1 계약 구현: 세션 오픈 시 선언 길이와 SHA-256을 검증하고, 실행 시 출력 형태를 검증하며, 불일치는 안정적인 오류 코드로 거부
-* `신규` 모델은 호스트가 읽기 전용 파일 디스크립터로 전달하며 오픈 전체가 하나의 단조 기한을 공유; 플러그인 APK는 모델을 포함하지 않고 네트워크 호출도 하지 않음
-* `신규` 세션 수명 주기 보호: 세션당 단일 요청 직렬 추론 (큐 0), 콜백 사망 감지, 멱등 닫기, 네이티브 리소스 지연 해제
-* `수정` 시작 시 오래된 모델 세션을 정리하여 호스트 비정상 종료 후 남는 네이티브 리소스 점유를 방지
-* `개선` release와 TEST-SIGNED RC 빌드에 R8과 리소스 축소를 적용하고 ELF 16 KiB 정렬로 패키징
-* `개선` APK에 MPL-2.0, Kotlin Apache-2.0, NCNN 라이선스와 출처 잠금 파일을 완전히 포함하고 서드파티 고지 색인을 첨부
-* `개선` 오프라인 소스/빌드/패키지 게이트 `tools/verify-r6-provider-source.ps1` 신설: README/CHANGELOG 생성물 22개의 드리프트 거부, 깨끗한 소스에서 시작, 테스트와 산출물 해시 기록, 다섯 파일 애셋 허용 목록으로 APK 검증
-* `의존성` NCNN 20260526 고정 (BSD-3-Clause, 출처와 해시 잠금 포함), Kotlin 2.2.21, YOLO 프로토콜 AAR 1.0 (동결된 AutoJs6 소스 리비전에서 인수)
 
 ##### 더 많은 릴리스 이력은 다음을 참조
 
