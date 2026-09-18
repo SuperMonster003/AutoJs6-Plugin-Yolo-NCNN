@@ -82,8 +82,8 @@ minimum host build: 5275 (AutoJs6 6.8.0+)
 
 ******
 
-- **怎么装** — 本插件当前处于私有暂存阶段 (见下方项目状态小节): 兼容宿主 AutoJs6 6.8.0 (版本号 5275) 正式发布后, 才会提供公开下载并提交官方插件索引. 在此之前可按下方构建小节自行构建 TEST-SIGNED 测试包, 并与使用相同调试证书的 AutoJs6 测试包配对安装; 宿主与插件必须同证书签名.
-- **怎么启用** — 安装插件不会自动开启 YOLO 能力: AutoJs6 宿主保留显式的选择, 信任与启用开关 (YOLO 路由默认关闭), 需在宿主中启用并信任本 Provider. 脚本侧还需在 `yolo.load` 的 `options.component` 中显式指定组件串, 不存在隐式回退.
+- **怎么装** — 本仓库已公开, 但尚未发布公开 Release, 也尚未收录进官方插件索引 (见下方项目状态小节); 公开下载与索引条目待生产签名 APK 与真机终验完成后提供, 宿主 AutoJs6 6.8.0 (版本号 5275) 的正式发布不再是硬性前置条件. 在此之前可按下方构建小节自行构建 TEST-SIGNED 测试包, 并与使用相同调试证书的 AutoJs6 测试包配对安装; 宿主与插件必须同证书签名, 且宿主版本号不低于 5275.
+- **怎么启用** — 启用, 信任与选择状态始终由 AutoJs6 宿主掌握: 通过宿主插件中心安装且由 AutoJs6 官方证书签名的插件包, 安装完成后会由插件中心自动写入启用记录并完成启用探测; TEST-SIGNED 测试包, adb 侧装, 覆盖安装与其他签名仍需在插件中心手动授权并启用. 宿主运行时只读取已保存的启用记录, 无记录即视为关闭 (YOLO 路由默认关闭). 脚本侧还需在 `yolo.load` 的 `options.component` 中显式指定组件串, 不存在隐式回退.
 - **怎么跑** — 准备一个包含 `model.json`, `model.ncnn.param`, `model.ncnn.bin` 三个文件的模型目录 (见下方模型准备小节), 用 `yolo.load(modelDir, options)` 打开检测器, 用 `detector.detect(image, options)` 得到检测数组, 用完调用 `detector.close()` 释放.
 - **出错了看哪里** — `yolo.load` 与 `detector.detect` 抛出的异常带稳定错误类别: `COMPONENT_REQUIRED` (未指定组件), `PROVIDER_UNAVAILABLE` (宿主未找到或未信任 Provider), `MODEL_REJECTED` (模型或 manifest 未通过校验, 详情带 `MANIFEST_*` 等前缀), `UNSUPPORTED_CAPABILITY` (请求了 CPU/detect 之外的能力), `SESSION_CLOSED`, `DETECT_FAILED` 等; 对照下方能力边界小节与 [模型 manifest 规范](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/model-manifest-v1.md) 排查.
 
@@ -188,7 +188,7 @@ manifest 是兼容性契约而非重标签工具: 打开会话时核验三个文
 - 输入按 640x640 letterbox 预处理 (manifest v1 固定档位), 像素格式 RGBA_8888.
 - 单会话串行推理: 排队上限为 0, 同一会话并发的第二个 `detect` 会失败.
 - 模型打开仅接受常规文件的只读描述符 (不接受管道或 socket), 三个文件均须可读.
-- 安装本插件不会自动启用 YOLO: 启用, 信任与选择状态始终由 AutoJs6 宿主掌握.
+- 启用, 信任与选择状态始终由 AutoJs6 宿主掌握: 仅由官方证书签名并经插件中心安装的包会被自动写入启用记录, 其余安装方式需手动启用, 运行时无记录即视为关闭.
 
 ******
 
@@ -211,7 +211,7 @@ manifest 是兼容性契约而非重标签工具: 打开会话时核验三个文
 
 ******
 
-需要 AutoJs6 版本号不低于 5275 (即 6.8.0 及以上) 且与插件同证书签名; Android 24+ (Android 7.0), targetSdk 37; 设备须为 `arm64-v8a, armeabi-v7a, x86, x86_64`. 插件协议版本 1.0; 当前 Provider 版本 0.1.3 (版本号 36).
+需要 AutoJs6 版本号不低于 5275 (即 6.8.0 及以上) 且与插件同证书签名; Android 24+ (Android 7.0), targetSdk 37; 设备须为 `arm64-v8a, armeabi-v7a, x86, x86_64`. 插件协议版本 1.0; 当前 Provider 版本 0.1.3 (版本号 37).
 
 ******
 
@@ -219,7 +219,7 @@ manifest 是兼容性契约而非重标签工具: 打开会话时核验三个文
 
 ******
 
-本仓库当前为私有证据暂存库: 兼容宿主 AutoJs6 6.8.0 (5275) 尚未正式发布, 本插件也尚未公开发布或收录进官方插件索引; 仓库公开前, 上方 GitHub 徽章可能无法显示. `assembleRelease` 在缺少 `sign.properties` 时产出未签名 APK, 仅作为源码/构建证据, 不可视为可发布产物. 首个发布版本为 0.1.3 (版本号 36, 无版本号 1 前身); 缺陷通过前向修复版本号 3 解决, 不做版本回滚. 生产签名, 真机终验与发布状态以外部 R6 证据档案为准, 详见 [工程记录](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/engineering-notes.md).
+本仓库已公开, 但本插件尚未发布公开 Release, 也尚未收录进官方插件索引; 兼容宿主 AutoJs6 6.8.0 (5275) 尚未正式发布, 但宿主正式发布不再是本插件公开发布的硬性前置条件, 公开 Release 与官方索引条目以生产签名 APK 与真机终验为前置. `assembleRelease` 在缺少 `sign.properties` 时产出未签名 APK, 仅作为源码/构建证据, 不可视为可发布产物. 当前版本为 0.1.3 (版本号 37); 缺陷通过前向修复的新版本号解决, 不做版本回滚. 生产签名, 真机终验与发布状态以外部 R6 证据档案为准, 详见 [工程记录](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/engineering-notes.md).
 
 ******
 

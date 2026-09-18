@@ -82,8 +82,8 @@ La identidad anterior es la que el host usa para descubrir y vincular este plugi
 
 ******
 
-- **Instalar** — Este plugin está actualmente en fase de preparación privada (ver la sección Estado del proyecto más abajo): la descarga pública y la entrada en el índice oficial de plugins llegarán solo después de que se publique formalmente el host compatible AutoJs6 6.8.0 (build 5275). Hasta entonces puede compilar usted mismo un candidato TEST-SIGNED como describe la sección Compilación y emparejarlo con un APK de prueba de AutoJs6 que use el mismo certificado de depuración; host y plugin deben firmarse con el mismo certificado.
-- **Activar** — Instalar el plugin no activa YOLO por sí solo: el host AutoJs6 conserva interruptores explícitos de selección, confianza y activación (la ruta YOLO está desactivada por defecto), así que active y confíe en este provider dentro del host. En el lado del script, `yolo.load` también exige la cadena de componente explícita en `options.component`; no existe ningún respaldo implícito.
+- **Instalar** — Este repositorio es público, pero aún no se ha publicado ninguna Release pública ni el plugin figura en el índice oficial de plugins (ver la sección Estado del proyecto más abajo); la descarga pública y la entrada en el índice llegarán cuando estén listos el APK firmado para producción y la verificación final en dispositivo, y la publicación formal del host AutoJs6 6.8.0 (build 5275) ya no es un requisito previo estricto. Hasta entonces puede compilar usted mismo un candidato TEST-SIGNED como describe la sección Compilación y emparejarlo con un APK de prueba de AutoJs6 que use el mismo certificado de depuración; host y plugin deben firmarse con el mismo certificado, y el código de versión del host debe ser al menos 5275.
+- **Activar** — La activación, la confianza y la selección pertenecen siempre al host AutoJs6: cuando un paquete firmado con el certificado oficial de AutoJs6 se instala desde el centro de plugins del host, el centro de plugins escribe el registro de activación y ejecuta el sondeo de activación automáticamente tras la instalación; los candidatos TEST-SIGNED, las instalaciones por adb, las actualizaciones y otros firmantes siguen necesitando autorización y activación manuales en el centro de plugins. El tiempo de ejecución del host solo lee el registro de activación guardado y trata su ausencia como desactivado (la ruta YOLO está desactivada por defecto). En el lado del script, `yolo.load` también exige la cadena de componente explícita en `options.component`; no existe ningún respaldo implícito.
 - **Ejecutar** — Prepare un directorio de modelo con los tres archivos `model.json`, `model.ncnn.param` y `model.ncnn.bin` (ver la sección Preparación del modelo más abajo), abra un detector con `yolo.load(modelDir, options)`, obtenga el arreglo de detecciones con `detector.detect(image, options)` y libérelo con `detector.close()` al terminar.
 - **Depurar** — Las excepciones lanzadas por `yolo.load` y `detector.detect` llevan categorías de error estables: `COMPONENT_REQUIRED` (sin componente), `PROVIDER_UNAVAILABLE` (el host no encuentra el provider o no confía en él), `MODEL_REJECTED` (el modelo o el manifiesto no pasó la validación; los detalles llevan prefijos como `MANIFEST_*`), `UNSUPPORTED_CAPABILITY` (se pidió una capacidad fuera de CPU/detect), `SESSION_CLOSED`, `DETECT_FAILED`, etc. Consulte la sección Límites más abajo y la [especificación del manifiesto de modelo](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/model-manifest-v1.md) al depurar.
 
@@ -188,7 +188,7 @@ Para mantener un comportamiento predecible, las peticiones fuera del siguiente a
 - La entrada se preprocesa como letterbox 640x640 (perfil fijo del manifest v1), con píxeles RGBA_8888.
 - Inferencia serial de una petición por sesión: el límite de cola es 0, así que un segundo `detect` concurrente en la misma sesión falla.
 - La apertura de modelo solo acepta descriptores de solo lectura de archivos regulares (ni tuberías ni sockets); los tres archivos deben ser legibles.
-- Instalar este plugin no activa YOLO por sí solo: la activación, la confianza y la selección pertenecen siempre al host AutoJs6.
+- La activación, la confianza y la selección pertenecen siempre al host AutoJs6: solo un paquete firmado con el certificado oficial e instalado desde el centro de plugins recibe su registro de activación automáticamente, cualquier otra vía de instalación requiere activación manual, y el tiempo de ejecución trata la ausencia de registro como desactivado.
 
 ******
 
@@ -211,7 +211,7 @@ El plugin está diseñado fail-closed; los siguientes mecanismos están siempre 
 
 ******
 
-Requiere AutoJs6 con código de versión no inferior a 5275 (es decir, 6.8.0 o posterior) firmado con el mismo certificado que el plugin; Android 24+ (Android 7.0), targetSdk 37; el dispositivo debe ser `arm64-v8a, armeabi-v7a, x86, x86_64`. Versión de protocolo del plugin 1.0; versión actual del provider 0.1.3 (código de versión 36).
+Requiere AutoJs6 con código de versión no inferior a 5275 (es decir, 6.8.0 o posterior) firmado con el mismo certificado que el plugin; Android 24+ (Android 7.0), targetSdk 37; el dispositivo debe ser `arm64-v8a, armeabi-v7a, x86, x86_64`. Versión de protocolo del plugin 1.0; versión actual del provider 0.1.3 (código de versión 37).
 
 ******
 
@@ -219,7 +219,7 @@ Requiere AutoJs6 con código de versión no inferior a 5275 (es decir, 6.8.0 o p
 
 ******
 
-Este repositorio es actualmente un archivo privado de preparación: el host compatible AutoJs6 6.8.0 (5275) aún no se ha publicado formalmente, y este plugin no está publicado ni listado en el índice oficial de plugins; las insignias de GitHub de arriba pueden no mostrarse hasta que el repositorio sea público. Sin `sign.properties`, `assembleRelease` produce un APK sin firmar que es solo evidencia de fuente/compilación, no un artefacto publicable. La primera versión es 0.1.3 (código de versión 36, sin predecesor de código 1); los defectos se corrigen hacia adelante con el código de versión 3, nunca con reversiones. La firma de producción, la verificación final en dispositivo y el estado de publicación quedan fijados por el archivo externo de evidencias R6; ver las [notas de ingeniería](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/engineering-notes.md).
+Este repositorio es público, pero el plugin aún no tiene una Release pública ni entrada en el índice oficial de plugins; el host compatible AutoJs6 6.8.0 (5275) aún no se ha publicado formalmente, pero esa publicación ya no es un requisito previo estricto para publicar este plugin, y la Release pública y la entrada en el índice dependen de un APK firmado para producción y de la verificación final en dispositivo. Sin `sign.properties`, `assembleRelease` produce un APK sin firmar que es solo evidencia de fuente/compilación, no un artefacto publicable. La versión actual es 0.1.3 (código de versión 37); los defectos se corrigen hacia adelante con un nuevo código de versión, nunca con reversiones. La firma de producción, la verificación final en dispositivo y el estado de publicación quedan fijados por el archivo externo de evidencias R6; ver las [notas de ingeniería](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/engineering-notes.md).
 
 ******
 

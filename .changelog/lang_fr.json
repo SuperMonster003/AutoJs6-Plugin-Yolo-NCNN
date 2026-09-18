@@ -31,7 +31,7 @@
     "v0.1.0": {
       "released_date": "2026/08/13",
       "hint": [
-        "Première version (code de version {{ version_build }}, sans prédécesseur de code 1) ; nécessite AutoJs6 avec un code de version d'au moins {{ required_host_build }} ({{ required_host_version }}+) signé avec le même certificat que le plugin",
+        "Première version (code de version 2, sans prédécesseur de code 1) ; nécessite AutoJs6 avec un code de version d'au moins {{ required_host_build }} ({{ required_host_version }}+) signé avec le même certificat que le plugin",
         "Actuellement en phase de préparation privée : la publication publique et la soumission à l'index officiel des plugins suivront la sortie officielle de l'hôte compatible ; le périmètre des capacités est CPU / arm64-v8a / détection d'objets"
       ],
       "feature": [

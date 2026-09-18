@@ -29,7 +29,7 @@
 
 ###### 2026/08/13
 
-* `Aviso` Primera versión (código de versión 36, sin predecesor de código 1); requiere AutoJs6 con código de versión no inferior a 5275 (6.8.0+) firmado con el mismo certificado que el plugin
+* `Aviso` Primera versión (código de versión 2, sin predecesor de código 1); requiere AutoJs6 con código de versión no inferior a 5275 (6.8.0+) firmado con el mismo certificado que el plugin
 * `Aviso` Actualmente en fase de preparación privada: la publicación pública y el envío al índice oficial de plugins seguirán al lanzamiento formal del host compatible; el alcance de capacidades es CPU / arm64-v8a / detección de objetos
 * `Novedad` La herramienta sin conexión `tools/generate_yolo_ncnn_manifest.py` convierte metadatos NCNN de Ultralytics YOLO11 en `model.json`, valida el perfil fijo de metadatos/etiquetas/grafo y emite hashes de artefactos
 * `Novedad` Provider de detección de objetos YOLO aislado en proceso: el proceso separado `:provider` sirve la inferencia `org.autojs.plugin.YOLO` y el descubrimiento `org.autojs.plugin.INFO`, ambos protegidos por el permiso `org.autojs.permission.PLUGIN`

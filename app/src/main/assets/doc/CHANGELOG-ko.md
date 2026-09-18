@@ -29,7 +29,7 @@
 
 ###### 2026/08/13
 
-* `안내` 첫 릴리스 (버전 코드 36, 버전 코드 1의 전신 없음); AutoJs6 버전 코드 5275 이상 (6.8.0+)이며 플러그인과 동일 인증서 서명이 필요
+* `안내` 첫 릴리스 (버전 코드 2, 버전 코드 1의 전신 없음); AutoJs6 버전 코드 5275 이상 (6.8.0+)이며 플러그인과 동일 인증서 서명이 필요
 * `안내` 현재 비공개 스테이징 단계: 호환 호스트의 정식 출시 후 공개 릴리스와 공식 플러그인 인덱스 제출을 진행; 기능 범위는 CPU / arm64-v8a / 객체 탐지
 * `신규` 오프라인 `tools/generate_yolo_ncnn_manifest.py`가 Ultralytics YOLO11 NCNN 메타데이터를 `model.json`로 변환하고 고정 메타데이터/레이블/그래프 프로필을 검증하며 산출물 해시를 출력
 * `신규` 프로세스 격리형 YOLO 객체 탐지 Provider 완성: 독립된 `:provider` 프로세스가 `org.autojs.plugin.YOLO` 추론 서비스와 `org.autojs.plugin.INFO` 발견 서비스를 제공하며, 모두 `org.autojs.permission.PLUGIN` 권한으로 보호
