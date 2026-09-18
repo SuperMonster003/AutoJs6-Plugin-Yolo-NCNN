@@ -12,7 +12,7 @@
   <p>
     <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/releases"><img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN?label=Release"/></a>
     <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/issues"><img alt="GitHub closed issues" src="https://img.shields.io/github/issues/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN?color=A24232&label=Issues"/></a>
-    <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/commit/01b9093c55c7c1a78f39246c671e928df244483f"><img alt="Created" src="https://img.shields.io/date/1786442764?color=2e7d32&label=Created"/></a>
+    <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/commit/28802f197259f70dde5fce54ec19f3f2ffd34bf5"><img alt="Created" src="https://img.shields.io/date/1786442764?color=2e7d32&label=Created"/></a>
     <br>
     <a href="https://developer.android.com/studio/archive"><img alt="Android Studio" src="https://img.shields.io/badge/Android%20Studio-2023.3+-B64FC8"/></a>
     <a href="https://www.jetbrains.com/idea/download/other.html"><img alt="IntelliJ IDEA" src="https://img.shields.io/badge/IntelliJ%20IDEA-2023.3+-EE4677"/></a>
@@ -211,7 +211,7 @@ models/yolo11n/
 
 ******
 
-AutoJs6 버전 코드 5275 이상 (즉 6.8.0 이후)이어야 하며 플러그인과 동일 인증서로 서명되어야 합니다. Android 24+ (Android 7.0), targetSdk 37. 기기는 `arm64-v8a, armeabi-v7a, x86, x86_64`여야 합니다. 플러그인 프로토콜 버전 1.0, 현재 Provider 버전 0.1.3 (버전 코드 37).
+AutoJs6 버전 코드 5275 이상 (즉 6.8.0 이후)이어야 하며 플러그인과 동일 인증서로 서명되어야 합니다. Android 24+ (Android 7.0), targetSdk 37. 기기는 `arm64-v8a, armeabi-v7a, x86, x86_64`여야 합니다. 플러그인 프로토콜 버전 1.0, 현재 Provider 버전 0.1.3 (버전 코드 38).
 
 ******
 
@@ -219,7 +219,7 @@ AutoJs6 버전 코드 5275 이상 (즉 6.8.0 이후)이어야 하며 플러그�
 
 ******
 
-이 저장소는 공개되었지만 이 플러그인에는 아직 공개 Release도 공식 플러그인 인덱스 등재도 없습니다. 호환 호스트 AutoJs6 6.8.0 (5275)는 아직 정식 출시되지 않았지만 그 출시는 더 이상 이 플러그인 공개의 필수 전제 조건이 아니며, 공개 Release와 인덱스 등재는 프로덕션 서명 APK와 실기기 최종 검증을 전제로 합니다. `sign.properties`가 없으면 `assembleRelease`는 서명되지 않은 APK를 생성하며, 이는 소스/빌드 증거일 뿐 배포 가능한 산출물이 아닙니다. 현재 버전은 0.1.3 (버전 코드 37)이며, 결함은 롤백이 아니라 새 버전 코드의 전방 수정으로 해결합니다. 프로덕션 서명, 실기기 최종 검증, 공개 상태는 외부 R6 증거 아카이브가 확정합니다. 자세한 내용은 [엔지니어링 노트](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/engineering-notes.md)를 참조하세요.
+이 저장소는 공개되었지만 이 플러그인에는 아직 공개 Release도 공식 플러그인 인덱스 등재도 없습니다. 호환 호스트 AutoJs6 6.8.0 (5275)는 아직 정식 출시되지 않았지만 그 출시는 더 이상 이 플러그인 공개의 필수 전제 조건이 아니며, 공개 Release와 인덱스 등재는 프로덕션 서명 APK와 실기기 최종 검증을 전제로 합니다. `sign.properties`가 없으면 `assembleRelease`는 서명되지 않은 APK를 생성하며, 이는 소스/빌드 증거일 뿐 배포 가능한 산출물이 아닙니다. 현재 버전은 0.1.3 (버전 코드 38)이며, 결함은 롤백이 아니라 새 버전 코드의 전방 수정으로 해결합니다. 프로덕션 서명, 실기기 최종 검증, 공개 상태는 외부 R6 증거 아카이브가 확정합니다. 자세한 내용은 [엔지니어링 노트](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/engineering-notes.md)를 참조하세요.
 
 ******
 

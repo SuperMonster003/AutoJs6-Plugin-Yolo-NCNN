@@ -4,7 +4,7 @@
   "result": "PASS",
   "capturedAtUtc": "2026-08-27T05:05:53.1746445Z",
   "source": {
-    "revision": "e74779429a98ad8d9016dffa037c129ab8aeec83",
+    "revision": "6ef591796be3d7794d3995c9c4d629c895da6560",
     "trackedWorktree": "CLEAN",
     "buildCommand": ".\\gradlew.bat --offline --no-daemon :app:assembleDebug :app:assembleDebugAndroidTest",
     "buildResult": "PASS",

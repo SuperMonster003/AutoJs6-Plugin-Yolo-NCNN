@@ -10,11 +10,17 @@ Local model weights and validation images remain under the ignored
 `fixtures/local/` tree. Evidence files record their lengths and SHA-256 digests,
 not their payloads.
 
+The repository history was rewritten on 2026-09-18 to replace the author
+e-mail address on every commit. That rewrite changed commit ids only; the
+`Source` column below and the `revision` field of each receipt were rebound
+to the rewritten ids, and every cited tree id is unchanged, so each receipt
+still binds to exactly the same source tree.
+
 | Date | Source | Device / Android API / page size | Result | Receipt |
 |---|---|---|---|---|
-| 2026-08-27 | `69e4a62` | 23046RP50C / 35 / 4 KiB | 5/5 instrumentation, fixed-image inference | [API 35 baseline](r9-arm64-api35-4k-smoke-2026-08-27.json) |
-| 2026-08-27 | `e747794` | XQ-AT72 / 31 / 4 KiB | 5/5 instrumentation, fixed-image inference | [API 31 baseline](r9-arm64-api31-4k-qv710-smoke-2026-08-27.json) |
-| 2026-09-10 | `dc43e15` | Samsung SM-A566B / 36 / 16 KiB | 5/5 instrumentation, fixed-image inference | [API 36 / 16 KiB validation](r9-arm64-api36-16k-samsung-smoke-2026-09-10.json) |
+| 2026-08-27 | `b766940` | 23046RP50C / 35 / 4 KiB | 5/5 instrumentation, fixed-image inference | [API 35 baseline](r9-arm64-api35-4k-smoke-2026-08-27.json) |
+| 2026-08-27 | `6ef5917` | XQ-AT72 / 31 / 4 KiB | 5/5 instrumentation, fixed-image inference | [API 31 baseline](r9-arm64-api31-4k-qv710-smoke-2026-08-27.json) |
+| 2026-09-10 | `26ba868` | Samsung SM-A566B / 36 / 16 KiB | 5/5 instrumentation, fixed-image inference | [API 36 / 16 KiB validation](r9-arm64-api36-16k-samsung-smoke-2026-09-10.json) |
 
 The Samsung receipt closes the R9 16 KiB and API 36 environment gaps for the
 recorded debug native lifecycle. It includes the actual page size, native ELF

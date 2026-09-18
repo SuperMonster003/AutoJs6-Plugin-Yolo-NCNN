@@ -12,7 +12,7 @@
   <p>
     <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/releases"><img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN?label=Release"/></a>
     <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/issues"><img alt="GitHub closed issues" src="https://img.shields.io/github/issues/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN?color=A24232&label=Issues"/></a>
-    <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/commit/01b9093c55c7c1a78f39246c671e928df244483f"><img alt="Created" src="https://img.shields.io/date/1786442764?color=2e7d32&label=Created"/></a>
+    <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/commit/28802f197259f70dde5fce54ec19f3f2ffd34bf5"><img alt="Created" src="https://img.shields.io/date/1786442764?color=2e7d32&label=Created"/></a>
     <br>
     <a href="https://developer.android.com/studio/archive"><img alt="Android Studio" src="https://img.shields.io/badge/Android%20Studio-2023.3+-B64FC8"/></a>
     <a href="https://www.jetbrains.com/idea/download/other.html"><img alt="IntelliJ IDEA" src="https://img.shields.io/badge/IntelliJ%20IDEA-2023.3+-EE4677"/></a>
@@ -211,7 +211,7 @@ manifest 是兼容性契约而非重标签工具: 打开会话时核验三个文
 
 ******
 
-需要 AutoJs6 版本号不低于 5275 (即 6.8.0 及以上) 且与插件同证书签名; Android 24+ (Android 7.0), targetSdk 37; 设备须为 `arm64-v8a, armeabi-v7a, x86, x86_64`. 插件协议版本 1.0; 当前 Provider 版本 0.1.3 (版本号 37).
+需要 AutoJs6 版本号不低于 5275 (即 6.8.0 及以上) 且与插件同证书签名; Android 24+ (Android 7.0), targetSdk 37; 设备须为 `arm64-v8a, armeabi-v7a, x86, x86_64`. 插件协议版本 1.0; 当前 Provider 版本 0.1.3 (版本号 38).
 
 ******
 
@@ -219,7 +219,7 @@ manifest 是兼容性契约而非重标签工具: 打开会话时核验三个文
 
 ******
 
-本仓库已公开, 但本插件尚未发布公开 Release, 也尚未收录进官方插件索引; 兼容宿主 AutoJs6 6.8.0 (5275) 尚未正式发布, 但宿主正式发布不再是本插件公开发布的硬性前置条件, 公开 Release 与官方索引条目以生产签名 APK 与真机终验为前置. `assembleRelease` 在缺少 `sign.properties` 时产出未签名 APK, 仅作为源码/构建证据, 不可视为可发布产物. 当前版本为 0.1.3 (版本号 37); 缺陷通过前向修复的新版本号解决, 不做版本回滚. 生产签名, 真机终验与发布状态以外部 R6 证据档案为准, 详见 [工程记录](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/engineering-notes.md).
+本仓库已公开, 但本插件尚未发布公开 Release, 也尚未收录进官方插件索引; 兼容宿主 AutoJs6 6.8.0 (5275) 尚未正式发布, 但宿主正式发布不再是本插件公开发布的硬性前置条件, 公开 Release 与官方索引条目以生产签名 APK 与真机终验为前置. `assembleRelease` 在缺少 `sign.properties` 时产出未签名 APK, 仅作为源码/构建证据, 不可视为可发布产物. 当前版本为 0.1.3 (版本号 38); 缺陷通过前向修复的新版本号解决, 不做版本回滚. 生产签名, 真机终验与发布状态以外部 R6 证据档案为准, 详见 [工程记录](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/engineering-notes.md).
 
 ******
 
