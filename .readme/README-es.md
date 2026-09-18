@@ -12,7 +12,7 @@
   <p>
     <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/releases"><img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN?label=Release"/></a>
     <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/issues"><img alt="GitHub closed issues" src="https://img.shields.io/github/issues/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN?color=A24232&label=Issues"/></a>
-    <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/commit/01b9093c55c7c1a78f39246c671e928df244483f"><img alt="Created" src="https://img.shields.io/date/1786442764?color=2e7d32&label=Created"/></a>
+    <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/commit/28802f197259f70dde5fce54ec19f3f2ffd34bf5"><img alt="Created" src="https://img.shields.io/date/1786442764?color=2e7d32&label=Created"/></a>
     <br>
     <a href="https://developer.android.com/studio/archive"><img alt="Android Studio" src="https://img.shields.io/badge/Android%20Studio-2023.3+-B64FC8"/></a>
     <a href="https://www.jetbrains.com/idea/download/other.html"><img alt="IntelliJ IDEA" src="https://img.shields.io/badge/IntelliJ%20IDEA-2023.3+-EE4677"/></a>
@@ -211,7 +211,7 @@ El plugin está diseñado fail-closed; los siguientes mecanismos están siempre 
 
 ******
 
-Requiere AutoJs6 con código de versión no inferior a 5275 (es decir, 6.8.0 o posterior) firmado con el mismo certificado que el plugin; Android 24+ (Android 7.0), targetSdk 37; el dispositivo debe ser `arm64-v8a, armeabi-v7a, x86, x86_64`. Versión de protocolo del plugin 1.0; versión actual del provider 0.1.3 (código de versión 37).
+Requiere AutoJs6 con código de versión no inferior a 5275 (es decir, 6.8.0 o posterior) firmado con el mismo certificado que el plugin; Android 24+ (Android 7.0), targetSdk 37; el dispositivo debe ser `arm64-v8a, armeabi-v7a, x86, x86_64`. Versión de protocolo del plugin 1.0; versión actual del provider 0.1.3 (código de versión 38).
 
 ******
 
@@ -219,7 +219,7 @@ Requiere AutoJs6 con código de versión no inferior a 5275 (es decir, 6.8.0 o p
 
 ******
 
-Este repositorio es público, pero el plugin aún no tiene una Release pública ni entrada en el índice oficial de plugins; el host compatible AutoJs6 6.8.0 (5275) aún no se ha publicado formalmente, pero esa publicación ya no es un requisito previo estricto para publicar este plugin, y la Release pública y la entrada en el índice dependen de un APK firmado para producción y de la verificación final en dispositivo. Sin `sign.properties`, `assembleRelease` produce un APK sin firmar que es solo evidencia de fuente/compilación, no un artefacto publicable. La versión actual es 0.1.3 (código de versión 37); los defectos se corrigen hacia adelante con un nuevo código de versión, nunca con reversiones. La firma de producción, la verificación final en dispositivo y el estado de publicación quedan fijados por el archivo externo de evidencias R6; ver las [notas de ingeniería](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/engineering-notes.md).
+Este repositorio es público, pero el plugin aún no tiene una Release pública ni entrada en el índice oficial de plugins; el host compatible AutoJs6 6.8.0 (5275) aún no se ha publicado formalmente, pero esa publicación ya no es un requisito previo estricto para publicar este plugin, y la Release pública y la entrada en el índice dependen de un APK firmado para producción y de la verificación final en dispositivo. Sin `sign.properties`, `assembleRelease` produce un APK sin firmar que es solo evidencia de fuente/compilación, no un artefacto publicable. La versión actual es 0.1.3 (código de versión 38); los defectos se corrigen hacia adelante con un nuevo código de versión, nunca con reversiones. La firma de producción, la verificación final en dispositivo y el estado de publicación quedan fijados por el archivo externo de evidencias R6; ver las [notas de ingeniería](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/engineering-notes.md).
 
 ******
 

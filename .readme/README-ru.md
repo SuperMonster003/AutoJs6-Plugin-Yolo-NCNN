@@ -12,7 +12,7 @@
   <p>
     <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/releases"><img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN?label=Release"/></a>
     <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/issues"><img alt="GitHub closed issues" src="https://img.shields.io/github/issues/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN?color=A24232&label=Issues"/></a>
-    <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/commit/01b9093c55c7c1a78f39246c671e928df244483f"><img alt="Created" src="https://img.shields.io/date/1786442764?color=2e7d32&label=Created"/></a>
+    <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/commit/28802f197259f70dde5fce54ec19f3f2ffd34bf5"><img alt="Created" src="https://img.shields.io/date/1786442764?color=2e7d32&label=Created"/></a>
     <br>
     <a href="https://developer.android.com/studio/archive"><img alt="Android Studio" src="https://img.shields.io/badge/Android%20Studio-2023.3+-B64FC8"/></a>
     <a href="https://www.jetbrains.com/idea/download/other.html"><img alt="IntelliJ IDEA" src="https://img.shields.io/badge/IntelliJ%20IDEA-2023.3+-EE4677"/></a>
@@ -211,7 +211,7 @@ models/yolo11n/
 
 ******
 
-Требуется AutoJs6 с кодом версии не ниже 5275 (то есть 6.8.0 или новее), подписанный тем же сертификатом, что и плагин; Android 24+ (Android 7.0), targetSdk 37; устройство должно быть `arm64-v8a, armeabi-v7a, x86, x86_64`. Версия протокола плагина 1.0; текущая версия провайдера 0.1.3 (код версии 37).
+Требуется AutoJs6 с кодом версии не ниже 5275 (то есть 6.8.0 или новее), подписанный тем же сертификатом, что и плагин; Android 24+ (Android 7.0), targetSdk 37; устройство должно быть `arm64-v8a, armeabi-v7a, x86, x86_64`. Версия протокола плагина 1.0; текущая версия провайдера 0.1.3 (код версии 38).
 
 ******
 
@@ -219,7 +219,7 @@ models/yolo11n/
 
 ******
 
-Репозиторий уже публичный, но у плагина пока нет ни публичного Release, ни записи в официальном индексе плагинов; совместимый хост AutoJs6 6.8.0 (5275) ещё не выпущен официально, но этот выпуск больше не является обязательным предварительным условием публикации плагина, а публичный Release и запись в индексе зависят от APK с продакшен-подписью и финальной проверки на устройстве. Без `sign.properties` `assembleRelease` создаёт неподписанный APK — это лишь свидетельство исходников/сборки, а не публикуемый артефакт. Текущая версия — 0.1.3 (код версии 37); дефекты исправляются вперёд новым кодом версии, а не откатом. Продакшен-подпись, финальная проверка на устройстве и статус публикации фиксируются внешним архивом свидетельств R6; см. [инженерные заметки](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/engineering-notes.md).
+Репозиторий уже публичный, но у плагина пока нет ни публичного Release, ни записи в официальном индексе плагинов; совместимый хост AutoJs6 6.8.0 (5275) ещё не выпущен официально, но этот выпуск больше не является обязательным предварительным условием публикации плагина, а публичный Release и запись в индексе зависят от APK с продакшен-подписью и финальной проверки на устройстве. Без `sign.properties` `assembleRelease` создаёт неподписанный APK — это лишь свидетельство исходников/сборки, а не публикуемый артефакт. Текущая версия — 0.1.3 (код версии 38); дефекты исправляются вперёд новым кодом версии, а не откатом. Продакшен-подпись, финальная проверка на устройстве и статус публикации фиксируются внешним архивом свидетельств R6; см. [инженерные заметки](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/engineering-notes.md).
 
 ******
 

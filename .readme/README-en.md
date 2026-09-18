@@ -12,7 +12,7 @@
   <p>
     <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/releases"><img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN?label=Release"/></a>
     <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/issues"><img alt="GitHub closed issues" src="https://img.shields.io/github/issues/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN?color=A24232&label=Issues"/></a>
-    <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/commit/01b9093c55c7c1a78f39246c671e928df244483f"><img alt="Created" src="https://img.shields.io/date/1786442764?color=2e7d32&label=Created"/></a>
+    <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/commit/28802f197259f70dde5fce54ec19f3f2ffd34bf5"><img alt="Created" src="https://img.shields.io/date/1786442764?color=2e7d32&label=Created"/></a>
     <br>
     <a href="https://developer.android.com/studio/archive"><img alt="Android Studio" src="https://img.shields.io/badge/Android%20Studio-2023.3+-B64FC8"/></a>
     <a href="https://www.jetbrains.com/idea/download/other.html"><img alt="IntelliJ IDEA" src="https://img.shields.io/badge/IntelliJ%20IDEA-2023.3+-EE4677"/></a>
@@ -211,7 +211,7 @@ The plugin is designed fail-closed; the following mechanisms are always in effec
 
 ******
 
-Requires AutoJs6 with a version code of at least 5275 (that is, 6.8.0 or later) signed with the same certificate as the plugin; Android 24+ (Android 7.0), targetSdk 37; the device must be `arm64-v8a, armeabi-v7a, x86, x86_64`. Plugin protocol version 1.0; current provider version 0.1.3 (version code 37).
+Requires AutoJs6 with a version code of at least 5275 (that is, 6.8.0 or later) signed with the same certificate as the plugin; Android 24+ (Android 7.0), targetSdk 37; the device must be `arm64-v8a, armeabi-v7a, x86, x86_64`. Plugin protocol version 1.0; current provider version 0.1.3 (version code 38).
 
 ******
 
@@ -219,7 +219,7 @@ Requires AutoJs6 with a version code of at least 5275 (that is, 6.8.0 or later) 
 
 ******
 
-This repository is public, but the plugin has neither a public Release nor an entry in the official plugin index yet; the compatible host AutoJs6 6.8.0 (5275) has not been formally released, but that release is no longer a hard prerequisite for publishing this plugin, and the public Release and index entry are gated on a production-signed APK and the final on-device verification. Without `sign.properties`, `assembleRelease` produces an unsigned APK that is source/build evidence only, not a publishable artifact. The current version is 0.1.3 (version code 37); defects are fixed forward with a new version code, never by rollback. Production signing, final on-device verification, and publication status are bound by the external R6 evidence archive; see the [engineering notes](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/engineering-notes.md).
+This repository is public, but the plugin has neither a public Release nor an entry in the official plugin index yet; the compatible host AutoJs6 6.8.0 (5275) has not been formally released, but that release is no longer a hard prerequisite for publishing this plugin, and the public Release and index entry are gated on a production-signed APK and the final on-device verification. Without `sign.properties`, `assembleRelease` produces an unsigned APK that is source/build evidence only, not a publishable artifact. The current version is 0.1.3 (version code 38); defects are fixed forward with a new version code, never by rollback. Production signing, final on-device verification, and publication status are bound by the external R6 evidence archive; see the [engineering notes](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/engineering-notes.md).
 
 ******
 

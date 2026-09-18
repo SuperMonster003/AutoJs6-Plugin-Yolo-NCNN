@@ -81,7 +81,7 @@ source; converting a model to NCNN does not change those conditions.
 ELF 16 KiB alignment is packaging evidence only. Separate R9 runtime evidence
 now covers native loading and fixed-image inference on a Samsung SM-A566B with
 Android 16 / API 36, `arm64-v8a`, and 16 KiB pages (2026-09-10). A clean build of
-`dc43e15` passed all five instrumentation tests; NCNN detected one bus and four
+`26ba868` passed all five instrumentation tests; NCNN detected one bus and four
 people, and installed APK hashes and post-test cleanup were verified. The
 [source-bound receipt](evidence/r9-arm64-api36-16k-samsung-smoke-2026-09-10.json)
 records `NATIVE_LOAD_16K_DEVICE=PASS_DEBUG_NATIVE_LOAD_AND_FIXED_IMAGE_INFERENCE`

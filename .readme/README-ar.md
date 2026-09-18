@@ -12,7 +12,7 @@
   <p>
     <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/releases"><img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN?label=Release"/></a>
     <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/issues"><img alt="GitHub closed issues" src="https://img.shields.io/github/issues/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN?color=A24232&label=Issues"/></a>
-    <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/commit/01b9093c55c7c1a78f39246c671e928df244483f"><img alt="Created" src="https://img.shields.io/date/1786442764?color=2e7d32&label=Created"/></a>
+    <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/commit/28802f197259f70dde5fce54ec19f3f2ffd34bf5"><img alt="Created" src="https://img.shields.io/date/1786442764?color=2e7d32&label=Created"/></a>
     <br>
     <a href="https://developer.android.com/studio/archive"><img alt="Android Studio" src="https://img.shields.io/badge/Android%20Studio-2023.3+-B64FC8"/></a>
     <a href="https://www.jetbrains.com/idea/download/other.html"><img alt="IntelliJ IDEA" src="https://img.shields.io/badge/IntelliJ%20IDEA-2023.3+-EE4677"/></a>
@@ -211,7 +211,7 @@ models/yolo11n/
 
 ******
 
-يتطلب AutoJs6 برمز إصدار لا يقل عن 5275 (أي 6.8.0 أو أحدث) موقّعًا بشهادة الإضافة نفسها؛ و Android 24+ (Android 7.0)، و targetSdk 37؛ ويجب أن يكون الجهاز `arm64-v8a, armeabi-v7a, x86, x86_64`. إصدار بروتوكول الإضافة 1.0؛ وإصدار المزوّد الحالي 0.1.3 (رمز الإصدار 37).
+يتطلب AutoJs6 برمز إصدار لا يقل عن 5275 (أي 6.8.0 أو أحدث) موقّعًا بشهادة الإضافة نفسها؛ و Android 24+ (Android 7.0)، و targetSdk 37؛ ويجب أن يكون الجهاز `arm64-v8a, armeabi-v7a, x86, x86_64`. إصدار بروتوكول الإضافة 1.0؛ وإصدار المزوّد الحالي 0.1.3 (رمز الإصدار 38).
 
 ******
 
@@ -219,7 +219,7 @@ models/yolo11n/
 
 ******
 
-هذا المستودع عام الآن، لكن الإضافة ليس لها بعد Release عام ولا إدراج في فهرس الإضافات الرسمي؛ المضيف المتوافق AutoJs6 6.8.0 (5275) لم يصدر رسميًا بعد، لكن ذلك الإصدار لم يعد شرطًا مسبقًا صارمًا لنشر هذه الإضافة، ويتوقف الـ Release العام والإدراج في الفهرس على ملف APK موقّع للإنتاج وعلى التحقق النهائي على الجهاز. بدون `sign.properties` ينتج `assembleRelease` ملف APK غير موقّع يُعد دليلًا على المصدر/البناء فحسب لا ناتجًا قابلًا للنشر. الإصدار الحالي هو 0.1.3 (رمز الإصدار 37)؛ وتُصحح العيوب إلى الأمام برمز إصدار جديد لا بالتراجع. توقيع الإنتاج والتحقق النهائي على الجهاز وحالة النشر يحسمها أرشيف أدلة R6 الخارجي؛ انظر [ملاحظات الهندسة](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/engineering-notes.md).
+هذا المستودع عام الآن، لكن الإضافة ليس لها بعد Release عام ولا إدراج في فهرس الإضافات الرسمي؛ المضيف المتوافق AutoJs6 6.8.0 (5275) لم يصدر رسميًا بعد، لكن ذلك الإصدار لم يعد شرطًا مسبقًا صارمًا لنشر هذه الإضافة، ويتوقف الـ Release العام والإدراج في الفهرس على ملف APK موقّع للإنتاج وعلى التحقق النهائي على الجهاز. بدون `sign.properties` ينتج `assembleRelease` ملف APK غير موقّع يُعد دليلًا على المصدر/البناء فحسب لا ناتجًا قابلًا للنشر. الإصدار الحالي هو 0.1.3 (رمز الإصدار 38)؛ وتُصحح العيوب إلى الأمام برمز إصدار جديد لا بالتراجع. توقيع الإنتاج والتحقق النهائي على الجهاز وحالة النشر يحسمها أرشيف أدلة R6 الخارجي؛ انظر [ملاحظات الهندسة](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/engineering-notes.md).
 
 ******
 

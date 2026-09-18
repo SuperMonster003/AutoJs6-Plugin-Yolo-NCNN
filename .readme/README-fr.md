@@ -12,7 +12,7 @@
   <p>
     <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/releases"><img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN?label=Release"/></a>
     <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/issues"><img alt="GitHub closed issues" src="https://img.shields.io/github/issues/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN?color=A24232&label=Issues"/></a>
-    <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/commit/01b9093c55c7c1a78f39246c671e928df244483f"><img alt="Created" src="https://img.shields.io/date/1786442764?color=2e7d32&label=Created"/></a>
+    <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/commit/28802f197259f70dde5fce54ec19f3f2ffd34bf5"><img alt="Created" src="https://img.shields.io/date/1786442764?color=2e7d32&label=Created"/></a>
     <br>
     <a href="https://developer.android.com/studio/archive"><img alt="Android Studio" src="https://img.shields.io/badge/Android%20Studio-2023.3+-B64FC8"/></a>
     <a href="https://www.jetbrains.com/idea/download/other.html"><img alt="IntelliJ IDEA" src="https://img.shields.io/badge/IntelliJ%20IDEA-2023.3+-EE4677"/></a>
@@ -211,7 +211,7 @@ Le plugin est conçu fail-closed ; les mécanismes suivants sont toujours en vig
 
 ******
 
-Nécessite AutoJs6 avec un code de version d'au moins 5275 (c'est-à-dire 6.8.0 ou ultérieur) signé avec le même certificat que le plugin ; Android 24+ (Android 7.0), targetSdk 37 ; l'appareil doit être `arm64-v8a, armeabi-v7a, x86, x86_64`. Version de protocole du plugin 1.0 ; version actuelle du provider 0.1.3 (code de version 37).
+Nécessite AutoJs6 avec un code de version d'au moins 5275 (c'est-à-dire 6.8.0 ou ultérieur) signé avec le même certificat que le plugin ; Android 24+ (Android 7.0), targetSdk 37 ; l'appareil doit être `arm64-v8a, armeabi-v7a, x86, x86_64`. Version de protocole du plugin 1.0 ; version actuelle du provider 0.1.3 (code de version 38).
 
 ******
 
@@ -219,7 +219,7 @@ Nécessite AutoJs6 avec un code de version d'au moins 5275 (c'est-à-dire 6.8.0 
 
 ******
 
-Ce dépôt est public, mais le plugin n'a encore ni Release publique ni entrée dans l'index officiel des plugins ; l'hôte compatible AutoJs6 6.8.0 (5275) n'est pas encore publié officiellement, mais cette publication n'est plus un prérequis strict pour publier ce plugin, et la Release publique ainsi que l'entrée dans l'index dépendent d'un APK signé pour la production et de la validation finale sur appareil. Sans `sign.properties`, `assembleRelease` produit un APK non signé qui n'est qu'une preuve de source/compilation, pas un artefact publiable. La version actuelle est 0.1.3 (code de version 37) ; les défauts sont corrigés en avant via un nouveau code de version, jamais par retour arrière. La signature de production, la validation finale sur appareil et le statut de publication sont fixés par l'archive de preuves R6 externe ; voir les [notes d'ingénierie](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/engineering-notes.md).
+Ce dépôt est public, mais le plugin n'a encore ni Release publique ni entrée dans l'index officiel des plugins ; l'hôte compatible AutoJs6 6.8.0 (5275) n'est pas encore publié officiellement, mais cette publication n'est plus un prérequis strict pour publier ce plugin, et la Release publique ainsi que l'entrée dans l'index dépendent d'un APK signé pour la production et de la validation finale sur appareil. Sans `sign.properties`, `assembleRelease` produit un APK non signé qui n'est qu'une preuve de source/compilation, pas un artefact publiable. La version actuelle est 0.1.3 (code de version 38) ; les défauts sont corrigés en avant via un nouveau code de version, jamais par retour arrière. La signature de production, la validation finale sur appareil et le statut de publication sont fixés par l'archive de preuves R6 externe ; voir les [notes d'ingénierie](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/engineering-notes.md).
 
 ******
 

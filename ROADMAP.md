@@ -109,20 +109,20 @@
 > (如 ELF 对齐) 推断运行时结论. 2026-09-10 的补充结果仅绑定其记录的源码、debug APK、
 > 固定模型与设备环境; 历史 R1–R6 和 4 KiB 证据保持原有边界, 发布 APK 仍需独立终验.
 
-- [x] 补充 arm64 / API 35 / 4 KiB 基线 (2026-08-27): 从干净提交 `69e4a62` 离线构建 debug 与
+- [x] 补充 arm64 / API 35 / 4 KiB 基线 (2026-08-27): 从干净提交 `b766940` 离线构建 debug 与
   instrumentation APK, 在 `23046RP50C` (`968e9f18`) 运行 5/5 测试; NCNN 20260526 对固定
   `bus.jpg` 推理得到 1 辆 bus 与 4 个人, 推理耗时 78 ms. 设备端 APK SHA-256 与本地一致,
   instrumentation 结束后进程退出、模型会话目录为 0, 最终两个包均已卸载; 完整边界与哈希见
   [`docs/evidence/r9-arm64-api35-4k-smoke-2026-08-27.json`](docs/evidence/r9-arm64-api35-4k-smoke-2026-08-27.json).
   此项仅刷新普通 arm64 基线; API 36 / 16 KiB 的独立验证见下
-- [x] 在优先测试设备复验 arm64 / API 31 / 4 KiB 基线 (2026-08-27): 从干净提交 `e747794`
+- [x] 在优先测试设备复验 arm64 / API 31 / 4 KiB 基线 (2026-08-27): 从干净提交 `6ef5917`
   离线构建 debug 与 instrumentation APK, 在 `XQ-AT72` (`QV710AF65F`) 运行 5/5 测试;
   NCNN 20260526 对同一固定 `bus.jpg` 推理得到 1 辆 bus 与 4 个人, 推理耗时 92 ms. 设备端
   APK SHA-256 与本地一致, instrumentation 结束后进程退出、模型会话目录为 0, 最终两个包均已
   卸载; 完整边界与哈希见
   [`docs/evidence/r9-arm64-api31-4k-qv710-smoke-2026-08-27.json`](docs/evidence/r9-arm64-api31-4k-qv710-smoke-2026-08-27.json).
   此项将历史 QV710AF65F 基线重新绑定到当时源码; API 36 / 16 KiB 的独立验证见下
-- [x] 16 KiB 页大小设备真机原生加载与单次定点推理验证 (2026-09-10): 从干净提交 `dc43e15`
+- [x] 16 KiB 页大小设备真机原生加载与单次定点推理验证 (2026-09-10): 从干净提交 `26ba868`
   经 `:app:clean` 离线构建 debug 与 instrumentation APK, 在用户授权的远程三星 `SM-A566B`
   (`a56x`, Android 16 / API 36 / `arm64-v8a`) 完成 5/5 测试. shell 与应用 UID 下
   `getconf PAGE_SIZE` 均为 `16384`; APK 内原生库的全部 3 个 LOAD 段均按 16 KiB 对齐,
@@ -236,7 +236,7 @@ Canonical R1 evidence is tracked in the AutoJs6 Host repository at
 
 Canonical R5 evidence is tracked in the AutoJs6 Host repository at
 `docs/dev/yolo-evidence/r5-summary.json`. It binds the device run to provider
-revision `2aa5b100edd5e0f7691cb7edb3dd3b38c194f77d` and Host revision
+revision `caab68b13d90ce2010eb34a3e73f41a5ddf8be23` and Host revision
 `c40464957239e1378acd7be92647a4c863ac60e5`.
 
 R5 source and packaging evidence are not production signing or publishing
