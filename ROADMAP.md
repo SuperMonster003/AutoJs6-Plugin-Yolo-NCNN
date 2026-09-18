@@ -1,6 +1,6 @@
 # Roadmap — AutoJs6 Plugin: YOLO NCNN
 
-> 当前版本: `0.1.0` (版本号 2) · 协议 1.0 · 要求宿主 ≥ 5275 (AutoJs6 6.8.0) · 私有暂存阶段, 未公开发布
+> 当前版本: `0.1.3` (版本号 37) · 协议 1.0 · 要求宿主 ≥ 5275 (AutoJs6 6.8.0) · 仓库已公开 (2026-09-18), 尚未发布公开 Release
 >
 > R1–R6 已完成 (2026-08-11 至 2026-08-13): 进程隔离 Provider, NCNN 20260526 CPU/arm64 detect,
 > Model Manifest v1, R8/资源收缩接入与离线源码/构建/打包门禁; 逐条证据记录原样保留于文末
@@ -32,7 +32,7 @@
 **因此继续精进的空间不在"补功能", 而在四个方向:**
 
 1. **文档与维护 (R7)** — 多语言文档流水线与漂移门禁已落地, 剩余公开后核对及逐版同步;
-2. **公开发布工程 (R8)** — 生产签名, 转公开, GitHub Release 与官方索引, 节奏受宿主发布约束;
+2. **公开发布工程 (R8)** — 生产签名, GitHub Release 与官方索引; 仓库已于 2026-09-18 转公开, 宿主正式发布不再是硬性前置;
 3. **平台与运行时验证 (R9)** — 16 KiB / API 36 debug 原生链路已验证, 后续补测升级链路并随发布构建复验;
 4. **能力扩展候选 (R10)** — 模型 manifest 工具链已落地; GPU / 更多任务 / 动态尺寸 / 有界队列等
    多数需宿主协议联动, 未排期不承诺.
@@ -87,17 +87,19 @@
 
 ---
 
-## R8 — 公开发布线 (前置: 宿主 AutoJs6 6.8.0 / 5275 正式发布) **[需联网]**
+## R8 — 公开发布线 (前置: 生产签名 APK 与真机终验) **[需联网]**
 
-> 在兼容宿主正式发布并通过独立公开评审前, 不改变仓库可见性, 不发布 Release,
-> 不提交官方插件索引 (与 R6 冻结的发布边界一致).
+> 2026-09-18 产品决定: 仓库已转公开; 宿主 AutoJs6 6.8.0 / 5275 正式发布不再是本线的硬性前置
+> (宿主发布暂无计划). 在生产签名 APK 与真机终验通过前, 仍不发布 Release, 不提交官方插件索引.
+> 宿主插件中心对宿主同证书 (OFFICIAL) 包的全新安装会自动写入启用记录, 其余安装方式仍需手动启用.
 
 - [ ] 使用生产证书完成 `assembleRelease` 签名构建, 与宿主正式 APK 完成双向证书 digest 比对并记录
 - [ ] 公开前复查: 确认仓库不含签名材料 (`sign.properties` / `*.jks`), 不含模型与图像负载
   (`fixtures/local/` 保持忽略), 不含私有路径与内部主机信息
-- [ ] 转公开仓库并创建首个公开 GitHub Release (附 APK 与 SHA-256), 使 Release 徽章生效
+- [x] 仓库已于 2026-09-18 转为公开
+- [ ] 创建首个公开 GitHub Release (附 APK 与 SHA-256), 使 Release 徽章生效
 - [ ] 以 R6 已导出的离线索引字符串资源 (插件 ID / 引擎 / 变体 / 最低宿主版本) 提交官方插件索引条目并确认收录
-- [ ] 在公开宿主上完成 安装 → 启用/信任 → 运行 `sample/yolo/detect.js` 全链路真机冒烟, 结果回填证据档案
+- [ ] 在兼容宿主上完成 插件中心安装 (官方签名包自动启用) → 授权/启用状态核对 → 运行 `sample/yolo/detect.js` 全链路真机冒烟, 结果回填证据档案
 
 ---
 
@@ -273,11 +275,11 @@ code `2` APK may be reinstalled only as same-version recovery after package,
 component, production signer, and SHA-256 verification. Defects are shipped as a
 forward-fix version code `3`.
 
-The current GitHub repository is private and is used only to stage source and
-evidence. Before a compatible AutoJs6 Host is publicly released, do not change
-repository visibility, publish a Release, or submit the Provider to the official
-plugin index. A private Draft Release may be created only after its exact APK and
-sanitized evidence assets have passed the refreshed R6 gates.
+The GitHub repository became public on 2026-09-18. A formal public release of a
+compatible AutoJs6 Host is no longer a hard prerequisite for publishing the
+Provider, but a public Release and the official plugin index entry still wait
+for a production-signed APK and the final on-device verification; do not publish
+a Release or submit the index entry before those gates pass.
 
 Runtime loading on a 16 KiB page-size target and API 36 arm64 runtime validation
 remain explicit non-blocking limitations:

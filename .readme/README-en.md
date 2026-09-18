@@ -82,8 +82,8 @@ The identity above is what the host uses to discover and bind this plugin. Model
 
 ******
 
-- **Install** — This plugin is currently in a private staging phase (see the Project Status section below): public downloads and the official plugin index entry arrive only after the compatible host AutoJs6 6.8.0 (build 5275) is formally released. Until then you can build a TEST-SIGNED candidate yourself as described in the Build section and pair it with an AutoJs6 test APK using the same debug certificate; host and plugin must be signed with the same certificate.
-- **Enable** — Installing the plugin does not switch YOLO on by itself: the AutoJs6 host keeps explicit selection, trust, and enable switches (the YOLO route is off by default), so enable and trust this provider in the host. On the script side, `yolo.load` also requires the explicit component string in `options.component`; there is no implicit fallback.
+- **Install** — This repository is public, but no public Release has been published yet and the plugin is not yet listed in the official plugin index (see the Project Status section below); public downloads and the index entry follow once a production-signed APK and the final on-device verification are done, and a formal release of the host AutoJs6 6.8.0 (build 5275) is no longer a hard prerequisite. Until then you can build a TEST-SIGNED candidate yourself as described in the Build section and pair it with an AutoJs6 test APK using the same debug certificate; host and plugin must be signed with the same certificate, and the host version code must be at least 5275.
+- **Enable** — Enable, trust, and selection state always belong to the AutoJs6 host: when a package signed with the official AutoJs6 certificate is installed through the host's Plugin Center, Plugin Center writes the enable record and runs the enable probe automatically after installation; TEST-SIGNED candidates, adb sideloads, updates and other signers still need manual authorization and enabling in Plugin Center. The host runtime reads only the saved enable record and treats a missing record as off (the YOLO route is off by default). On the script side, `yolo.load` also requires the explicit component string in `options.component`; there is no implicit fallback.
 - **Run** — Prepare a model directory containing the three files `model.json`, `model.ncnn.param`, and `model.ncnn.bin` (see the Model Preparation section below), open a detector with `yolo.load(modelDir, options)`, get the detection array with `detector.detect(image, options)`, and release it with `detector.close()` when done.
 - **Troubleshoot** — Exceptions thrown by `yolo.load` and `detector.detect` carry stable error categories: `COMPONENT_REQUIRED` (no component given), `PROVIDER_UNAVAILABLE` (host cannot find or does not trust the provider), `MODEL_REJECTED` (model or manifest failed validation; details carry prefixes such as `MANIFEST_*`), `UNSUPPORTED_CAPABILITY` (a capability outside CPU/detect was requested), `SESSION_CLOSED`, `DETECT_FAILED`, and so on. Check the Boundaries section below and the [model manifest specification](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/model-manifest-v1.md) when debugging.
 
@@ -188,7 +188,7 @@ To keep behavior predictable, requests outside the following scope are rejected 
 - Input is preprocessed as a 640x640 letterbox (the fixed manifest v1 profile) with RGBA_8888 pixels.
 - Single-request serial inference per session: the queue limit is 0, so a second concurrent `detect` on the same session fails.
 - Model open accepts read-only descriptors of regular files only (no pipes or sockets); all three files must be readable.
-- Installing this plugin does not enable YOLO by itself: enable, trust, and selection state always belong to the AutoJs6 host.
+- Enable, trust, and selection state always belong to the AutoJs6 host: only a package signed with the official certificate and installed through Plugin Center gets its enable record written automatically, every other installation path needs manual enabling, and the runtime treats a missing record as off.
 
 ******
 
@@ -211,7 +211,7 @@ The plugin is designed fail-closed; the following mechanisms are always in effec
 
 ******
 
-Requires AutoJs6 with a version code of at least 5275 (that is, 6.8.0 or later) signed with the same certificate as the plugin; Android 24+ (Android 7.0), targetSdk 37; the device must be `arm64-v8a, armeabi-v7a, x86, x86_64`. Plugin protocol version 1.0; current provider version 0.1.3 (version code 36).
+Requires AutoJs6 with a version code of at least 5275 (that is, 6.8.0 or later) signed with the same certificate as the plugin; Android 24+ (Android 7.0), targetSdk 37; the device must be `arm64-v8a, armeabi-v7a, x86, x86_64`. Plugin protocol version 1.0; current provider version 0.1.3 (version code 37).
 
 ******
 
@@ -219,7 +219,7 @@ Requires AutoJs6 with a version code of at least 5275 (that is, 6.8.0 or later) 
 
 ******
 
-This repository is currently a private staging archive: the compatible host AutoJs6 6.8.0 (5275) has not been formally released, and this plugin is neither publicly released nor listed in the official plugin index; the GitHub badges above may not render until the repository goes public. Without `sign.properties`, `assembleRelease` produces an unsigned APK that is source/build evidence only, not a publishable artifact. The first release is 0.1.3 (version code 36, with no version code 1 predecessor); defects are fixed forward as version code 3, never by rollback. Production signing, final on-device verification, and publication status are bound by the external R6 evidence archive; see the [engineering notes](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/engineering-notes.md).
+This repository is public, but the plugin has neither a public Release nor an entry in the official plugin index yet; the compatible host AutoJs6 6.8.0 (5275) has not been formally released, but that release is no longer a hard prerequisite for publishing this plugin, and the public Release and index entry are gated on a production-signed APK and the final on-device verification. Without `sign.properties`, `assembleRelease` produces an unsigned APK that is source/build evidence only, not a publishable artifact. The current version is 0.1.3 (version code 37); defects are fixed forward with a new version code, never by rollback. Production signing, final on-device verification, and publication status are bound by the external R6 evidence archive; see the [engineering notes](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/engineering-notes.md).
 
 ******
 

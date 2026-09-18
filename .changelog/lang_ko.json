@@ -31,7 +31,7 @@
     "v0.1.0": {
       "released_date": "2026/08/13",
       "hint": [
-        "첫 릴리스 (버전 코드 {{ version_build }}, 버전 코드 1의 전신 없음); AutoJs6 버전 코드 {{ required_host_build }} 이상 ({{ required_host_version }}+)이며 플러그인과 동일 인증서 서명이 필요",
+        "첫 릴리스 (버전 코드 2, 버전 코드 1의 전신 없음); AutoJs6 버전 코드 {{ required_host_build }} 이상 ({{ required_host_version }}+)이며 플러그인과 동일 인증서 서명이 필요",
         "현재 비공개 스테이징 단계: 호환 호스트의 정식 출시 후 공개 릴리스와 공식 플러그인 인덱스 제출을 진행; 기능 범위는 CPU / arm64-v8a / 객체 탐지"
       ],
       "feature": [

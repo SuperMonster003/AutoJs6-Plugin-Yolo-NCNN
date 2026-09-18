@@ -42,8 +42,11 @@ not cooperatively abortable, so R1 makes no hard-timeout claim.
 
 The current release-candidate scope is CPU-only `arm64-v8a` detection. Vulkan,
 other ABIs, segmentation, pose, OBB, tracking, and unknown decoders are explicit
-unsupported capabilities; they do not silently fall back. Installing this APK
-alone does not enable the default-off YOLO route in AutoJs6.
+unsupported capabilities; they do not silently fall back. The AutoJs6 runtime
+keeps the YOLO route off until an enable record exists; since 2026-09-18 Plugin
+Center writes that record automatically only for a fresh install of a package
+signed with the host's official certificate, while adb sideloads, updates and
+other signers still require a manual choice.
 
 `assembleRc` creates an installable, non-debuggable, arm64-only test candidate.
 As of R6 it inherits the release minifier and resource shrinker, while retaining
@@ -96,13 +99,13 @@ the Provider and withdraws its index entry. A verified archived exact version
 code `2` may be reinstalled only as same-version recovery, while defects require
 a forward-fix version code `3`.
 
-This sibling Git repository is independent. Its current GitHub remote is a
-private evidence archive only: it is not a public distribution channel, has no
-published release, and is not admitted to the official plugin index. Canonical
-raw receipts remain in the AutoJs6 Host repository under
-`docs/dev/yolo-evidence`. The repository must not be made public until a
-compatible AutoJs6 Host is formally released and a separate public-release
-review has passed.
+This sibling Git repository is independent. Its GitHub remote became public on
+2026-09-18; it still has no published release and is not admitted to the
+official plugin index. Canonical raw receipts remain in the AutoJs6 Host
+repository under `docs/dev/yolo-evidence`. A formal release of a compatible
+AutoJs6 Host is no longer a hard prerequisite, but a public Release and the
+index entry still require a production-signed APK and the final on-device
+verification.
 
 ## Source ownership and protocol handoff
 

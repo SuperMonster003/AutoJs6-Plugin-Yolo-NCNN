@@ -31,7 +31,7 @@
     "v0.1.0": {
       "released_date": "2026/08/13",
       "hint": [
-        "首个版本 (版本号 {{ version_build }}, 无版本号 1 前身); 需 AutoJs6 版本号不低于 {{ required_host_build }} ({{ required_host_version }}+) 且与插件同证书签名",
+        "首个版本 (版本号 2, 无版本号 1 前身); 需 AutoJs6 版本号不低于 {{ required_host_build }} ({{ required_host_version }}+) 且与插件同证书签名",
         "当前处于私有暂存阶段: 待兼容宿主正式发布后再公开发布并提交官方插件索引; 能力范围为 CPU / arm64-v8a / 目标检测"
       ],
       "feature": [

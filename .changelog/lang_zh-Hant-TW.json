@@ -31,7 +31,7 @@
     "v0.1.0": {
       "released_date": "2026/08/13",
       "hint": [
-        "首個版本 (版本號 {{ version_build }}, 無版本號 1 前身); 需 AutoJs6 版本號不低於 {{ required_host_build }} ({{ required_host_version }}+) 且與插件以同一憑證簽章",
+        "首個版本 (版本號 2, 無版本號 1 前身); 需 AutoJs6 版本號不低於 {{ required_host_build }} ({{ required_host_version }}+) 且與插件以同一憑證簽章",
         "目前處於私有暫存階段: 待相容宿主正式發布後再公開發布並提交官方插件索引; 能力範圍為 CPU / arm64-v8a / 物件偵測"
       ],
       "feature": [
