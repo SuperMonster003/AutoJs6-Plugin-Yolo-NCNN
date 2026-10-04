@@ -1,2 +1,12 @@
 # This asset is hash-pinned by the offline Provider source gate.
 app/src/main/assets/licenses/Apache-2.0.txt text eol=lf
+
+# Icon Studio reproducible assets
+.icons/assets/** binary
+.icons/recipe.json text eol=lf
+.python/icon_studio_runtime.py text eol=lf
+.python/generate_icon_studio.py text eol=lf
+app/src/main/res/raw/keep_plugin_center_icon.xml text eol=lf
+app/src/main/res/raw/keep_icon_studio.xml text eol=lf
+app/src/main/res/raw/keep_icon_studio_background.xml text eol=lf
+app/src/main/res/values*/icon_studio_backgrounds.xml text eol=lf

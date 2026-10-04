@@ -211,7 +211,7 @@ The plugin is designed fail-closed; the following mechanisms are always in effec
 
 ******
 
-Requires AutoJs6 with a version code of at least 5275 (that is, 6.8.0 or later) signed with the same certificate as the plugin; Android 24+ (Android 7.0), targetSdk 37; the device must be `arm64-v8a, armeabi-v7a, x86, x86_64`. Plugin protocol version 1.0; current provider version 0.1.3 (version code 38).
+Requires AutoJs6 with a version code of at least 5275 (that is, 6.8.0 or later) signed with the same certificate as the plugin; Android 24+ (Android 7.0), targetSdk 37; the device must be `arm64-v8a, armeabi-v7a, x86, x86_64`. Plugin protocol version 1.0; current provider version 0.1.4 (version code 41).
 
 ******
 
@@ -219,7 +219,7 @@ Requires AutoJs6 with a version code of at least 5275 (that is, 6.8.0 or later) 
 
 ******
 
-This repository is public, but the plugin has neither a public Release nor an entry in the official plugin index yet; the compatible host AutoJs6 6.8.0 (5275) has not been formally released, but that release is no longer a hard prerequisite for publishing this plugin, and the public Release and index entry are gated on a production-signed APK and the final on-device verification. Without `sign.properties`, `assembleRelease` produces an unsigned APK that is source/build evidence only, not a publishable artifact. The current version is 0.1.3 (version code 38); defects are fixed forward with a new version code, never by rollback. Production signing, final on-device verification, and publication status are bound by the external R6 evidence archive; see the [engineering notes](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/engineering-notes.md).
+This repository is public, but the plugin has neither a public Release nor an entry in the official plugin index yet; the compatible host AutoJs6 6.8.0 (5275) has not been formally released, but that release is no longer a hard prerequisite for publishing this plugin, and the public Release and index entry are gated on a production-signed APK and the final on-device verification. Without `sign.properties`, `assembleRelease` produces an unsigned APK that is source/build evidence only, not a publishable artifact. The current version is 0.1.4 (version code 41); defects are fixed forward with a new version code, never by rollback. Production signing, final on-device verification, and publication status are bound by the external R6 evidence archive; see the [engineering notes](https://github.com/SuperMonster003/AutoJs6-Plugin-Yolo-NCNN/blob/master/docs/engineering-notes.md).
 
 ******
 
@@ -247,6 +247,12 @@ Before any Gradle build, the same gate also runs the eight standard-library test
 
 ******
 
+# v0.1.4
+
+###### 2026/10/04
+
+* `Improvement` Plugin Center icons use the sizes, positions, light and dark artwork, and circular backgrounds adjusted in Icon Studio, retaining reproducible sources and parameters
+
 # v0.1.3
 
 ###### 2026/09/19
@@ -262,12 +268,6 @@ Before any Gradle build, the same gate also runs the eight standard-library test
 * `Fix` Add the standard Wake activation entry and report native ABIs from the installed APK, with complete localized descriptions
 * `Improvement` Validate release APK versions, signing and the complete variant set before creating download artifacts
 * `Improvement` Extend native ABI packaging and plugin metadata to arm64-v8a, armeabi-v7a, x86 and x86_64, with matching universal and per-ABI APKs
-
-# v0.1.1
-
-###### 2026/09/13
-
-* `Improvement` Build verification of 16 KB page alignment for 64-bit native libraries, including manifest contract checks and JSON reports
 
 ##### For more release history, see
 
