@@ -249,9 +249,10 @@ Antes de cualquier compilación Gradle, la misma puerta también ejecuta las och
 
 # v0.1.4
 
-###### 2026/10/04
+###### 2026/10/05
 
 * `Mejora` Los iconos del centro de plugins usan los tamaños, posiciones, imágenes claras y oscuras y fondos circulares ajustados en Icon Studio, conservando fuentes y parámetros reproducibles
+* `Mejora` Los iconos de información de la aplicación de Android comparten las imágenes y los fondos claros y oscuros de Icon Studio, conservando las imágenes transparentes del centro de plugins y las opciones del lanzador
 
 # v0.1.3
 
